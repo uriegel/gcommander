@@ -5,6 +5,6 @@ abstract class Controller
         if (path == null || path == RootController.Name)
             return RootController.Get(current);
 
-        return new EmptyController();
+        return new RootController();
     }
 }

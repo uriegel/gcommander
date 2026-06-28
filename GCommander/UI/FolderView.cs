@@ -1,14 +1,13 @@
 using Gtk4DotNet;
 
 
-// TODO EmptyController
 class FolderView : ColumnView
 {
     public FolderView(Builder builder, string name) : base(builder, name)
     {
 
 
-        // Initial Empty Controller
+        // To RootController
         var store = ListStore.New();
         model = NoSelection.New(store);
         AppendColumn(ColumnViewColumn.New("Name", SignalListItemFactory.New()).Expand());
@@ -24,7 +23,7 @@ class FolderView : ColumnView
 
 
 
-    // Initial Empty Controller
+    // To Controller
     SelectionModel model = null!;
 
 
@@ -33,5 +32,5 @@ class FolderView : ColumnView
 
     }
 
-    Controller Controller = new EmptyController();
+    Controller Controller = new RootController();
 }
