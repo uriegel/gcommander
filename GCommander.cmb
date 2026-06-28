@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<!-- Created with Cambalache 1.0.3 -->
+<cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
+  <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="e797d15e665843f0a8b682015ceca34eabc0ed9ac222f73b33faef35d42b1d3d"/>
+</cambalache-project>
