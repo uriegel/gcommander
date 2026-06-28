@@ -1,5 +1,6 @@
 using Gtk4DotNet;
 
+// TODO FolderViewController as Property in FolderView for keyboard and mouse control
 
 class FolderView : ColumnView
 {
