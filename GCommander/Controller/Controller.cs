@@ -11,12 +11,12 @@ abstract class Controller : IDisposable
     }
 
     public abstract void ChangePath(string? path);
-    
-    protected Controller(Func<ListStore, SelectionModel> getModel)
+
+    protected Controller(Func<SortListModel, SelectionModel> getModel)
     {
         store = ListStore.New();
         sortModel = SortListModel.New(store, null);
-        model = getModel(store);
+        model = getModel(sortModel);
     }
 
     protected SelectionModel model;
@@ -31,17 +31,17 @@ abstract class Controller : IDisposable
         {
             if (disposing)
             {
-                // TODO: Verwalteten Zustand (verwaltete Objekte) bereinigen
+                // Verwalteten Zustand (verwaltete Objekte) bereinigen
                 model.Dispose();
             }
 
-            // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
-            // TODO: Große Felder auf NULL setzen
+            // Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
+            // Große Felder auf NULL setzen
             disposedValue = true;
         }
     }
 
-    // // TODO: Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält
+    // Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält
     // ~Controller()
     // {
     //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.

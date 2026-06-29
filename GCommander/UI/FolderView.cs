@@ -1,5 +1,6 @@
 using Gtk4DotNet;
 
+// TODO setup columns for RootController
 // TODO FolderViewController as Property in FolderView for keyboard and mouse control
 
 class FolderView : ColumnView
@@ -8,7 +9,7 @@ class FolderView : ColumnView
     {
         controller = Controller.GetFromPath(null, null, this)!;
         controller.ChangePath(null);
-        
+
         OnFinalize(() =>
         {
             controller.Dispose();
