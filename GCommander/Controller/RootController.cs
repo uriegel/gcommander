@@ -5,12 +5,17 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Size Display
-// TODO Percentage as progress?
-// TODO with warning css when too large
+
+// TODO Sorting by size broken
+// TODO GtkMultiSorter
 // TODO Sorting name? attach name sort index to sort, perhaps group sort? is mounted, is not mounted
+// TODO Remotes and Favorites
+// TODO with warning css when too large
+// TODO Percentage as progress?
 // TODO Mount unmounted drive
 // TODO VolumeMontior
+
+// TODO GetParent() generic and returns null if no parent
 
 class RootController : Controller
 {
@@ -33,57 +38,63 @@ class RootController : Controller
     {
         previous?.Dispose();
 
-        var namefactory = SignalListItemFactory.New();
-        namefactory.Setup(listitem =>
-        {
-            using var builder = Builder.FromDotNetResource("icon-name-item");
-            var item = new IconNameItem(builder);
-            listitem.SetManagedChild(item);
-        });
-        namefactory.Bind(listitem =>
-        {
-            var iconname = listitem.GetManagedChild<IconNameItem>();
-            var item = listitem.GetItem<RootItem>();
-            iconname?.Name = item?.Name ?? "";
-            if (item?.IconName != null)
-                iconname?.SetFromIconName(item.IconName);
-        });
+        var namefactory = SignalListItemFactory
+            .New()
+            .Setup(listitem =>
+            {
+                using var builder = Builder.FromDotNetResource("icon-name-item");
+                var item = new IconNameItem(builder);
+                listitem.SetManagedChild(item);
+            })
+            .Bind(listitem =>
+            {
+                var iconname = listitem.GetManagedChild<IconNameItem>();
+                var item = listitem.GetItem<RootItem>();
+                iconname?.Name = item?.Name ?? "";
+                if (item?.IconName != null)
+                    iconname?.SetFromIconName(item.IconName);
+                iconname?.GetParent()?.GetParent().AddCssClass("hiddenItem", item?.IsMounted != true);
+            });
 
-        var descriptionfactory = SignalListItemFactory.New();
-        descriptionfactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)));
-        descriptionfactory.Bind(listitem =>
-        {
-            var label = listitem.GetChild<Label>();
-            var item = listitem.GetItem<RootItem>();
-            label.Text = item?.Description ?? "";
-        });
+        var descriptionfactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<RootItem>();
+                label.Text = item?.Description ?? "";
+            });
 
-        var mountPointfactory = SignalListItemFactory.New();
-        mountPointfactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)));
-        mountPointfactory.Bind(listitem =>
-        {
-            var label = listitem.GetChild<Label>();
-            var item = listitem.GetItem<RootItem>();
-            label.Text = item?.MountPoint ?? "";
-        });
+        var mountPointfactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<RootItem>();
+                label.Text = item?.MountPoint ?? "";
+            });
 
-        var usefactory = SignalListItemFactory.New();
-        usefactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)));
-        usefactory.Bind(listitem =>
-        {
-            var label = listitem.GetChild<Label>();
-            var item = listitem.GetItem<RootItem>();
-            label.Text = item?.Use ?? "";
-        });
+        var usefactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<RootItem>();
+                label.Text = item?.Use ?? "";
+            });
 
-        var sizefactory = SignalListItemFactory.New();
-        sizefactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)));
-        sizefactory.Bind(listitem =>
-        {
-            var label = listitem.GetChild<Label>();
-            var item = listitem.GetItem<RootItem>();
-            label.Text = item?.Size != 0 ? item?.Size.ToString() ?? "" : "";
-        });
+        var sizefactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<RootItem>();
+                label.Text = item?.Size.FormatSize() ?? "";
+            });
 
         view.SetModel(null);
         view.ClearColumns();
@@ -122,7 +133,7 @@ class RootController : Controller
     }
 
     static async Task<RootItem[]> Get()
-        => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
+        => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
             from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices
@@ -132,7 +143,7 @@ class RootController : Controller
             select new RootItem(
                 child.Name,
                 child.Label,
-                child.Size,
+                child.Size != 0 ? child.Size : null,
                 child.Mountpoint ?? "",
                 child.Mountpoint?.Length > 0,
                 (child.Tran ?? drive.Tran).GetIconName(child.Rm),

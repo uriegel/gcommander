@@ -20,8 +20,8 @@ abstract class Controller : IDisposable
     }
 
     protected static int SortSize(long? s1, long? s2)
-        => s1 - s2 > 0 
-            ? 1 
+        => s1 - s2 > 0
+            ? 1
             : s1 - s2 < 0
             ? -1
             : 0;
@@ -65,4 +65,28 @@ abstract class Controller : IDisposable
     bool disposedValue;
 
     #endregion
+}
+
+static class ControllerExtensions
+{
+    public static string FormatSize(this long? size)
+    {
+        if (!size.HasValue || size == -1)
+            return "";
+        var sizeStr = size.Value.ToString();
+        var sep = '.';
+        if (sizeStr.Length > 3) 
+        {
+            var sizePart = sizeStr;
+            sizeStr = "";
+            for (var j = 3; j < sizePart.Length; j += 3) 
+            {
+                var extract = sizePart.Substring(sizePart.Length - j, 3);
+                sizeStr = sep + extract + sizeStr;
+            }
+            var strfirst = sizePart[..((sizePart.Length % 3 == 0) ? 3 : (sizePart.Length % 3))];
+            sizeStr = strfirst + sizeStr;
+        }
+        return sizeStr;    
+    }
 }
