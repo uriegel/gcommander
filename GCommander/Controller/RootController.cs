@@ -5,13 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Remotes and Favorites
-// TODO with warning css when too large
-// TODO Percentage as progress?
 // TODO Mount unmounted drive
-// TODO VolumeMontior
+// TODO VolumeMonitor
 
-// TODO GetParent() generic and returns null if no parent
+// TODO Percentage as progress?
+// TODO DriveType??
 
 class RootController : Controller
 {
@@ -46,10 +44,11 @@ class RootController : Controller
             {
                 var iconname = listitem.GetManagedChild<IconNameItem>();
                 var item = listitem.GetItem<RootItem>();
-                iconname?.Name = item?.Name ?? "";
+                iconname?.Name = item?.Name.RemoveZzz() ?? "";
                 if (item?.IconName != null)
                     iconname?.SetFromIconName(item.IconName);
-                iconname?.GetParent()?.GetParent().AddCssClass("hiddenItem", item?.IsMounted != true);
+                var row = iconname?.GetParent()?.GetParent();
+                row?.AddCssClass("hiddenItem", item?.IsMounted != true);
             });
 
         var descriptionfactory = SignalListItemFactory
@@ -79,7 +78,9 @@ class RootController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<RootItem>();
-                label.Text = item?.Use ?? "";
+                label.Text = item?.Use != null ? $"{item?.Use}%" : "";
+                if (item?.Use > 90)
+                    label.GetParent().AddCssClass("warning", item?.IsMounted == true);
             });
 
         var sizefactory = SignalListItemFactory
@@ -108,11 +109,12 @@ class RootController : Controller
 
         using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
         using var nameMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(nameSorter);
-        view.AppendColumn(ColumnViewColumn
+        var firstCol = ColumnViewColumn
             .New("Name", namefactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(nameMultiSorter))
-        );
+            .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
+        view.AppendColumn(firstCol);
+        view.SortByColumn(firstCol);
 
         using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
         using var descriptionMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(descriptionSorter);
@@ -128,7 +130,7 @@ class RootController : Controller
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
         );
-        using var useSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Use ?? "").CompareTo(item2?.Use ?? ""));
+        using var useSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
         using var useMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(useSorter);
         view.AppendColumn(ColumnViewColumn
             .New("%", usefactory)
@@ -148,8 +150,10 @@ class RootController : Controller
     }
 
     static async Task<RootItem[]> Get()
-        => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
-            from drive in JsonSerializer.Deserialize<DrivesResult>(
+        => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME),
+            new RootItem("zzzfav", "Favoriten", null, "fav", true, "starred", null, DriveType.HOME),
+            new RootItem("zzzremotes", "Zugriff auf entfernte Geräte", null, "remotes", true, "network-server", null, DriveType.HOME),
+            .. from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices
             where drive.Fstype != "squashfs"
@@ -164,7 +168,7 @@ class RootController : Controller
                 (child.Tran ?? drive.Tran).GetIconName(child.Rm),
                 child.Uuid,
                 (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
-                child.Fsuse,
+                child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
 }
 
@@ -187,6 +191,11 @@ static class RootItemExtensions
             ("usb", true) => DriveType.REMOVABLE_USB,
             _ => DriveType.HARDDRIVE
         };
+
+    public static string RemoveZzz(this string name)
+        => name.StartsWith("zzz") 
+            ? name[3..] 
+            : name;
 }
 
 record DrivesResult(Device[] Blockdevices);

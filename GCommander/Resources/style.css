@@ -23,5 +23,10 @@ listview row .exif {
 }
 
 listview row.hiddenItem {
-    opacity: 0.5;
+    opacity: 0.45;
+}
+
+.warning {
+    background-color: color-mix(in srgb, red 80%, transparent);
+    color: white;
 }

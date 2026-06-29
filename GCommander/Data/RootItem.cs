@@ -7,7 +7,7 @@ record RootItem(
     string IconName,
     string? Uuid = null,
     string Type = DriveType.HARDDRIVE,
-    string? Use = null,
+    int? Use = null,
     bool Removable = false
 );
 
