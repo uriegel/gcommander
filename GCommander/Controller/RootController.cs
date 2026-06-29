@@ -5,10 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-
-// TODO Sorting by size broken
-// TODO GtkMultiSorter
-// TODO Sorting name? attach name sort index to sort, perhaps group sort? is mounted, is not mounted
 // TODO Remotes and Favorites
 // TODO with warning css when too large
 // TODO Percentage as progress?
@@ -28,12 +24,12 @@ class RootController : Controller
             store.Append(item);
     }
 
-    public static RootController? Get(Controller? current, ColumnView view)
+    public static RootController? Get(Controller? current, ColumnView view, FolderViewController folderView)
         => current is RootController
             ? null
-            : new RootController(current, view);
+            : new RootController(current, view, folderView);
 
-    public RootController(Controller? previous, ColumnView view)
+    public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
         : base(NoSelection.New)
     {
         previous?.Dispose();
@@ -99,36 +95,55 @@ class RootController : Controller
         view.SetModel(null);
         view.ClearColumns();
         view.SetModel(model);
+
+        var sorterIsMounted = CustomSorter.New<RootItem>((item1, item2) =>
+        {
+            var order = item1?.IsMounted == true && item2?.IsMounted != true
+                ? -1
+                : item2?.IsMounted == true && item1?.IsMounted != true
+                ? 1
+                : 0;
+            return folderView.ReverseSortOrder ? -order : order;
+        });
+
         using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(nameSorter);
         view.AppendColumn(ColumnViewColumn
             .New("Name", namefactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(nameSorter))
+            .SideEffect(cvc => cvc.SetSorter(nameMultiSorter))
         );
+
         using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
+        using var descriptionMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(descriptionSorter);
         view.AppendColumn(ColumnViewColumn
             .New("Bezeichnung", descriptionfactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(descriptionSorter))
+            .SideEffect(cvc => cvc.SetSorter(descriptionMultiSorter))
         );
         using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
+        using var mountPointMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(mountPointSorter);
         view.AppendColumn(ColumnViewColumn
             .New("MountPoint", mountPointfactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(mountPointSorter))
+            .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
         );
         using var useSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Use ?? "").CompareTo(item2?.Use ?? ""));
+        using var useMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(useSorter);
         view.AppendColumn(ColumnViewColumn
             .New("%", usefactory)
-            .SideEffect(cvc => cvc.SetSorter(useSorter))
+            .SideEffect(cvc => cvc.SetSorter(useMultiSorter))
         );
         using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
+        using var sizeMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(sizeSorter);
         view.AppendColumn(ColumnViewColumn
             .New("Größe", sizefactory)
-            .SideEffect(cvc => cvc.SetSorter(sizeSorter))
+            .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
         );
 
         using var viewsorter = view.GetSorter();
+        viewsorter.OnChanged -= folderView.SortOrderChanged;
+        viewsorter.OnChanged += folderView.SortOrderChanged;
         sortModel.SetSorter(viewsorter);
     }
 

@@ -1,12 +1,15 @@
 using Gtk4DotNet;
 
-// TODO FolderViewController as Property in FolderView for keyboard and mouse control, only for MultiSelection
+// TODO FolderViewController as Property in FolderView for keyboard and mouse control, only for MultiSelection, and for Sorting (ascending, descending)
 
 class FolderView : ColumnView
 {
+    public FolderViewController FolderViewController { get; }
+    
     public FolderView(Builder builder, string name) : base(builder, name)
     {
-        controller = Controller.GetFromPath(null, null, this)!;
+        FolderViewController = new(this);
+        controller = Controller.GetFromPath(null, null, this, FolderViewController)!;
         controller.ChangePath(null);
 
         OnFinalize(() =>

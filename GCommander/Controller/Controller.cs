@@ -2,12 +2,12 @@ using Gtk4DotNet;
 
 abstract class Controller : IDisposable
 {
-    public static Controller? GetFromPath(string? path, Controller? current, ColumnView view)
+    public static Controller? GetFromPath(string? path, Controller? current, ColumnView view, FolderViewController folderView)
     {
         if (path == null || path == RootController.Name)
-            return RootController.Get(current, view);
+            return RootController.Get(current, view, folderView);
 
-        return new RootController(current, view);
+        return new RootController(current, view, folderView);
     }
 
     public abstract void ChangePath(string? path);
@@ -20,11 +20,15 @@ abstract class Controller : IDisposable
     }
 
     protected static int SortSize(long? s1, long? s2)
-        => s1 - s2 > 0
+    {
+        var a = s1.HasValue ? s1.Value : 0;
+        var b = s2.HasValue ? s2.Value : 0;
+        return a - b > 0
             ? 1
-            : s1 - s2 < 0
+            : a - b < 0
             ? -1
             : 0;
+    }
 
     protected SelectionModel model;
     protected SortListModel sortModel;
