@@ -1,6 +1,5 @@
 using Gtk4DotNet;
 
-// TODO Sorting name? attach name sort index to sort, perhaps group sort? is mounted, is not mounted
 // TODO FolderViewController as Property in FolderView for keyboard and mouse control, only for MultiSelection
 
 class FolderView : ColumnView

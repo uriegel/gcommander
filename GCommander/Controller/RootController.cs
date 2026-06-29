@@ -5,6 +5,13 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO Size Display
+// TODO Percentage as progress?
+// TODO with warning css when too large
+// TODO Sorting name? attach name sort index to sort, perhaps group sort? is mounted, is not mounted
+// TODO Mount unmounted drive
+// TODO VolumeMontior
+
 class RootController : Controller
 {
     public const string Name = "Root";
