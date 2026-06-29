@@ -10,7 +10,7 @@ class MainWindow : ApplicationWindow
             StyleProviderPriority.Application);
 
 
-        _ = columnviewLeft;
+        AddActions(new SimpleAction("refresh", () => columnviewLeft.Refresh(), "<Ctrl>R"));
     }
 
     [Widget]

@@ -23,5 +23,10 @@ class FolderView : ColumnView
 
     }
 
+    public void Refresh()
+    {
+        controller.ChangePath(null);
+    }
+
     Controller controller;
 }

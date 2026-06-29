@@ -5,8 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO find selectedItem, get name, after refresh select this item again
 // TODO Mount unmounted drive
-// TODO VolumeMonitor
 
 // TODO Percentage as progress?
 // TODO DriveType??
@@ -18,6 +18,7 @@ class RootController : Controller
     public override async void ChangePath(string? path)
     {
         var items = await Get();
+        store.RemoveAll();
         foreach (var item in items)
             store.Append(item);
     }
@@ -80,7 +81,7 @@ class RootController : Controller
                 var item = listitem.GetItem<RootItem>();
                 label.Text = item?.Use != null ? $"{item?.Use}%" : "";
                 if (item?.Use > 90)
-                    label.GetParent().AddCssClass("warning", item?.IsMounted == true);
+                    label?.GetParent()?.AddCssClass("warning", item?.IsMounted == true);
             });
 
         var sizefactory = SignalListItemFactory
@@ -147,6 +148,8 @@ class RootController : Controller
         viewsorter.OnChanged -= folderView.SortOrderChanged;
         viewsorter.OnChanged += folderView.SortOrderChanged;
         sortModel.SetSorter(viewsorter);
+
+        StartMonitoring();
     }
 
     static async Task<RootItem[]> Get()
@@ -170,6 +173,42 @@ class RootController : Controller
                 (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
+
+    void Refresh() => ChangePath(null);
+
+    void StartMonitoring()
+    {
+        volumeMonitor = VolumeMonitor.Get();
+        volumeMonitor.OnDriveConnected(Refresh);
+        volumeMonitor.OnDriveDisconnected(Refresh);
+        volumeMonitor.OnMountAdded(Refresh);
+        volumeMonitor.OnMountRemoved(Refresh);
+        volumeMonitor.OnVolumeRemoved(Refresh);
+    }
+
+    VolumeMonitor? volumeMonitor;
+
+    #region IDisposable
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                volumeMonitor?.Dispose();
+            }
+
+            // Free unmanaged resources owned by DerivedClass
+
+            disposed = true;
+        }
+
+        base.Dispose(disposing);
+    }
+    bool disposed;
+
+    #endregion
 }
 
 static class RootItemExtensions
