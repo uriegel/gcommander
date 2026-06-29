@@ -1,14 +1,14 @@
 record RootItem(
     string Name,
     string Description,
-    long? Size,
+    long Size,
     string MountPoint,
     bool IsMounted,
     string IconName,
     string? Uuid = null,
     string Type = DriveType.HARDDRIVE,
     string? Use = null,
-    bool? Removable = null
+    bool Removable = false
 );
 
 static class DriveType

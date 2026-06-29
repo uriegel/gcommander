@@ -19,6 +19,13 @@ abstract class Controller : IDisposable
         model = getModel(sortModel);
     }
 
+    protected static int SortSize(long? s1, long? s2)
+        => s1 - s2 > 0 
+            ? 1 
+            : s1 - s2 < 0
+            ? -1
+            : 0;
+
     protected SelectionModel model;
     protected SortListModel sortModel;
     protected ListStore store;

@@ -11,9 +11,9 @@ class RootController : Controller
 
     public override async void ChangePath(string? path)
     {
-        // var items = await Get();
-        // foreach (var item in items)
-        //     store.Append(item);
+        var items = await Get();
+        foreach (var item in items)
+            store.Append(item);
     }
 
     public static RootController? Get(Controller? current, ColumnView view)
@@ -38,8 +38,44 @@ class RootController : Controller
             var iconname = listitem.GetManagedChild<IconNameItem>();
             var item = listitem.GetItem<RootItem>();
             iconname?.Name = item?.Name ?? "";
-            // if (item?.IconName != null)
-            //     iconname?.SetFromIconName(item.IconName);
+            if (item?.IconName != null)
+                iconname?.SetFromIconName(item.IconName);
+        });
+
+        var descriptionfactory = SignalListItemFactory.New();
+        descriptionfactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)));
+        descriptionfactory.Bind(listitem =>
+        {
+            var label = listitem.GetChild<Label>();
+            var item = listitem.GetItem<RootItem>();
+            label.Text = item?.Description ?? "";
+        });
+
+        var mountPointfactory = SignalListItemFactory.New();
+        mountPointfactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)));
+        mountPointfactory.Bind(listitem =>
+        {
+            var label = listitem.GetChild<Label>();
+            var item = listitem.GetItem<RootItem>();
+            label.Text = item?.MountPoint ?? "";
+        });
+
+        var usefactory = SignalListItemFactory.New();
+        usefactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)));
+        usefactory.Bind(listitem =>
+        {
+            var label = listitem.GetChild<Label>();
+            var item = listitem.GetItem<RootItem>();
+            label.Text = item?.Use ?? "";
+        });
+
+        var sizefactory = SignalListItemFactory.New();
+        sizefactory.Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)));
+        sizefactory.Bind(listitem =>
+        {
+            var label = listitem.GetChild<Label>();
+            var item = listitem.GetItem<RootItem>();
+            label.Text = item?.Size != 0 ? item?.Size.ToString() ?? "" : "";
         });
 
         view.SetModel(null);
@@ -51,6 +87,29 @@ class RootController : Controller
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameSorter))
         );
+        using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
+        view.AppendColumn(ColumnViewColumn
+            .New("Bezeichnung", descriptionfactory)
+            .Expand()
+            .SideEffect(cvc => cvc.SetSorter(descriptionSorter))
+        );
+        using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
+        view.AppendColumn(ColumnViewColumn
+            .New("MountPoint", mountPointfactory)
+            .Expand()
+            .SideEffect(cvc => cvc.SetSorter(mountPointSorter))
+        );
+        using var useSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Use ?? "").CompareTo(item2?.Use ?? ""));
+        view.AppendColumn(ColumnViewColumn
+            .New("%", usefactory)
+            .SideEffect(cvc => cvc.SetSorter(useSorter))
+        );
+        using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
+        view.AppendColumn(ColumnViewColumn
+            .New("Größe", sizefactory)
+            .SideEffect(cvc => cvc.SetSorter(sizeSorter))
+        );
+
         using var viewsorter = view.GetSorter();
         sortModel.SetSorter(viewsorter);
     }
