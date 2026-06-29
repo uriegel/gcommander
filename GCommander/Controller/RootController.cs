@@ -1,3 +1,5 @@
+using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Extensions;
@@ -5,7 +7,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO find selectedItem, get name, after refresh select this item again
+// TODO update 2nd value in 100_000 like counting from 0 to 100000 and update one item
 // TODO Mount unmounted drive
 
 // TODO Percentage as progress?
@@ -32,6 +34,8 @@ class RootController : Controller
         : base(NoSelection.New)
     {
         previous?.Dispose();
+
+        this.view = view;
 
         var namefactory = SignalListItemFactory
             .New()
@@ -174,7 +178,21 @@ class RootController : Controller
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
 
-    void Refresh() => ChangePath(null);
+    async void Refresh()
+    {
+        var pos = view.GetFocusedItemPos();
+        Console.WriteLine($"pos: {pos}");
+        var item = store.GetItem<RootItem>(pos);
+        Console.WriteLine($"item: {item}");
+        ChangePath(null);
+        await Task.Delay(300);
+        pos = store.GetItems<RootItem>()
+            .Select((n, i) => new ItemPos(Item: n, Pos: i))
+            .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
+                ?? 0;
+        Console.WriteLine($"pos new: {pos}");
+        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);                
+    } 
 
     void StartMonitoring()
     {
@@ -187,6 +205,7 @@ class RootController : Controller
     }
 
     VolumeMonitor? volumeMonitor;
+    ColumnView view;
 
     #region IDisposable
 
@@ -250,3 +269,5 @@ record Device(
     [property: JsonPropertyName("fsuse%")]
     string? Fsuse,
     bool Rm);
+
+record ItemPos(RootItem Item, int Pos);
