@@ -1,0 +1,1 @@
+record RootItem(string Name);

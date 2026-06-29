@@ -6,32 +6,19 @@ class FolderView : ColumnView
 {
     public FolderView(Builder builder, string name) : base(builder, name)
     {
-
-
-        // To RootController
-        var store = ListStore.New();
-        model = NoSelection.New(store);
-        AppendColumn(ColumnViewColumn.New("Name", SignalListItemFactory.New()).Expand());
-        SetModel(model);
+        controller = Controller.GetFromPath(null, null, this)!;
+        controller.ChangePath(null);
+        
         OnFinalize(() =>
         {
-            model.Dispose();
+            controller.Dispose();
         });
-
-
-
     }
-
-
-
-    // To Controller
-    SelectionModel model = null!;
-
 
     public void ChangePath(string? path)
     {
 
     }
 
-    Controller Controller = new RootController();
+    Controller controller;
 }
