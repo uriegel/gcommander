@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO VolumeMonitor select latest
+// TODO CurrentPosition wrong when sort changed
 // TODO update 2nd value in 100_000 like counting from 0 to 100000 and update one item
 // TODO Mount unmounted drive
 
@@ -44,13 +44,11 @@ class RootController : Controller
             var item = model.GetItem<RootItem>(folderView.CurrentPos);
             var items = await Get();
             store.Splice(0, model.ItemsCount(), items);
-            // foreach (var itm in model.GetItems<RootItem>().Select(n => n.Name))
-            //     Console.WriteLine($"item: {itm}");
-
             int pos = model.GetItems<RootItem>()
                 .Select((n, i) => new ItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
                     ?? 0;
+            folderView.CheckCurrentChanged(pos);
             view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         }
         finally
@@ -201,11 +199,11 @@ class RootController : Controller
     void StartMonitoring()
     {
         volumeMonitor = VolumeMonitor.Get();
-        // volumeMonitor.OnDriveConnected(Refresh);
-        // volumeMonitor.OnDriveDisconnected(Refresh);
-        // volumeMonitor.OnMountAdded(Refresh);
-        // volumeMonitor.OnMountRemoved(Refresh);
-        // volumeMonitor.OnVolumeRemoved(Refresh);
+        volumeMonitor.OnDriveConnected(Refresh);
+        volumeMonitor.OnDriveDisconnected(Refresh);
+        volumeMonitor.OnMountAdded(Refresh);
+        volumeMonitor.OnMountRemoved(Refresh);
+        volumeMonitor.OnVolumeRemoved(Refresh);
     }
 
     int SortMounted(RootItem? item1, RootItem? item2)

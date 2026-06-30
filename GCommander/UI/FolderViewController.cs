@@ -68,7 +68,7 @@ class FolderViewController
         return false;
     }
 
-    void CheckCurrentChanged(int newPos)
+    public void CheckCurrentChanged(int newPos)
     {
         if (newPos != CurrentPos)
         {
