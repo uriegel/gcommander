@@ -14,6 +14,8 @@ abstract class Controller : IDisposable
 
     public abstract void ChangePath(string? path);
 
+    public abstract void Refresh();
+
     protected Controller(Func<SortListModel, SelectionModel> getModel)
     {
         store = ListStore.New();

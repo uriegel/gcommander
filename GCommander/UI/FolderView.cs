@@ -20,7 +20,7 @@ class FolderView : ColumnView
 
     public void ChangePath(string? path) { }
 
-    public void Refresh() => controller.ChangePath(null);
+    public void Refresh() => controller.Refresh();
 
     public void SelectionChanged(int pos)
     {

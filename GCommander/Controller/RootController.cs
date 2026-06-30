@@ -36,6 +36,29 @@ class RootController : Controller
             ?? "";
     }
 
+    public override async void Refresh()
+    {
+        await locker.WaitAsync();
+        try
+        {
+            var item = model.GetItem<RootItem>(folderView.CurrentPos);
+            var items = await Get();
+            store.Splice(0, model.ItemsCount(), items);
+            // foreach (var itm in model.GetItems<RootItem>().Select(n => n.Name))
+            //     Console.WriteLine($"item: {itm}");
+
+            int pos = model.GetItems<RootItem>()
+                .Select((n, i) => new ItemPos(Item: n, Pos: i))
+                .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
+                    ?? 0;
+            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        }
+        finally
+        {
+            locker.Release();
+        }
+    }
+
     public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
         : base(NoSelection.New)
     {
@@ -175,36 +198,14 @@ class RootController : Controller
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
 
-    async void Refresh()
-    {
-        await locker.WaitAsync();
-        try
-        {
-            var item = store.GetItem<RootItem>(folderView.CurrentPos);
-            Console.WriteLine($"item: {item}");
-            ChangePath(null);
-            foreach (var itm in store.GetItems<RootItem>().Select(n => n.Name))
-                Console.WriteLine($"item: {itm}");
-            int pos = store.GetItems<RootItem>()
-                .Select((n, i) => new ItemPos(Item: n, Pos: i))
-                .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
-                    ?? 0;
-            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
-        }
-        finally
-        {
-            locker.Release();
-        }
-    }
-
     void StartMonitoring()
     {
         volumeMonitor = VolumeMonitor.Get();
-        volumeMonitor.OnDriveConnected(Refresh);
-        volumeMonitor.OnDriveDisconnected(Refresh);
-        volumeMonitor.OnMountAdded(Refresh);
-        volumeMonitor.OnMountRemoved(Refresh);
-        volumeMonitor.OnVolumeRemoved(Refresh);
+        // volumeMonitor.OnDriveConnected(Refresh);
+        // volumeMonitor.OnDriveDisconnected(Refresh);
+        // volumeMonitor.OnMountAdded(Refresh);
+        // volumeMonitor.OnMountRemoved(Refresh);
+        // volumeMonitor.OnVolumeRemoved(Refresh);
     }
 
     int SortMounted(RootItem? item1, RootItem? item2)
