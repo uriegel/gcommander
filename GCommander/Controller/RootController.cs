@@ -5,9 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO CurrentPosition wrong when sort changed
 // TODO update 2nd value in 100_000 like counting from 0 to 100000 and update one item
 // TODO Mount unmounted drive
+// TODO DirectoryController
 
 // TODO Percentage as progress?
 // TODO DriveType??
@@ -29,10 +29,10 @@ class RootController : Controller
 
     public override string GetItemPath(int pos)
     {
-        var name = model.GetItem<RootItem>(pos)?.Name;
-        return name?.StartsWith("zzz") == true
-            ? name[3..]
-            : name
+        latestName = model.GetItem<RootItem>(pos)?.Name;
+        return latestName?.StartsWith("zzz") == true
+            ? latestName[3..]
+            : latestName
             ?? "";
     }
 
@@ -41,12 +41,11 @@ class RootController : Controller
         await locker.WaitAsync();
         try
         {
-            var item = model.GetItem<RootItem>(folderView.CurrentPos);
             var items = await Get();
             store.Splice(0, model.ItemsCount(), items);
             int pos = model.GetItems<RootItem>()
                 .Select((n, i) => new ItemPos(Item: n, Pos: i))
-                .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
+                .FirstOrDefault(n => n.Item.Name == latestName)?.Pos
                     ?? 0;
             folderView.CheckCurrentChanged(pos);
             view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
@@ -220,7 +219,7 @@ class RootController : Controller
     readonly ColumnView view;
     readonly SemaphoreSlim locker = new(1, 1);
     VolumeMonitor? volumeMonitor;
-
+    string? latestName;
 
     #region IDisposable
 
