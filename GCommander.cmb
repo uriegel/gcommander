@@ -2,5 +2,5 @@
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
 <!-- Created with Cambalache 1.0.3 -->
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
-  <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="e797d15e665843f0a8b682015ceca34eabc0ed9ac222f73b33faef35d42b1d3d"/>
+  <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="eab1fe3f3de493aaa2df7b76195e39c3d4005e92b7737fbc509f44d0b4d0ec98"/>
 </cambalache-project>

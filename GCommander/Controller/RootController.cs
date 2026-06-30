@@ -1,5 +1,3 @@
-using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Extensions;
@@ -36,6 +34,7 @@ class RootController : Controller
         previous?.Dispose();
 
         this.view = view;
+        this.folderView = folderView;
 
         var namefactory = SignalListItemFactory
             .New()
@@ -102,18 +101,8 @@ class RootController : Controller
         view.ClearColumns();
         view.SetModel(model);
 
-        var sorterIsMounted = CustomSorter.New<RootItem>((item1, item2) =>
-        {
-            var order = item1?.IsMounted == true && item2?.IsMounted != true
-                ? -1
-                : item2?.IsMounted == true && item1?.IsMounted != true
-                ? 1
-                : 0;
-            return folderView.ReverseSortOrder ? -order : order;
-        });
-
         using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(nameSorter);
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New("Name", namefactory)
             .Expand()
@@ -122,27 +111,27 @@ class RootController : Controller
         view.SortByColumn(firstCol);
 
         using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
-        using var descriptionMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(descriptionSorter);
+        using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(descriptionSorter);
         view.AppendColumn(ColumnViewColumn
             .New("Bezeichnung", descriptionfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(descriptionMultiSorter))
         );
         using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
-        using var mountPointMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(mountPointSorter);
+        using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(mountPointSorter);
         view.AppendColumn(ColumnViewColumn
             .New("MountPoint", mountPointfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
         );
         using var useSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
-        using var useMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(useSorter);
+        using var useMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(useSorter);
         view.AppendColumn(ColumnViewColumn
             .New("%", usefactory)
             .SideEffect(cvc => cvc.SetSorter(useMultiSorter))
         );
         using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
-        using var sizeMultiSorter = MultiSorter.New().Append(sorterIsMounted).Append(sizeSorter);
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(sizeSorter);
         view.AppendColumn(ColumnViewColumn
             .New("Größe", sizefactory)
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
@@ -191,8 +180,8 @@ class RootController : Controller
             .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
                 ?? 0;
         Console.WriteLine($"pos new: {pos}");
-        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);                
-    } 
+        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+    }
 
     void StartMonitoring()
     {
@@ -203,6 +192,18 @@ class RootController : Controller
         volumeMonitor.OnMountRemoved(Refresh);
         volumeMonitor.OnVolumeRemoved(Refresh);
     }
+
+    int SortMounted(RootItem? item1, RootItem? item2)
+    {
+        var order = item1?.IsMounted == true && item2?.IsMounted != true
+            ? -1
+            : item2?.IsMounted == true && item1?.IsMounted != true
+            ? 1
+            : 0;
+        return folderView.ReverseSortOrder ? -order : order;
+    }
+
+    FolderViewController folderView;
 
     VolumeMonitor? volumeMonitor;
     ColumnView view;
@@ -251,8 +252,8 @@ static class RootItemExtensions
         };
 
     public static string RemoveZzz(this string name)
-        => name.StartsWith("zzz") 
-            ? name[3..] 
+        => name.StartsWith("zzz")
+            ? name[3..]
             : name;
 }
 

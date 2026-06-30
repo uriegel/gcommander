@@ -11,12 +11,80 @@
         <child type="top">
           <object class="AdwHeaderBar" id="headerBar"/>
         </child>
-        <child>
-          <object class="GtkColumnView" id="columnviewLeft">
-            <property name="enable-rubberband">True</property>
-            <property name="tab-behavior">item</property>
+        <property name="content">
+          <object class="GtkBox" id="box">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkColumnView" id="columnviewLeft">
+                <property name="enable-rubberband">True</property>
+                <property name="tab-behavior">item</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkActionBar" id="actionBar">
+                <property name="valign">end</property>
+                <property name="vexpand">False</property>
+                <child>
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkLabel" id="statusText">
+                        <property name="ellipsize">end</property>
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="selectedItemsText">
+                        <property name="ellipsize">end</property>
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="restrictionText">
+                        <property name="ellipsize">end</property>
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="backgroundActionText">
+                        <property name="ellipsize">end</property>
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="hexpand">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="labelDirs">
+                        <property name="hexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="hexpand">False</property>
+                        <property name="label"> Verz.</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="labelFiles">
+                        <property name="hexpand">False</property>
+                        <property name="margin-start">5</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="hexpand">False</property>
+                        <property name="label"> Dateien</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
-        </child>
+        </property>
       </object>
     </property>
     <property name="default-height">800</property>
