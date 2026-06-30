@@ -5,6 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO VolumeMonitor select latest
 // TODO update 2nd value in 100_000 like counting from 0 to 100000 and update one item
 // TODO Mount unmounted drive
 
@@ -18,15 +19,22 @@ class RootController : Controller
     public override async void ChangePath(string? path)
     {
         var items = await Get();
-        store.RemoveAll();
-        foreach (var item in items)
-            store.Append(item);
+        store.Splice(0, store.ItemsCount(), items);
     }
 
     public static RootController? Get(Controller? current, ColumnView view, FolderViewController folderView)
         => current is RootController
             ? null
             : new RootController(current, view, folderView);
+
+    public override string GetItemPath(int pos)
+    {
+        var name = model.GetItem<RootItem>(pos)?.Name;
+        return name?.StartsWith("zzz") == true
+            ? name[3..]
+            : name
+            ?? "";
+    }
 
     public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
         : base(NoSelection.New)
@@ -169,18 +177,24 @@ class RootController : Controller
 
     async void Refresh()
     {
-        var pos = view.GetFocusedItemPos();
-        Console.WriteLine($"pos: {pos}");
-        var item = store.GetItem<RootItem>(pos);
-        Console.WriteLine($"item: {item}");
-        ChangePath(null);
-        await Task.Delay(300);
-        pos = store.GetItems<RootItem>()
-            .Select((n, i) => new ItemPos(Item: n, Pos: i))
-            .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
-                ?? 0;
-        Console.WriteLine($"pos new: {pos}");
-        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        await locker.WaitAsync();
+        try
+        {
+            var item = store.GetItem<RootItem>(folderView.CurrentPos);
+            Console.WriteLine($"item: {item}");
+            ChangePath(null);
+            foreach (var itm in store.GetItems<RootItem>().Select(n => n.Name))
+                Console.WriteLine($"item: {itm}");
+            int pos = store.GetItems<RootItem>()
+                .Select((n, i) => new ItemPos(Item: n, Pos: i))
+                .FirstOrDefault(n => n.Item.Name == item?.Name)?.Pos
+                    ?? 0;
+            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        }
+        finally
+        {
+            locker.Release();
+        }
     }
 
     void StartMonitoring()
@@ -203,10 +217,11 @@ class RootController : Controller
         return folderView.ReverseSortOrder ? -order : order;
     }
 
-    FolderViewController folderView;
-
+    readonly FolderViewController folderView;
+    readonly ColumnView view;
+    readonly SemaphoreSlim locker = new(1, 1);
     VolumeMonitor? volumeMonitor;
-    ColumnView view;
+
 
     #region IDisposable
 

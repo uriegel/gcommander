@@ -18,15 +18,15 @@ class FolderView : ColumnView
         });
     }
 
-    public void ChangePath(string? path)
-    {
+    public void ChangePath(string? path) { }
 
+    public void Refresh() => controller.ChangePath(null);
+
+    public void SelectionChanged(int pos)
+    {
+        MainContext.Instance.SelectedPath = controller.GetItemPath(pos);
+        //Context.ExifData = controller.GetExifData(CurrentPos);
     }
 
-    public void Refresh()
-    {
-        controller.ChangePath(null);
-    }
-
-    Controller controller;
+    readonly Controller controller;
 }

@@ -9,10 +9,15 @@ class MainWindow : ApplicationWindow
             CssProvider.New().FromResource("style"),
             StyleProviderPriority.Application);
 
+        DataContext = MainContext.Instance;
+        statusText.Binding("label", nameof(MainContext.SelectedPath), BindingFlags.Default);
 
-        AddActions(new SimpleAction("refresh", () => columnviewLeft.Refresh(), "<Ctrl>R"));
+        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
     }
 
     [Widget]
     FolderView columnviewLeft = null!;
+
+    [Widget]
+    Label statusText = null!;
 }

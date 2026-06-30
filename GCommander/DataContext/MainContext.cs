@@ -1,0 +1,24 @@
+using System.ComponentModel;
+
+class MainContext : INotifyPropertyChanged
+{
+    public static MainContext Instance = new();
+
+    public string? SelectedPath
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(SelectedPath));
+                //OnChanged(nameof(StatusChoice));
+            }
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
+}

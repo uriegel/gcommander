@@ -10,6 +10,8 @@ abstract class Controller : IDisposable
         return new RootController(current, view, folderView);
     }
 
+    public abstract string GetItemPath(int pos);
+
     public abstract void ChangePath(string? path);
 
     protected Controller(Func<SortListModel, SelectionModel> getModel)

@@ -30,3 +30,21 @@ listview row.hiddenItem {
     background-color: color-mix(in srgb, red 80%, transparent);
     color: white;
 }
+
+actionbar {
+    font-size: smaller;
+    font-family: "Noto Sans";
+}
+
+actionbar>revealer>box {    
+    transition: background-color 0.3s;
+}
+
+actionbar.info>revealer>box{
+	background-color: color-mix(in srgb, @theme_selected_bg_color 25%, transparent);
+}
+
+.custom-accent { 
+    color: @accent_color; 
+}
+
