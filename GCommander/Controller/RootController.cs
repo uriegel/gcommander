@@ -5,14 +5,14 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO => columnView.SideEffect(cv => Gtk.SignalConnect<ActivateDelegate>(cv, "activate", (_, pos, __) => onActivate(pos)));
+// TODO ChangePath to other pathes
+// TODO ChangePath to parent
+// TODO ChangePath to parent => root
+// TODO ScrollWindow
+// TODO Paned with two cmmanderViews
 
-// TODO OnActivate
-// TODO ChangePath to DirectoryController
 // TODO Mount unmounted drive
 // TODO Display Error
-// TODO Change Controllers ...
-// TODO Paned with two cmmanderViews
 
 // TODO public static void RemoveDrive(string mountPoint)
 
@@ -45,7 +45,7 @@ class RootController : Controller
 
     public override string GetChangePath(int pos)
         => model.GetItem<RootItem>(pos)?.MountPoint ?? "";
-    
+
     public override async void Refresh()
     {
         await locker.WaitAsync();
@@ -68,7 +68,7 @@ class RootController : Controller
 
     public override void Activate(int position)
     {
-        var item = model.GetItem<RootItem>(position);                
+        var item = model.GetItem<RootItem>(position);
 
     }
 
