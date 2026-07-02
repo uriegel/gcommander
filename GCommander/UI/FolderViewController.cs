@@ -10,11 +10,11 @@ class FolderViewController
     {
         this.view = view;
         var controller = ClickGesture.New();
-        controller.OnPressed((c, _, _) =>
+        controller.OnPressed += (c, _, _) =>
         {
             int pos = view.GetFocusedItemPos();
             CheckCurrentChanged(pos);
-        });
+        };
         view.AddController(controller);
 
         var kec = KeyEventController.New();

@@ -29,9 +29,9 @@ class RootController : Controller
         store.Splice(0, store.ItemsCount(), items);
     }
 
-    public static RootController? Get(Controller? current, ColumnView view, FolderViewController folderView)
-        => current is RootController
-            ? null
+    public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView)
+        => current is RootController rootController
+            ? rootController
             : new RootController(current, view, folderView);
 
     public override string GetItemPath(int pos)
@@ -43,6 +43,9 @@ class RootController : Controller
             ?? "";
     }
 
+    public override string GetChangePath(int pos)
+        => model.GetItem<RootItem>(pos)?.MountPoint ?? "";
+    
     public override async void Refresh()
     {
         await locker.WaitAsync();
@@ -63,21 +66,27 @@ class RootController : Controller
         }
     }
 
-    public static async Task<string> Mount(string device)
+    public override void Activate(int position)
     {
-        try
-        {
-            var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
-            return output.SubstringAfter(" at ").Trim();
-        }
-        catch (Exception)
-        {
-            // if (e.Message.Contains("already mounted"))
-            //     throw new AlreadyMountedException();
-            // else
-            //     throw new MountException(e.Message);
-        }
+        var item = model.GetItem<RootItem>(position);                
+
     }
+
+    // public static async Task<string> Mount(string device)
+    // {
+    //     try
+    //     {
+    //         var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
+    //         return output.SubstringAfter(" at ").Trim();
+    //     }
+    //     catch (Exception)
+    //     {
+    //         // if (e.Message.Contains("already mounted"))
+    //         //     throw new AlreadyMountedException();
+    //         // else
+    //         //     throw new MountException(e.Message);
+    //     }
+    // }
 
     public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
         : base(NoSelection.New)

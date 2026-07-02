@@ -12,6 +12,8 @@ class FolderView : ColumnView
         controller = Controller.GetFromPath(null, null, this, FolderViewController)!;
         controller.ChangePath(null);
 
+        OnActivate += Activate;
+
         OnFinalize(() =>
         {
             controller.Dispose();
@@ -28,5 +30,12 @@ class FolderView : ColumnView
         //Context.ExifData = controller.GetExifData(CurrentPos);
     }
 
-    readonly Controller controller;
+    void Activate(int position)
+    {
+        var changePath = controller.GetChangePath(position);
+        controller = Controller.GetFromPath(changePath, controller, this, FolderViewController);
+        controller.ChangePath(changePath);
+    }
+
+    Controller controller;
 }

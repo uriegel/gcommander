@@ -1,0 +1,3 @@
+record DirectoryItem(
+    string Name
+);

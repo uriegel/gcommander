@@ -2,15 +2,19 @@ using Gtk4DotNet;
 
 abstract class Controller : IDisposable
 {
-    public static Controller? GetFromPath(string? path, Controller? current, ColumnView view, FolderViewController folderView)
+    public static Controller GetFromPath(string? path, Controller? current, ColumnView view, FolderViewController folderView)
     {
         if (path == null || path == RootController.Name)
             return RootController.Get(current, view, folderView);
-
-        return new RootController(current, view, folderView);
+        else 
+            return new DirectoryController(current, view, folderView);
     }
 
     public abstract string GetItemPath(int pos);
+
+    public abstract string GetChangePath(int pos);
+
+    public abstract void Activate(int position);
 
     public abstract void ChangePath(string? path);
 
