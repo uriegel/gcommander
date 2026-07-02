@@ -59,8 +59,8 @@ class DirectoryController : Controller
                     iconname?.SetFromIconName("folder-open");
                 else
                     iconname?.SetIcon(item?.Name ?? "");
-                // var row = iconname?.GetParent()?.GetParent();
-                // row?.AddCssClass("hiddenItem", item?.IsMounted != true);
+                var row = iconname?.GetParent()?.GetParent();
+                row?.AddCssClass("hiddenItem", item?.IsHidden == true);
             });
 
         var datefactory = SignalListItemFactory
@@ -70,7 +70,7 @@ class DirectoryController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<DirectoryItem>();
-                label.Text = item?.DateTime.ToString() ?? "";
+                label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
             });
 
         var sizefactory = SignalListItemFactory
@@ -89,7 +89,7 @@ class DirectoryController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<DirectoryItem>((item1, item2) => 0); //(item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameSorter = CustomSorter.New<DirectoryItem>(NameOrExtensonOrder);
         using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New("Name", namefactory)
@@ -117,50 +117,76 @@ class DirectoryController : Controller
         view.SortByColumn(sizeCol);
 
         using var viewsorter = view.GetSorter();
-        viewsorter.OnChanged -= folderView.SortOrderChanged;
-        viewsorter.OnChanged += folderView.SortOrderChanged;
+        viewsorter.OnChanged -= SortOrderChanged;
+        viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
 
-        // StartMonitoring();
+        //StartMonitoring();
     }
-    
+
     async Task<DirectoryItem[]> Get(string path)
     {
         var dirInfo = new DirectoryInfo(path);
         var dirs = dirInfo
                         .GetDirectories()
                         .Select(DirectoryItem.CreateDirItem)
-                        //.Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                         .OrderBy(n => n.Name)
                         .ToArray();
         var files = dirInfo
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
-                        //.Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                         .ToArray();
-        currentPath = dirInfo.FullName;                        
+        currentPath = dirInfo.FullName;
         return [
-            new DirectoryItem("..", DirectoryItemType.Parent),
+            new DirectoryItem("..", DirectoryItemType.Parent, false),
             .. dirs,
             .. files
         ];
     }
 
+    int NameOrExtensonOrder(DirectoryItem? item1, DirectoryItem? item2)
+        => extensionSearch
+            ? (item1?.Name.GetFileExtension() ?? "").CompareTo(item2?.Name.GetFileExtension() ?? "")
+            : (item1?.Name ?? "").CompareTo(item2?.Name ?? "");
+  
+    void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange __)
+    {
+        if ((lastSearchTitle == "Name" || lastSearchTitle == "Erweiterung") && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
+        {
+            extensionSearch = lastSearchTitle == "Name";
+            nameOrExt = col;
+            col?.Title = extensionSearch ? "Erweiterung" : "Name";
+        }
+        if (col?.Title != "Name" && col?.Title != "Erweiterung")
+        {
+            extensionSearch = false;
+            nameOrExt?.Title = "Name";
+        }
+        reverseOrder = reverse;
+        lastSearchTitle = col?.Title ?? "";
+    }
+        
     int SortDirectoriesFirst(DirectoryItem? item1, DirectoryItem? item2)
     {
-        return 0;
-        // var order = item1?.IsMounted == true && item2?.IsMounted != true
-        //     ? -1
-        //     : item2?.IsMounted == true && item1?.IsMounted != true
-        //     ? 1
-        //     : 0;
-        // return folderView.ReverseSortOrder ? -order : order;
+        var order = item1?.Type == DirectoryItemType.Parent
+            ? 1
+            : item2?.Type == DirectoryItemType.Parent
+            ? 1
+            : item1?.Type == DirectoryItemType.Directory && item2?.Type == DirectoryItemType.File
+            ? -1
+            : item2?.Type == DirectoryItemType.Directory && item1?.Type == DirectoryItemType.File
+            ? 1
+            : 0;
+        return reverseOrder ? -order : order;
     }
 
     readonly FolderViewController folderView;
     readonly ColumnView view;
-
     string currentPath = "";
+    bool reverseOrder;
+    bool extensionSearch;
+    string lastSearchTitle = "";
+    ColumnViewColumn? nameOrExt;
 
     #region IDisposable
 

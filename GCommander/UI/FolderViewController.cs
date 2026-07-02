@@ -2,8 +2,6 @@ using Gtk4DotNet;
 
 class FolderViewController
 {
-    public bool ReverseSortOrder { get; private set; }
-
     public int CurrentPos { get; private set; } = -1;
 
     public FolderViewController(FolderView view)
@@ -24,8 +22,6 @@ class FolderViewController
 
     }
     
-    public void SortOrderChanged(bool reverse, SorterChange _) => ReverseSortOrder = reverse;
-
     bool OnKey(char key, KeyModifiers mod)
     {
         switch (key)

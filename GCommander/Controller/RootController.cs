@@ -5,12 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO size
-// TODO Sorter
+// TODO extension Sorter: make const strings for name ands extension
+// TODO: initial sort order wrong? (file)
 // TODO show hidden filter
 // TODO Paned with two commanderViews
-
-// TODO extension Sorter
 
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -195,8 +193,8 @@ class RootController : Controller
         );
 
         using var viewsorter = view.GetSorter();
-        viewsorter.OnChanged -= folderView.SortOrderChanged;
-        viewsorter.OnChanged += folderView.SortOrderChanged;
+        viewsorter.OnChanged -= SortOrderChanged;
+        viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
 
         StartMonitoring();
@@ -234,6 +232,9 @@ class RootController : Controller
         volumeMonitor.OnVolumeRemoved(Refresh);
     }
 
+    void SortOrderChanged(bool reverse, ColumnViewColumn? _, SorterChange __)
+        => reverseSortOrder = reverse;
+
     int SortMounted(RootItem? item1, RootItem? item2)
     {
         var order = item1?.IsMounted == true && item2?.IsMounted != true
@@ -241,7 +242,7 @@ class RootController : Controller
             : item2?.IsMounted == true && item1?.IsMounted != true
             ? 1
             : 0;
-        return folderView.ReverseSortOrder ? -order : order;
+        return reverseSortOrder ? -order : order;
     }
 
     readonly FolderViewController folderView;
@@ -249,6 +250,7 @@ class RootController : Controller
     readonly SemaphoreSlim locker = new(1, 1);
     VolumeMonitor? volumeMonitor;
     string? latestName;
+    bool reverseSortOrder;
 
     #region IDisposable
 

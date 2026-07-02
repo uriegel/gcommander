@@ -18,6 +18,19 @@ class MainContext : INotifyPropertyChanged
         }
     }
 
+    public bool ShowHiddenItems
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(ShowHiddenItems));
+            }
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
