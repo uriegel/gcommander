@@ -5,8 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO test on Ubuntu 26.04
-
 // TODO size and datetime
 // TODO Sorter
 // TODO show hidden filter
@@ -29,6 +27,7 @@ class RootController : Controller
         var items = await Get();
         store.Splice(0, store.ItemsCount(), items);
         view.ScrollTo(0, ListScrollFlags.ScrollFocus);
+        folderView.CheckCurrentChanged(0, true);
     }
 
     public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView)

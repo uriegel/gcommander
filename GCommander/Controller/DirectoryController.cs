@@ -13,15 +13,15 @@ class DirectoryController : Controller
         var folderToSelect = path.EndsWith("..") ? currentPath.SubstringAfterLast('/') : null;
         var items = await Get(path);
         store.Splice(0, store.ItemsCount(), items);
-        if (folderToSelect != null)
-        {
-            int pos = model.GetItems<DirectoryItem>()
+        int pos = folderToSelect != null
+            ? model
+                .GetItems<DirectoryItem>()
                 .Select((n, i) => new DirItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == folderToSelect)?.Pos
-                    ?? 0;
-            folderView.CheckCurrentChanged(pos);
-            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
-        }
+                ?? 0
+            : 0;
+        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        folderView.CheckCurrentChanged(pos, true);
     }
 
     public override string GetChangePath(int pos) => GetItemPath(pos);

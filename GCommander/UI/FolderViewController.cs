@@ -68,9 +68,9 @@ class FolderViewController
         return false;
     }
 
-    public void CheckCurrentChanged(int newPos)
+    public void CheckCurrentChanged(int newPos, bool force = false)
     {
-        if (newPos != CurrentPos)
+        if (newPos != CurrentPos || force)
         {
             CurrentPos = newPos;
             view.SelectionChanged(CurrentPos);
