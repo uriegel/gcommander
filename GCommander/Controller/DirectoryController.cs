@@ -89,7 +89,7 @@ class DirectoryController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<DirectoryItem>(NameOrExtensonOrder);
+        using var nameSorter = CustomSorter.New<DirectoryItem>(NameOrExtensionOrder);
         using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New("Name", namefactory)
@@ -144,7 +144,7 @@ class DirectoryController : Controller
         ];
     }
 
-    int NameOrExtensonOrder(DirectoryItem? item1, DirectoryItem? item2)
+    int NameOrExtensionOrder(DirectoryItem? item1, DirectoryItem? item2)
         => extensionSearch
             ? (item1?.Name.GetFileExtension() ?? "").CompareTo(item2?.Name.GetFileExtension() ?? "")
             : (item1?.Name ?? "").CompareTo(item2?.Name ?? "");
