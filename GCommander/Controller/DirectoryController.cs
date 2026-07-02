@@ -3,10 +3,6 @@ using Gtk4DotNet;
 
 class DirectoryController : Controller
 {
-    public override void Activate(int position)
-    {
-    }
-
     public override async void ChangePath(string path)
     {
         var items = await Get(path);
@@ -16,7 +12,7 @@ class DirectoryController : Controller
     public override string GetChangePath(int pos) => GetItemPath(pos);
 
     public override string GetItemPath(int pos)
-        => model.GetItem<DirectoryItem>(pos)?.Name ?? "";
+        => currentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
 
     public override void Refresh()
     {
@@ -141,7 +137,7 @@ class DirectoryController : Controller
         // StartMonitoring();
     }
     
-    static async Task<DirectoryItem[]> Get(string path)
+    async Task<DirectoryItem[]> Get(string path)
     {
         var dirInfo = new DirectoryInfo(path);
         var dirs = dirInfo
@@ -155,6 +151,7 @@ class DirectoryController : Controller
                         .Select(DirectoryItem.CreateFileItem)
                         //.Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                         .ToArray();
+        currentPath = dirInfo.FullName;                        
         return [
             new DirectoryItem(".."),
             .. dirs,
@@ -175,6 +172,8 @@ class DirectoryController : Controller
 
     readonly FolderViewController folderView;
     readonly ColumnView view;
+
+    string currentPath = "";
 
     #region IDisposable
 

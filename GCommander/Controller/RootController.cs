@@ -5,11 +5,15 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO ChangePath to other pathes
-// TODO ChangePath to parent
+// TODO ChangePath to parent => select lates dir
 // TODO ChangePath to parent => root
-// TODO ScrollWindow
-// TODO Paned with two cmmanderViews
+// TODO Initial cursor pos and focus
+// TODO Initial cursor pos
+// TODO Dir and file icons
+// TODO size and datetime
+// TODO Sorter
+// TODO show hidden filter
+// TODO Paned with two commanderViews
 
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -64,12 +68,6 @@ class RootController : Controller
         {
             locker.Release();
         }
-    }
-
-    public override void Activate(int position)
-    {
-        var item = model.GetItem<RootItem>(position);
-
     }
 
     // public static async Task<string> Mount(string device)

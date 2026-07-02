@@ -8,17 +8,18 @@
   <object class="AdwApplicationWindow" id="window">
     <property name="content">
       <object class="AdwToolbarView">
-        <child type="top">
-          <object class="AdwHeaderBar" id="headerBar"/>
-        </child>
         <property name="content">
           <object class="GtkBox" id="box">
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkColumnView" id="columnviewLeft">
-                <property name="enable-rubberband">True</property>
-                <property name="tab-behavior">item</property>
-                <property name="vexpand">True</property>
+              <object class="GtkScrolledWindow">
+                <child>
+                  <object class="GtkColumnView" id="columnviewLeft">
+                    <property name="enable-rubberband">True</property>
+                    <property name="tab-behavior">item</property>
+                    <property name="vexpand">True</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -85,6 +86,9 @@
             </child>
           </object>
         </property>
+        <child type="top">
+          <object class="AdwHeaderBar" id="headerBar"/>
+        </child>
       </object>
     </property>
     <property name="default-height">800</property>

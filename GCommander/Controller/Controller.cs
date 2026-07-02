@@ -14,8 +14,6 @@ abstract class Controller : IDisposable
 
     public abstract string GetChangePath(int pos);
 
-    public abstract void Activate(int position);
-
     public abstract void ChangePath(string path);
 
     public abstract void Refresh();
