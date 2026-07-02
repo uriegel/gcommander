@@ -105,7 +105,6 @@ class DirectoryController : Controller
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.AppendColumn(dateCol);
-        view.SortByColumn(dateCol);
 
         using var sizeSorter = CustomSorter.New<DirectoryItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
         using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(sizeSorter);
@@ -114,7 +113,6 @@ class DirectoryController : Controller
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter));
         view.AppendColumn(sizeCol);
-        view.SortByColumn(sizeCol);
 
         using var viewsorter = view.GetSorter();
         viewsorter.OnChanged -= SortOrderChanged;

@@ -5,8 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO: initial sort order wrong? (file), correct it also in Gtk4DotNet?
+
 // TODO extension Sorter: make const strings for name ands extension
-// TODO: initial sort order wrong? (file)
 // TODO show hidden filter
 // TODO Paned with two commanderViews
 
