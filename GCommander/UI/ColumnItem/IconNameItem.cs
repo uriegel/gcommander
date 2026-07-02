@@ -15,6 +15,7 @@ class IconNameItem : Box
     {
         var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
         image.SetIcon(icon);
+        SetObject(Quark.Get("Hallo"), icon);
     }
 
     public IconNameItem() : base() { }
