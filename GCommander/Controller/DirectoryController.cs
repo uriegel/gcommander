@@ -73,37 +73,15 @@ class DirectoryController : Controller
                 label.Text = item?.DateTime.ToString() ?? "";
             });
 
-        // var mountPointfactory = SignalListItemFactory
-        //     .New()
-        //     .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
-        //     .Bind(listitem =>
-        //     {
-        //         var label = listitem.GetChild<Label>();
-        //         var item = listitem.GetItem<RootItem>();
-        //         label.Text = item?.MountPoint ?? "";
-        //     });
-
-        // var usefactory = SignalListItemFactory
-        //     .New()
-        //     .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
-        //     .Bind(listitem =>
-        //     {
-        //         var label = listitem.GetChild<Label>();
-        //         var item = listitem.GetItem<RootItem>();
-        //         label.Text = item?.Use != null ? $"{item?.Use}%" : "";
-        //         if (item?.Use > 90)
-        //             label?.GetParent()?.AddCssClass("warning", item?.IsMounted == true);
-        //     });
-
-        // var sizefactory = SignalListItemFactory
-        //     .New()
-        //     .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
-        //     .Bind(listitem =>
-        //     {
-        //         var label = listitem.GetChild<Label>();
-        //         var item = listitem.GetItem<RootItem>();
-        //         label.Text = item?.Size.FormatSize() ?? "";
-        //     });
+        var sizefactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<DirectoryItem>();
+                label.Text = item?.Size.FormatSize() ?? "";
+            });
 
         view.SetModel(null);
         view.ClearColumns();
@@ -128,30 +106,15 @@ class DirectoryController : Controller
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.AppendColumn(dateCol);
         view.SortByColumn(dateCol);
-        // view.AppendColumn(ColumnViewColumn
-        //     .New("Bezeichnung", descriptionfactory)
-        //     .Expand()
-        //     .SideEffect(cvc => cvc.SetSorter(descriptionMultiSorter))
-        // );
-        // using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
-        // using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(mountPointSorter);
-        // view.AppendColumn(ColumnViewColumn
-        //     .New("MountPoint", mountPointfactory)
-        //     .Expand()
-        //     .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
-        // );
-        // using var useSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
-        // using var useMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(useSorter);
-        // view.AppendColumn(ColumnViewColumn
-        //     .New("%", usefactory)
-        //     .SideEffect(cvc => cvc.SetSorter(useMultiSorter))
-        // );
-        // using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
-        // using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(sizeSorter);
-        // view.AppendColumn(ColumnViewColumn
-        //     .New("Größe", sizefactory)
-        //     .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
-        // );
+
+        using var sizeSorter = CustomSorter.New<DirectoryItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(sizeSorter);
+        var sizeCol = ColumnViewColumn
+            .New("Größe", sizefactory)
+            .Expand()
+            .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter));
+        view.AppendColumn(sizeCol);
+        view.SortByColumn(sizeCol);
 
         using var viewsorter = view.GetSorter();
         viewsorter.OnChanged -= folderView.SortOrderChanged;

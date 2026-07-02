@@ -10,6 +10,8 @@ using static CsTools.ProcessCmd;
 // TODO show hidden filter
 // TODO Paned with two commanderViews
 
+// TODO extension Sorter
+
 // TODO Mount unmounted drive
 // TODO Display Error
 
