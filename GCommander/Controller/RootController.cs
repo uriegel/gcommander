@@ -5,11 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO ChangePath to parent => select lates dir
-// TODO ChangePath to parent => root
-// TODO Initial cursor pos and focus
-// TODO Initial cursor pos
-// TODO Dir and file icons
+// TODO Gtk4DotNet Image getFromGIcon
+// TODO file icons
+// TODO test with 10000 fotos
+// TODO test on Ubuntu 26.04
+
 // TODO size and datetime
 // TODO Sorter
 // TODO show hidden filter
@@ -31,6 +31,7 @@ class RootController : Controller
     {
         var items = await Get();
         store.Splice(0, store.ItemsCount(), items);
+        view.ScrollTo(0, ListScrollFlags.ScrollFocus);
     }
 
     public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView)

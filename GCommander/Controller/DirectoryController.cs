@@ -3,10 +3,25 @@ using Gtk4DotNet;
 
 class DirectoryController : Controller
 {
+    public static DirectoryController Get(Controller? current, ColumnView view, FolderViewController folderView)
+        => current is DirectoryController directoryController
+            ? directoryController
+            : new DirectoryController(current, view, folderView);
+
     public override async void ChangePath(string path)
     {
+        var folderToSelect = path.EndsWith("..") ? currentPath.SubstringAfterLast('/') : null;
         var items = await Get(path);
         store.Splice(0, store.ItemsCount(), items);
+        if (folderToSelect != null)
+        {
+            int pos = model.GetItems<DirectoryItem>()
+                .Select((n, i) => new DirItemPos(Item: n, Pos: i))
+                .FirstOrDefault(n => n.Item.Name == folderToSelect)?.Pos
+                    ?? 0;
+            folderView.CheckCurrentChanged(pos);
+            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        }
     }
 
     public override string GetChangePath(int pos) => GetItemPath(pos);
@@ -39,7 +54,13 @@ class DirectoryController : Controller
                 var iconname = listitem.GetManagedChild<IconNameItem>();
                 var item = listitem.GetItem<DirectoryItem>();
                 iconname?.Name = item?.Name ?? "";
-                // if (item?.IconName != null)
+                if (item?.Type == DirectoryItemType.Parent)
+                    iconname?.SetFromIconName("go-up");
+                else if (item?.Type == DirectoryItemType.Directory)
+                    iconname?.SetFromIconName("folder-open");
+                // else
+                //     using var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
+                //     iconname?.SetFromIconName()
                 //     iconname?.SetFromIconName(item.IconName);
                 // var row = iconname?.GetParent()?.GetParent();
                 // row?.AddCssClass("hiddenItem", item?.IsMounted != true);
@@ -153,7 +174,7 @@ class DirectoryController : Controller
                         .ToArray();
         currentPath = dirInfo.FullName;                        
         return [
-            new DirectoryItem(".."),
+            new DirectoryItem("..", DirectoryItemType.Parent),
             .. dirs,
             .. files
         ];
@@ -198,3 +219,4 @@ class DirectoryController : Controller
     #endregion
 }
 
+record DirItemPos(DirectoryItem Item, int Pos);

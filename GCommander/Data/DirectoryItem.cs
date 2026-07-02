@@ -1,9 +1,11 @@
 record DirectoryItem(
-    string Name
+    string Name,
+    DirectoryItemType Type,
+    string? IconPath = null
 )
 {
     public static DirectoryItem CreateDirItem(DirectoryInfo info)
-        => new(info.Name);
+        => new(info.Name, DirectoryItemType.Directory);
         // => new(info.Name, idx)
         // {
         //     IsDirectory = true,
@@ -12,7 +14,7 @@ record DirectoryItem(
         // };
 
     public static DirectoryItem CreateFileItem(FileInfo info)
-        => new(info.Name);
+        => new(info.Name, DirectoryItemType.File);
         // => new(info.Name, idx)
         // {
         //     Size = info.Length,
@@ -22,3 +24,9 @@ record DirectoryItem(
         // };
 }
 
+enum DirectoryItemType
+{
+    Parent,
+    Directory,
+    File
+}
