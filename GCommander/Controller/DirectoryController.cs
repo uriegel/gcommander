@@ -7,16 +7,16 @@ class DirectoryController : Controller
     {
     }
 
-    public override void ChangePath(string? path)
+    public override async void ChangePath(string path)
     {
+        var items = await Get(path);
+        store.Splice(0, store.ItemsCount(), items);
     }
 
     public override string GetChangePath(int pos) => GetItemPath(pos);
 
     public override string GetItemPath(int pos)
-    {
-        throw new NotImplementedException();
-    }
+        => model.GetItem<DirectoryItem>(pos)?.Name ?? "";
 
     public override void Refresh()
     {
@@ -94,7 +94,7 @@ class DirectoryController : Controller
         view.SetModel(null);
         view.ClearColumns();
         view.SetModel(model);
-        
+
         previous?.Dispose();
 
         using var nameSorter = CustomSorter.New<DirectoryItem>((item1, item2) => 0); //(item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
@@ -139,6 +139,27 @@ class DirectoryController : Controller
         sortModel.SetSorter(viewsorter);
 
         // StartMonitoring();
+    }
+    
+    static async Task<DirectoryItem[]> Get(string path)
+    {
+        var dirInfo = new DirectoryInfo(path);
+        var dirs = dirInfo
+                        .GetDirectories()
+                        .Select(DirectoryItem.CreateDirItem)
+                        //.Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
+                        .OrderBy(n => n.Name)
+                        .ToArray();
+        var files = dirInfo
+                        .GetFiles()
+                        .Select(DirectoryItem.CreateFileItem)
+                        //.Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
+                        .ToArray();
+        return [
+            new DirectoryItem(".."),
+            .. dirs,
+            .. files
+        ];
     }
 
     int SortDirectoriesFirst(DirectoryItem? item1, DirectoryItem? item2)

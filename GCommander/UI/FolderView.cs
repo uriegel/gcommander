@@ -10,7 +10,7 @@ class FolderView : ColumnView
     {
         FolderViewController = new(this);
         controller = Controller.GetFromPath(null, null, this, FolderViewController)!;
-        controller.ChangePath(null);
+        controller.ChangePath("");
 
         OnActivate += Activate;
 
@@ -20,7 +20,7 @@ class FolderView : ColumnView
         });
     }
 
-    public void ChangePath(string? path) { }
+    public void ChangePath(string path) { }
 
     public void Refresh() => controller.Refresh();
 
