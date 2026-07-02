@@ -5,9 +5,16 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO update 2nd value in 100_000 like counting from 0 to 100000 and update one item
+// TODO => columnView.SideEffect(cv => Gtk.SignalConnect<ActivateDelegate>(cv, "activate", (_, pos, __) => onActivate(pos)));
+
+// TODO OnActivate
+// TODO ChangePath to DirectoryController
 // TODO Mount unmounted drive
-// TODO DirectoryController
+// TODO Display Error
+// TODO Change Controllers ...
+// TODO Paned with two cmmanderViews
+
+// TODO public static void RemoveDrive(string mountPoint)
 
 // TODO Percentage as progress?
 // TODO DriveType??
@@ -53,6 +60,22 @@ class RootController : Controller
         finally
         {
             locker.Release();
+        }
+    }
+
+    public static async Task<string> Mount(string device)
+    {
+        try
+        {
+            var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
+            return output.SubstringAfter(" at ").Trim();
+        }
+        catch (Exception)
+        {
+            // if (e.Message.Contains("already mounted"))
+            //     throw new AlreadyMountedException();
+            // else
+            //     throw new MountException(e.Message);
         }
     }
 

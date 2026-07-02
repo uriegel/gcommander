@@ -6,7 +6,7 @@ class MainContext : INotifyPropertyChanged
 
     public string? SelectedPath
     {
-        get => field;
+        get;
         set
         {
             if (field != value)
