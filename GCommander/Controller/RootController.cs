@@ -5,9 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Gtk4DotNet Image getFromGIcon
-// TODO file icons
 // TODO test with 10000 fotos
+// TODO Gtk4DotNet.GIcon not disposed!
 // TODO test on Ubuntu 26.04
 
 // TODO size and datetime

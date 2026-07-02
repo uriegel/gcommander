@@ -58,8 +58,8 @@ class DirectoryController : Controller
                     iconname?.SetFromIconName("go-up");
                 else if (item?.Type == DirectoryItemType.Directory)
                     iconname?.SetFromIconName("folder-open");
-                // else
-                //     using var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
+                else
+                    iconname?.SetIcon(item?.Name ?? "");
                 //     iconname?.SetFromIconName()
                 //     iconname?.SetFromIconName(item.IconName);
                 // var row = iconname?.GetParent()?.GetParent();
