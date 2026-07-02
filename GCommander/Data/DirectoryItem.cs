@@ -1,27 +1,24 @@
 record DirectoryItem(
     string Name,
     DirectoryItemType Type,
-    string? IconPath = null
+    string? IconPath = null,
+    DateTime? DateTime = null
 )
 {
     public static DirectoryItem CreateDirItem(DirectoryInfo info)
-        => new(info.Name, DirectoryItemType.Directory);
-        // => new(info.Name, idx)
-        // {
-        //     IsDirectory = true,
-        //     IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),
-        //     Time = info.LastWriteTime
-        // };
+        => new(info.Name, DirectoryItemType.Directory)
+            {
+                DateTime = info.LastWriteTime
+            //     IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),
+            };
 
     public static DirectoryItem CreateFileItem(FileInfo info)
-        => new(info.Name, DirectoryItemType.File);
-        // => new(info.Name, idx)
-        // {
-        //     Size = info.Length,
-        //     IconPath = Directory.GetIconPath(info.Name, info.DirectoryName),
-        //     IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),
-        //     Time = info.LastWriteTime
-        // };
+        => new(info.Name, DirectoryItemType.File)
+            {
+                //Size = info.Length,
+                //     IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),
+                DateTime = info.LastWriteTime
+            };
 }
 
 enum DirectoryItemType

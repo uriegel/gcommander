@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO size and datetime
+// TODO size
 // TODO Sorter
 // TODO show hidden filter
 // TODO Paned with two commanderViews

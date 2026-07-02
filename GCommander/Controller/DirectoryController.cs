@@ -35,8 +35,7 @@ class DirectoryController : Controller
     }
 
     public DirectoryController(Controller? previous, ColumnView view, FolderViewController folderView)
-        //: base(MultiSelection.New)
-        : base(NoSelection.New)
+        : base(MultiSelection.New)
     {
         this.view = view;
         this.folderView = folderView;
@@ -60,21 +59,19 @@ class DirectoryController : Controller
                     iconname?.SetFromIconName("folder-open");
                 else
                     iconname?.SetIcon(item?.Name ?? "");
-                //     iconname?.SetFromIconName()
-                //     iconname?.SetFromIconName(item.IconName);
                 // var row = iconname?.GetParent()?.GetParent();
                 // row?.AddCssClass("hiddenItem", item?.IsMounted != true);
             });
 
-        // var descriptionfactory = SignalListItemFactory
-        //     .New()
-        //     .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
-        //     .Bind(listitem =>
-        //     {
-        //         var label = listitem.GetChild<Label>();
-        //         var item = listitem.GetItem<RootItem>();
-        //         label.Text = item?.Description ?? "";
-        //     });
+        var datefactory = SignalListItemFactory
+            .New()
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+            .Bind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                var item = listitem.GetItem<DirectoryItem>();
+                label.Text = item?.DateTime.ToString() ?? "";
+            });
 
         // var mountPointfactory = SignalListItemFactory
         //     .New()
@@ -123,8 +120,14 @@ class DirectoryController : Controller
         view.AppendColumn(firstCol);
         view.SortByColumn(firstCol);
 
-        // using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
-        // using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(descriptionSorter);
+        using var dateSorter = CustomSorter.New<DirectoryItem>((item1, item2) => (item1?.DateTime ?? DateTime.MinValue).CompareTo(item2?.DateTime ?? DateTime.MinValue));
+        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(dateSorter);
+        var dateCol = ColumnViewColumn
+            .New("Datum", datefactory)
+            .Expand()
+            .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
+        view.AppendColumn(dateCol);
+        view.SortByColumn(dateCol);
         // view.AppendColumn(ColumnViewColumn
         //     .New("Bezeichnung", descriptionfactory)
         //     .Expand()
