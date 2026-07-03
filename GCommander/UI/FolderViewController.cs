@@ -73,6 +73,8 @@ class FolderViewController
         }
     }
 
+    public void OnItemsChange(bool start) => view.OnItemsChange(start);
+
     static int GetNumberOfVisibleRows(ColumnView? view)
     {
         if (view == null)

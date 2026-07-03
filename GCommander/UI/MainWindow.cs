@@ -11,17 +11,12 @@ class MainWindow : ApplicationWindow
 
         DataContext = MainContext.Instance;
         statusText.Binding("label", nameof(MainContext.SelectedPath), BindingFlags.Default);
-
-        columnviewLeft.GrabFocus();
-
-        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
+        folderpaned.SetInitialFocus();
+//        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
     }
 
-    [Widget]
-    FolderView columnviewLeft = null!;
-
-    [Widget]
-    FolderView columnviewRight = null!;
+    [Widget(Template ="folderpaned")]
+    FolderPaned folderpaned = null!;
 
     [Widget]
     Label statusText = null!;

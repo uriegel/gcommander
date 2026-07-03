@@ -1,9 +1,9 @@
 using Gtk4DotNet;
 
-// TODO FolderViewController as Property in FolderView for keyboard and mouse control, only for MultiSelection, and for Sorting (ascending, descending)
-
 class FolderView : ColumnView
 {
+    public event Action<bool>? ItemsChange;
+
     public FolderViewController FolderViewController { get; }
     
     public FolderView(Builder builder, string name) : base(builder, name)
@@ -29,6 +29,8 @@ class FolderView : ColumnView
         MainContext.Instance.SelectedPath = controller.GetItemPath(pos);
         //Context.ExifData = controller.GetExifData(CurrentPos);
     }
+
+    public void OnItemsChange(bool start) => ItemsChange?.Invoke(start);
 
     void Activate(int position)
     {

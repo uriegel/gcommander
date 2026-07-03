@@ -5,6 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO when size reaches treshold minimze column titles and vice versa
 // TODO show hidden files
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -21,7 +22,9 @@ class RootController : Controller
     public override async void ChangePath(string? path)
     {
         var items = await Get();
+        folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
+        folderView.OnItemsChange(false);
         view.ScrollTo(0, ListScrollFlags.ScrollFocus);
         folderView.CheckCurrentChanged(0, true);
     }
@@ -155,8 +158,8 @@ class RootController : Controller
         using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
         using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(nameSorter);
         var firstCol = ColumnViewColumn
-            //.New("Name", namefactory)
-            .New("N", namefactory)
+            .New("Name", namefactory)
+            //.New("N", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.AppendColumn(firstCol);
@@ -165,16 +168,16 @@ class RootController : Controller
         using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
         using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(descriptionSorter);
         view.AppendColumn(ColumnViewColumn
-            //.New("Bezeichnung", descriptionfactory)
-            .New("B", descriptionfactory)
+            .New("Bez.", descriptionfactory)
+            //.New("B", descriptionfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(descriptionMultiSorter))
         );
         using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
         using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(mountPointSorter);
         view.AppendColumn(ColumnViewColumn
-            //.New("MountPoint", mountPointfactory)
-            .New("M", mountPointfactory)
+            .New("Mount", mountPointfactory)
+            //.New("M", mountPointfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
         );
@@ -187,8 +190,8 @@ class RootController : Controller
         using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
         using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(sizeSorter);
         view.AppendColumn(ColumnViewColumn
-            //.New("Größe", sizefactory)
-            .New("G", sizefactory)
+            .New("Größe", sizefactory)
+            //.New("G", sizefactory)
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
         );
 
