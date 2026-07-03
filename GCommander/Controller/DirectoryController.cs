@@ -92,7 +92,7 @@ class DirectoryController : Controller
         using var nameSorter = CustomSorter.New<DirectoryItem>(NameOrExtensionOrder);
         using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
-            .New("Name", namefactory)
+            .New(NAME, namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.AppendColumn(firstCol);
@@ -153,17 +153,17 @@ class DirectoryController : Controller
     void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc)
     {
 
-        if ((lastSearchTitle == "Name" || lastSearchTitle == "Erweiterung") && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
+        if ((lastSearchTitle == NAME || lastSearchTitle == ERWEITERUNG) && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
         {
-            extensionSearch = lastSearchTitle == "Name";
+            extensionSearch = lastSearchTitle == NAME;
             nameOrExt = col;
-            col?.Title = extensionSearch ? "Erweiterung" : "Name";
+            col?.Title = extensionSearch ? ERWEITERUNG : NAME;
         }
-        if (col?.Title != "Name" && col?.Title != "Erweiterung" && extensionSearch)
+        if (col?.Title != NAME && col?.Title != ERWEITERUNG && extensionSearch)
         {
             extensionSearch = false;
             // This is a little bit dangerous!!
-            nameOrExt?.Title = "Name";
+            nameOrExt?.Title = NAME;
         }
         reverseOrder = reverse;
         lastSearchTitle = col?.Title ?? "";
@@ -190,6 +190,9 @@ class DirectoryController : Controller
     bool extensionSearch;
     string lastSearchTitle = "";
     ColumnViewColumn? nameOrExt;
+
+    const string NAME = "Name";
+    const string ERWEITERUNG = "Erweiterung";
 
     #region IDisposable
 
