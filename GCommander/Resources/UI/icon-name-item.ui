@@ -15,6 +15,7 @@
       <object class="GtkLabel" id="text">
         <property name="ellipsize">end</property>
         <property name="single-line-mode">True</property>
+        <property name="wrap-mode">char</property>
       </object>
     </child>
   </object>
