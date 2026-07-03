@@ -10,16 +10,40 @@
       <object class="AdwToolbarView">
         <property name="content">
           <object class="GtkBox" id="box">
+            <property name="hexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkScrolledWindow">
-                <child>
-                  <object class="GtkColumnView" id="columnviewLeft">
-                    <property name="enable-rubberband">True</property>
-                    <property name="tab-behavior">item</property>
-                    <property name="vexpand">True</property>
+              <object class="GtkPaned">
+                <property name="end-child">
+                  <object class="GtkScrolledWindow">
+                    <property name="hexpand">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <child>
+                      <object class="GtkColumnView" id="columnviewRight">
+                        <property name="enable-rubberband">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="tab-behavior">item</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
                   </object>
-                </child>
+                </property>
+                <property name="hexpand">True</property>
+                <property name="start-child">
+                  <object class="GtkScrolledWindow">
+                    <property name="hexpand">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <child>
+                      <object class="GtkColumnView" id="columnviewLeft">
+                        <property name="enable-rubberband">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="tab-behavior">item</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="vexpand">True</property>
               </object>
             </child>
             <child>

@@ -21,5 +21,8 @@ class MainWindow : ApplicationWindow
     FolderView columnviewLeft = null!;
 
     [Widget]
+    FolderView columnviewRight = null!;
+
+    [Widget]
     Label statusText = null!;
 }

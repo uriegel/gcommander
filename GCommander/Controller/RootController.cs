@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Paned with two commanderViews
 // TODO show hidden files
 // TODO Mount unmounted drive
 // TODO Display Error
