@@ -29,7 +29,7 @@ class MainContext : INotifyPropertyChanged
                 OnChanged(nameof(ShowHiddenItems));
             }
         }
-    }
+    };
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

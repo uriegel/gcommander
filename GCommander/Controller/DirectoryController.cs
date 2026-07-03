@@ -35,7 +35,7 @@ class DirectoryController : Controller
     }
 
     public DirectoryController(Controller? previous, ColumnView view, FolderViewController folderView)
-        : base(MultiSelection.New)
+        : base(CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New)
     {
         this.view = view;
         this.folderView = folderView;
@@ -142,22 +142,27 @@ class DirectoryController : Controller
         ];
     }
 
+    static bool FilterHidden(DirectoryItem? item) 
+        => MainContext.Instance.ShowHiddenItems || item?.IsHidden != true;
+
     int NameOrExtensionOrder(DirectoryItem? item1, DirectoryItem? item2)
         => extensionSearch
             ? (item1?.Name.GetFileExtension() ?? "").CompareTo(item2?.Name.GetFileExtension() ?? "")
             : (item1?.Name ?? "").CompareTo(item2?.Name ?? "");
   
-    void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange __)
+    void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc)
     {
+
         if ((lastSearchTitle == "Name" || lastSearchTitle == "Erweiterung") && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
         {
             extensionSearch = lastSearchTitle == "Name";
             nameOrExt = col;
             col?.Title = extensionSearch ? "Erweiterung" : "Name";
         }
-        if (col?.Title != "Name" && col?.Title != "Erweiterung")
+        if (col?.Title != "Name" && col?.Title != "Erweiterung" && extensionSearch)
         {
             extensionSearch = false;
+            // This is a little bit dangerous!!
             nameOrExt?.Title = "Name";
         }
         reverseOrder = reverse;

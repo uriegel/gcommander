@@ -5,12 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO: initial sort order wrong? (file), correct it also in Gtk4DotNet?
-
 // TODO extension Sorter: make const strings for name ands extension
-// TODO show hidden filter
 // TODO Paned with two commanderViews
-
+// TODO show hidden files
 // TODO Mount unmounted drive
 // TODO Display Error
 
@@ -85,10 +82,8 @@ class RootController : Controller
     // }
 
     public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
-        : base(NoSelection.New)
+        : base(null, NoSelection.New)
     {
-        previous?.Dispose();
-
         this.view = view;
         this.folderView = folderView;
 
@@ -156,6 +151,8 @@ class RootController : Controller
         view.SetModel(null);
         view.ClearColumns();
         view.SetModel(model);
+
+        previous?.Dispose();
 
         using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
         using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(nameSorter);

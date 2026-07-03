@@ -18,10 +18,11 @@ abstract class Controller : IDisposable
 
     public abstract void Refresh();
 
-    protected Controller(Func<SortListModel, SelectionModel> getModel)
+    protected Controller(CustomFilter? filter, Func<SortListModel, SelectionModel> getModel)
     {
+        this.filter = filter;
         store = ListStore.New();
-        sortModel = SortListModel.New(store, null);
+        sortModel = SortListModel.New(FilterListModel.New(store, filter), null);
         model = getModel(sortModel);
     }
 
@@ -39,6 +40,7 @@ abstract class Controller : IDisposable
     protected SelectionModel model;
     protected SortListModel sortModel;
     protected ListStore store;
+    protected CustomFilter? filter;
 
     #region IDisposable
 
