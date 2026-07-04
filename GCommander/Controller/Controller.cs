@@ -18,7 +18,11 @@ abstract class Controller : IDisposable
 
     public abstract void Refresh();
 
-    public virtual void OnWidth(int w) {}
+    public virtual void OnWidth(int w) { }
+    
+    public virtual int GetFileCount() => 0;
+    public virtual int GetDirectoryCount() => 0;
+
 
     protected Controller(CustomFilter? filter, Func<SortListModel, SelectionModel> getModel)
     {

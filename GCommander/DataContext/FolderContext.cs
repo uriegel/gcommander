@@ -3,6 +3,7 @@ using System.ComponentModel;
 class FolderContext : INotifyPropertyChanged
 {
     public bool IsLeft { get; set; }
+
     public string CurrentPath
     {
         get;
@@ -19,6 +20,32 @@ class FolderContext : INotifyPropertyChanged
             }
         }
     } = "";
+    
+    public int CurrentFileCount
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(CurrentFileCount));
+            }
+        }
+    }
+    
+    public int CurrentDirectoryCount
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(CurrentDirectoryCount));
+            }
+        }
+    }
 
     public string SelectedPath
     {

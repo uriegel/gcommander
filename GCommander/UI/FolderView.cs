@@ -35,7 +35,16 @@ class FolderView : ColumnView
 
     public void OnWidth() => controller.OnWidth(Width);
 
-    public void OnItemsChange(bool start) => ItemsChange?.Invoke(start);
+    public void OnItemsChange(bool start)
+    {
+        ItemsChange?.Invoke(start);
+        if (start == false)
+        {
+            Context.CurrentFileCount = controller.GetFileCount();
+            Context.CurrentDirectoryCount = controller.GetDirectoryCount();
+        }
+    }
+
     public void OnItemsGet(bool start) => ItemsSet?.Invoke(start);
     
     void Activate(int position)

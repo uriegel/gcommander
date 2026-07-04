@@ -18,6 +18,32 @@ class MainContext : INotifyPropertyChanged
         }
     }
 
+    public int CurrentFileCount
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(CurrentFileCount));
+            }
+        }
+    }
+    
+    public int CurrentDirectoryCount
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(CurrentDirectoryCount));
+            }
+        }
+    }
+
     public bool ShowHiddenItems
     {
         get;
@@ -41,8 +67,8 @@ class MainContext : INotifyPropertyChanged
                 this.folderContext.PropertyChanged -= FolderContextPropertyChanged;
             this.folderContext = folderContext;
             this.folderContext.PropertyChanged += FolderContextPropertyChanged;
-            // CurrentDirectories = folderContext.CurrentDirectories;
-            // CurrentFiles = folderContext.CurrentFiles;
+            CurrentDirectoryCount = folderContext.CurrentDirectoryCount;
+            CurrentFileCount = folderContext.CurrentFileCount;
             SelectedPath = folderContext.SelectedPath;
             // ExifData = folderContext.ExifData;
             // BackgroundAction = folderContext.BackgroundAction;
@@ -55,12 +81,12 @@ class MainContext : INotifyPropertyChanged
         if (folderContext != null)
             switch (e.PropertyName)
             {
-                // case nameof(CurrentDirectories):
-                //     CurrentDirectories = folderContext.CurrentDirectories;
-                //     break;
-                // case nameof(CurrentFiles):
-                //     CurrentFiles = folderContext.CurrentFiles;
-                //     break;
+                case nameof(CurrentDirectoryCount):
+                    CurrentDirectoryCount = folderContext.CurrentDirectoryCount;
+                    break;
+                case nameof(CurrentFileCount):
+                    CurrentFileCount = folderContext.CurrentFileCount;
+                    break;
                 case nameof(SelectedPath):
                     SelectedPath = folderContext.SelectedPath;
                     break;

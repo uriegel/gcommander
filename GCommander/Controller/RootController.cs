@@ -7,10 +7,13 @@ using static CsTools.ProcessCmd;
 
 // GTK4
 
-// TODO display path in ActionBar and counts
 // TODO show hidden files
+// TODO react to onHiddenChange with changed counts
+// TODO path bar in CommandeView => FolderView
 // TODO Mount unmounted drive
 // TODO Display Error
+
+// TODO Order by extension not working (especially in 2023/1)
 
 // TODO public static void RemoveDrive(string mountPoint)
 
@@ -46,6 +49,8 @@ class RootController : Controller
             : latestName
             ?? "";
     }
+
+    public override int GetDirectoryCount() => model.GetItems<RootItem>().Count();
 
     public override string GetChangePath(int pos)
         => model.GetItem<RootItem>(pos)?.MountPoint ?? "";

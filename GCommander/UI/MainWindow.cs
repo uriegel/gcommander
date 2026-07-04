@@ -11,13 +11,21 @@ class MainWindow : ApplicationWindow
 
         DataContext = MainContext.Instance;
         statusText.Binding("label", nameof(MainContext.SelectedPath), BindingFlags.Default);
+        labelDirs.Binding("label", nameof(MainContext.CurrentDirectoryCount), BindingFlags.Default);
+        labelFiles.Binding("label", nameof(MainContext.CurrentFileCount), BindingFlags.Default);
         folderpaned.SetFocus();
-//        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
+        //        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
     }
 
-    [Widget(Template ="folderpaned")]
-    FolderPaned folderpaned = null!;
+    [Widget(Template = "folderpaned")]
+    readonly FolderPaned folderpaned = null!;
 
     [Widget]
-    Label statusText = null!;
+    readonly Label statusText = null!;
+
+    [Widget]
+    readonly Label labelDirs = null!;
+
+    [Widget]
+    readonly Label labelFiles = null!;
 }

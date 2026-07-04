@@ -144,6 +144,9 @@ class DirectoryController : Controller
         ];
     }
 
+    public override int GetDirectoryCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.Directory);
+    public override int GetFileCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.File);
+
     static bool FilterHidden(DirectoryItem? item) 
         => MainContext.Instance.ShowHiddenItems || item?.IsHidden != true;
 
