@@ -15,6 +15,7 @@ class MainWindow : ApplicationWindow
         labelFiles.Binding("label", nameof(MainContext.CurrentFileCount), BindingFlags.Default);
         folderpaned.SetFocus();
         //        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
+        AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
     }
 
     [Widget(Template = "folderpaned")]

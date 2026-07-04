@@ -52,6 +52,8 @@ class FolderPaned : Paned
 
     public void SetFocus() => activeView?.GrabFocus();
 
+    public void ShowHidden(bool show) {}
+
     void OnPosition()
     {
         if (columnviewLeft.Width == 0 && columnviewRight.Width == 0)

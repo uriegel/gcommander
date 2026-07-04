@@ -80,7 +80,14 @@
           </object>
         </property>
         <child type="top">
-          <object class="AdwHeaderBar" id="headerBar"/>
+          <object class="AdwHeaderBar" id="headerBar">
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">main-menu</property>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </property>
@@ -88,4 +95,115 @@
     <property name="default-width">900</property>
     <property name="title">Commander</property>
   </object>
+  <menu id="main-menu">
+    <section>
+      <item>
+        <attribute name="action">win.refresh</attribute>
+        <attribute name="label">_Aktualisieren</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.showhidden</attribute>
+        <attribute name="label">_Versteckte Dateien</attribute>
+      </item>
+    </section>
+    <section/>
+    <section>
+      <submenu>
+        <attribute name="label">_Datei</attribute>
+        <section>
+          <item>
+            <attribute name="action">win.rename</attribute>
+            <attribute name="label">_Umbenennen</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.renameascopy</attribute>
+            <attribute name="label">Kopie _anlegen</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.extendedrename</attribute>
+            <attribute name="label">_Erweitertes Umbenennen</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.copy</attribute>
+            <attribute name="label">_Kopieren</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.move</attribute>
+            <attribute name="label">_Verschieben</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.delete</attribute>
+            <attribute name="label">_Löschen</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.createfolder</attribute>
+            <attribute name="label">_Ordner anlegen</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.openwith</attribute>
+            <attribute name="label">_Öffnen mit...</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.quit</attribute>
+            <attribute name="label">_Beenden</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu>
+        <attribute name="label">_Navigation</attribute>
+        <section>
+          <item>
+            <attribute name="action">win.favorites</attribute>
+            <attribute name="label">_Favoriten</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.adaptpath</attribute>
+            <attribute name="label">_Gleichen Ordner öffnen</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu>
+        <attribute name="label">_Selektion</attribute>
+        <section>
+          <item>
+            <attribute name="action">win.toggleselection</attribute>
+            <attribute name="label">Selektion _wechseln</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.selectall</attribute>
+            <attribute name="label">_Alles</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.selectnone</attribute>
+            <attribute name="label">_Selektion entfernen</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu id="sub-menu-view">
+        <attribute name="label">_Ansicht</attribute>
+        <section>
+          <item>
+            <attribute name="action">app.fullscreen</attribute>
+            <attribute name="label">_Vollbild</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="action">win.devtools</attribute>
+            <attribute name="label">_Entwicklerwerkzeuge</attribute>
+          </item>
+        </section>
+      </submenu>
+    </section>
+  </menu>  
 </interface>

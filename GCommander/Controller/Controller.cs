@@ -43,6 +43,8 @@ abstract class Controller : IDisposable
             : 0;
     }
 
+    protected void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
+
     protected SelectionModel model;
     protected SortListModel sortModel;
     protected ListStore store;

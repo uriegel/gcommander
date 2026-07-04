@@ -7,9 +7,10 @@ using static CsTools.ProcessCmd;
 
 // GTK4
 
-// TODO show hidden files
+// TODO show hidden files: After Actions grabFocus to paned
 // TODO react to onHiddenChange with changed counts
 // TODO path bar in CommandeView => FolderView
+// TODO Preview pane
 // TODO Mount unmounted drive
 // TODO Display Error
 

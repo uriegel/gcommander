@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
@@ -24,6 +25,8 @@ class DirectoryController : Controller
             : 0;
         view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         folderView.CheckCurrentChanged(pos, true);
+
+        MainContext.Instance.PropertyChanged += OnPropertyChanged;
     }
 
     public override string GetChangePath(int pos) => GetItemPath(pos);
@@ -173,7 +176,7 @@ class DirectoryController : Controller
         reverseOrder = reverse;
         lastSearchTitle = col?.Title ?? "";
     }
-        
+
     int SortDirectoriesFirst(DirectoryItem? item1, DirectoryItem? item2)
     {
         var order = item1?.Type == DirectoryItemType.Parent
@@ -186,6 +189,12 @@ class DirectoryController : Controller
             ? 1
             : 0;
         return reverseOrder ? -order : order;
+    }
+    
+    void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainContext.ShowHiddenItems))
+            FilterChanged(MainContext.Instance.ShowHiddenItems ? FilterChange.LessStrict : FilterChange.MoreStrict);
     }
 
     readonly FolderViewController folderView;
@@ -207,6 +216,7 @@ class DirectoryController : Controller
         {
             if (disposing)
             {
+                MainContext.Instance.PropertyChanged -= OnPropertyChanged;
                 //                volumeMonitor?.Dispose();
             }
 
