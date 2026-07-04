@@ -16,15 +16,22 @@ class FolderPaned : Paned
             activeView = columnviewLeft;
             lastActiveView = columnviewLeft;
         };
-        leftEvents.OnLeave += () => activeView = null;
-
+        leftEvents.OnLeave += () =>
+        {
+            lastActiveView = columnviewRight;
+            activeView = null;
+        };
         var rightEvents = FocusEventController.New();
         rightEvents.OnEnter += () =>
         {
             activeView = columnviewRight;
             lastActiveView = columnviewRight;
         };
-        rightEvents.OnLeave += () => activeView = null;
+        rightEvents.OnLeave += () =>
+        {
+            lastActiveView = columnviewLeft;
+            activeView = null;
+        };
         columnviewLeft.AddController(leftEvents);
         columnviewRight.AddController(rightEvents);
 
@@ -34,8 +41,7 @@ class FolderPaned : Paned
         AddController(kec);
     }
 
-    // TODO change to focus active folder
-    public void SetFocus() => columnviewLeft.GrabFocus();
+    public void SetFocus() => activeView?.GrabFocus();
 
     void OnPosition()
     {
@@ -45,14 +51,16 @@ class FolderPaned : Paned
         columnviewRight.OnWidth();
     }
 
-    void OnItemsChange(bool start)
+    async void OnItemsChange(bool start)
     {
         if (start)
             lastPosition = Position;
         else if (lastPosition > 0)
+        {
+            await Task.Delay(10);
             Position = lastPosition;
+        }
     }
-
 
     bool OnKey(char chr, KeyModifiers key)
     {
@@ -65,7 +73,7 @@ class FolderPaned : Paned
             return false;
     }
 
-    ColumnView GetInactiveView() => columnviewLeft == activeView ? columnviewRight : columnviewLeft;
+    ColumnView GetInactiveView() => columnviewLeft == lastActiveView ? columnviewRight : columnviewLeft;
 
     [Widget]
     FolderView columnviewLeft = null!;

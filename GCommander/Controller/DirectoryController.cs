@@ -12,7 +12,9 @@ class DirectoryController : Controller
     {
         var folderToSelect = path.EndsWith("..") ? currentPath.SubstringAfterLast('/') : null;
         var items = await Get(path);
+        folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
+        folderView.OnItemsChange(false);
         int pos = folderToSelect != null
             ? model
                 .GetItems<DirectoryItem>()

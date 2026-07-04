@@ -7,7 +7,6 @@ using static CsTools.ProcessCmd;
 
 // GTK4
 
-// TODO When activation DirectoryController for the first time, the column implodes
 // TODO display path in ActionBar and counts
 // TODO show hidden files
 // TODO Mount unmounted drive
