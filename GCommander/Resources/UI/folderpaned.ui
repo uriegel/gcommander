@@ -9,13 +9,13 @@
     <property name="end-child">
       <object class="GtkBox" id="folderViewRight">
         <property name="orientation">vertical</property>
-      </object>      
+      </object>
     </property>
     <property name="hexpand">True</property>
     <property name="start-child">
       <object class="GtkBox" id="folderViewLeft">
         <property name="orientation">vertical</property>
-      </object>      
+      </object>
     </property>
     <property name="vexpand">True</property>
   </object>

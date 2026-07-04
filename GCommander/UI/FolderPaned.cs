@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Gtk4DotNet;
 
 class FolderPaned : Paned
@@ -5,12 +6,11 @@ class FolderPaned : Paned
     public FolderPaned(Builder builder, string name) : base(builder, name)
     {
         this["position"].OnNotify += OnPosition;
+
         folderViewLeft.ItemsSet += OnItemsSet;
         folderViewRight.ItemsSet += OnItemsSet;
-        folderViewLeft.ItemsChange += OnItemsChange;
-        folderViewRight.ItemsChange += OnItemsChange;
 
-        activeView = folderViewLeft;    
+        activeView = folderViewLeft;
         MainContext.Instance.ChangeFolderContext(folderViewLeft.Context);
 
         var leftEvents = FocusEventController.New();
@@ -48,11 +48,19 @@ class FolderPaned : Paned
         kec.SetPropagationPhase(PropagationPhase.Capture);
         kec.OnKeyPressed += OnKey;
         AddController(kec);
+
+        setPositionSetLater();
+
+        async void setPositionSetLater()
+        {
+            await Task.Delay(300);
+            SetBool("position-set", true);
+        }
     }
 
-    public void SetFocus() => activeView?.GrabFocus();
+    public void SetFocus() => activeView?.ColumnView.GrabFocus();
 
-    public void ShowHidden(bool show) {}
+    public void ShowHidden(bool show) { }
 
     void OnPosition()
     {
@@ -61,25 +69,14 @@ class FolderPaned : Paned
         folderViewLeft.OnWidth();
         folderViewRight.OnWidth();
     }
-    
+
     async void OnItemsSet(bool start) => onItemsSet = start;
-    
-    async void OnItemsChange(bool start)
-    {
-        if (start)
-            lastPosition = Position;
-        else if (lastPosition > 0)
-        {
-            await Task.Delay(10);
-            Position = lastPosition;
-        }
-    }
 
     bool OnKey(char chr, KeyModifiers key)
     {
         if (chr == (char)ConsoleKey.Tab && !key.HasFlag(KeyModifiers.Shift))
         {
-            GetInactiveView()?.GrabFocus();
+            GetInactiveView()?.ColumnView.GrabFocus();
             return true;
         }
         else
@@ -98,6 +95,4 @@ class FolderPaned : Paned
     FolderView lastActiveView = null!;
 
     bool onItemsSet;
-    
-    int lastPosition;
 }
