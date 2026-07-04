@@ -6,6 +6,7 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // TODO Preview pane
+// TODO Save settings, like last pathes, window positions in GSettings
 // TODO Mount unmounted drive
 // TODO Display Error
 
