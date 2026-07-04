@@ -8,11 +8,13 @@ class FolderPaned : Paned
         columnviewLeft.ItemsChange += OnItemsChange;
         columnviewRight.ItemsChange += OnItemsChange;
 
-        activeView = columnviewLeft;
+        activeView = columnviewLeft;    
+        MainContext.Instance.ChangeFolderContext(columnviewLeft.Context);
 
         var leftEvents = FocusEventController.New();
         leftEvents.OnEnter += () =>
         {
+            MainContext.Instance.ChangeFolderContext(columnviewLeft.Context);
             activeView = columnviewLeft;
             lastActiveView = columnviewLeft;
         };
@@ -24,6 +26,7 @@ class FolderPaned : Paned
         var rightEvents = FocusEventController.New();
         rightEvents.OnEnter += () =>
         {
+            MainContext.Instance.ChangeFolderContext(columnviewRight.Context);
             activeView = columnviewRight;
             lastActiveView = columnviewRight;
         };

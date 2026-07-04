@@ -4,6 +4,8 @@ class FolderView : ColumnView
 {
     public event Action<bool>? ItemsChange;
 
+    public FolderContext Context { get; } = new();
+
     public FolderViewController FolderViewController { get; }
     
     public FolderView(Builder builder, string name) : base(builder, name)
@@ -26,7 +28,7 @@ class FolderView : ColumnView
 
     public void SelectionChanged(int pos)
     {
-        MainContext.Instance.SelectedPath = controller.GetItemPath(pos);
+        Context.SelectedPath = controller.GetItemPath(pos);
         //Context.ExifData = controller.GetExifData(CurrentPos);
     }
 
