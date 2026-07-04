@@ -5,9 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// GTK4
-// TODO Change Path must check Controller!
-
 // TODO Preview pane
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -22,7 +19,7 @@ using static CsTools.ProcessCmd;
 
 class RootController : Controller
 {
-    public const string Name = "Root";
+    public const string Name = "root";
 
     public override async void ChangePath(string? path)
     {

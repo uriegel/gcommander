@@ -4,7 +4,7 @@ abstract class Controller : IDisposable
 {
     public static Controller GetFromPath(string? path, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
     {
-        if (path == null || path == "/.." || path == RootController.Name)
+        if (path == null || path == "/.." || path.Length == 0 || path == RootController.Name)
             return RootController.Get(current, view, folderView, context);
         else 
             return DirectoryController.Get(current, view, folderView, context);

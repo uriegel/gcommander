@@ -19,7 +19,7 @@ class FolderView : Box
             if (!Context.IsEditing)
             {
                 ColumnView.GrabFocus();
-                controller?.ChangePath(editablePath.Text);
+                ChangePath(editablePath.Text);
             }
         };
         editablePath.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
@@ -35,8 +35,6 @@ class FolderView : Box
             controller.Dispose();
         });
     }
-
-    public void ChangePath(string path) { }
 
     public void StartEditing() => editablePath.StartEditing();
 
@@ -65,8 +63,13 @@ class FolderView : Box
     void Activate(int position)
     {
         var changePath = controller.GetChangePath(position);
-        controller = Controller.GetFromPath(changePath, controller, ColumnView, FolderViewController, Context);
-        controller.ChangePath(changePath);
+        ChangePath(changePath);
+    }
+
+    void ChangePath(string path)
+    {
+        controller = Controller.GetFromPath(path, controller, ColumnView, FolderViewController, Context);
+        controller.ChangePath(path);
     }
 
     static void ReplacePlaceHolder(string name, nint parent, nint widget)
