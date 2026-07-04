@@ -59,7 +59,7 @@ class FolderContext : INotifyPropertyChanged
             }
         }
     } = "";
-    
+
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
 
     public event PropertyChangedEventHandler? PropertyChanged;

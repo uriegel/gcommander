@@ -7,14 +7,13 @@ using static CsTools.ProcessCmd;
 
 // GTK4
 
-// TODO show hidden files: After Actions grabFocus to paned
-// TODO react to onHiddenChange with changed counts
 // TODO path bar in CommandeView => FolderView
 // TODO Preview pane
 // TODO Mount unmounted drive
 // TODO Display Error
 
 // TODO Order by extension not working (especially in 2023/1)
+// TODO After Actions grabFocus to paned
 
 // TODO public static void RemoveDrive(string mountPoint)
 

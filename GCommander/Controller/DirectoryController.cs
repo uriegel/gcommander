@@ -194,7 +194,10 @@ class DirectoryController : Controller
     void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainContext.ShowHiddenItems))
+        {
             FilterChanged(MainContext.Instance.ShowHiddenItems ? FilterChange.LessStrict : FilterChange.MoreStrict);
+            folderView.CountsChanged(GetDirectoryCount(), GetFileCount());
+        }
     }
 
     readonly FolderViewController folderView;

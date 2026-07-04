@@ -77,6 +77,12 @@ class FolderViewController
 
     public void OnItemsGet(bool start) => view.OnItemsGet(start);
 
+    public void CountsChanged(int dirCount, int fileCount)
+    {
+        view.Context.CurrentDirectoryCount = dirCount;  
+        view.Context.CurrentFileCount = fileCount;
+    } 
+
     static int GetNumberOfVisibleRows(ColumnView? view)
     {
         if (view == null)
