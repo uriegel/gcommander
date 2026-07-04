@@ -6,6 +6,7 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // GTK4
+// TODO EditableLabel StartEditing Text property
 
 // TODO path bar in CommandeView => FolderView
 // TODO Preview pane

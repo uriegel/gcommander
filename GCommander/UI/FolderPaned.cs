@@ -89,10 +89,16 @@ class FolderPaned : Paned
     ColumnView GetInactiveView() => columnviewLeft == lastActiveView ? columnviewRight : columnviewLeft;
 
     [Widget]
-    FolderView columnviewLeft = null!;
+    readonly FolderView columnviewLeft = null!;
 
     [Widget]
-    FolderView columnviewRight = null!;
+    readonly FolderView columnviewRight = null!;
+
+    [Widget]
+    readonly Widget pathLeft = null!;
+
+    [Widget]
+    readonly Widget pathRight = null!;
 
     ColumnView? activeView;
     ColumnView lastActiveView = null!;
