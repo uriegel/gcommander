@@ -4,14 +4,14 @@ using Gtk4DotNet;
 
 class DirectoryController : Controller
 {
-    public static DirectoryController Get(Controller? current, ColumnView view, FolderViewController folderView)
+    public static DirectoryController Get(Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
         => current is DirectoryController directoryController
             ? directoryController
-            : new DirectoryController(current, view, folderView);
+            : new DirectoryController(current, view, folderView, context);
 
     public override async void ChangePath(string path)
     {
-        var folderToSelect = path.EndsWith("..") ? currentPath.SubstringAfterLast('/') : null;
+        var folderToSelect = path.EndsWith("..") ? context.CurrentPath.SubstringAfterLast('/') : null;
         var items = await Get(path);
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
@@ -33,15 +33,15 @@ class DirectoryController : Controller
     public override string GetChangePath(int pos) => GetItemPath(pos);
 
     public override string GetItemPath(int pos)
-        => currentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
+        => context.CurrentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
 
     public override void Refresh()
     {
         throw new NotImplementedException();
     }
 
-    public DirectoryController(Controller? previous, ColumnView view, FolderViewController folderView)
-        : base(CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New)
+    public DirectoryController(Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
+        : base(CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New, context)
     {
         this.view = view;
         this.folderView = folderView;
@@ -131,16 +131,16 @@ class DirectoryController : Controller
     async Task<DirectoryItem[]> Get(string path)
     {
         var dirInfo = new DirectoryInfo(path);
-        var dirs = dirInfo
-                        .GetDirectories()
-                        .Select(DirectoryItem.CreateDirItem)
-                        .OrderBy(n => n.Name)
-                        .ToArray();
+            var dirs = dirInfo
+                            .GetDirectories()
+                            .Select(DirectoryItem.CreateDirItem)
+                            .OrderBy(n => n.Name)
+                            .ToArray();
         var files = dirInfo
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
                         .ToArray();
-        currentPath = dirInfo.FullName;
+        context.CurrentPath = dirInfo.FullName;
         return [
             new DirectoryItem("..", DirectoryItemType.Parent, false),
             .. dirs,
@@ -203,7 +203,6 @@ class DirectoryController : Controller
 
     readonly FolderViewController folderView;
     readonly ColumnView view;
-    string currentPath = "";
     bool reverseOrder;
     bool extensionSearch;
     string lastSearchTitle = "";

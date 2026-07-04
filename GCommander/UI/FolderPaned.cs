@@ -74,9 +74,12 @@ class FolderPaned : Paned
 
     bool OnKey(char chr, KeyModifiers key)
     {
-        if (chr == (char)ConsoleKey.Tab && !key.HasFlag(KeyModifiers.Shift))
+        if (chr == (char)ConsoleKey.Tab)
         {
-            GetInactiveView()?.ColumnView.GrabFocus();
+            if (!key.HasFlag(KeyModifiers.Shift))
+                GetInactiveView()?.ColumnView.GrabFocus();
+            else
+                activeView?.StartEditing();
             return true;
         }
         else

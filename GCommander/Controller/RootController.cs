@@ -6,9 +6,8 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // GTK4
-// TODO EditableLabel StartEditing Text property
+// TODO Change Path must check Controller!
 
-// TODO path bar in CommandeView => FolderView
 // TODO Preview pane
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -29,6 +28,7 @@ class RootController : Controller
     {
         folderView.OnItemsGet(true);
         var items = await Get();
+        context.CurrentPath = "root";
         folderView.OnItemsGet(false);
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
@@ -37,10 +37,10 @@ class RootController : Controller
         folderView.CheckCurrentChanged(0, true);
     }
 
-    public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView)
+    public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
         => current is RootController rootController
             ? rootController
-            : new RootController(current, view, folderView);
+            : new RootController(current, view, folderView, context);
 
     public override string GetItemPath(int pos)
     {
@@ -112,8 +112,8 @@ class RootController : Controller
     //     }
     // }
 
-    public RootController(Controller? previous, ColumnView view, FolderViewController folderView)
-        : base(null, NoSelection.New)
+    public RootController(Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
+        : base(null, NoSelection.New, context)
     {
         this.view = view;
         this.folderView = folderView;

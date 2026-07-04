@@ -12,21 +12,20 @@ class FolderView : Box
     public FolderView(Builder builder, string name, nint parent) 
         : base(builder, "folderview", widget => ReplacePlaceHolder(name, parent, widget))
     {
-        // pathEditing.DataContext = Context;
-        // // pathEditing["editing"].OnNotify += () =>
-        // //     {
-        // //         Context.IsEditing = (bool)e.GetProperty("editing", typeof(bool))! == true;
-        // //         if (!Context.IsEditing)
-        // //         {
-        // //             columnView.GrabFocus();
-        // //             var val = pathEditing.GetText();
-        // //             if (val != null)
-        // //                 controller.ChangePath(val, true);
-        // //         }
-        // pathEditing.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
+        editablePath.DataContext = Context;
+        editablePath["editing"].OnNotify += () =>
+        {
+            Context.IsEditing = editablePath.IsEditing;
+            if (!Context.IsEditing)
+            {
+                ColumnView.GrabFocus();
+                controller?.ChangePath(editablePath.Text);
+            }
+        };
+        editablePath.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
 
         FolderViewController = new(this);
-        controller = Controller.GetFromPath(null, null, ColumnView, FolderViewController)!;
+        controller = Controller.GetFromPath(null, null, ColumnView, FolderViewController, Context)!;
         controller.ChangePath("");
 
         ColumnView.OnActivate += Activate;
@@ -38,6 +37,8 @@ class FolderView : Box
     }
 
     public void ChangePath(string path) { }
+
+    public void StartEditing() => editablePath.StartEditing();
 
     public void Refresh() => controller.Refresh();
 
@@ -64,7 +65,7 @@ class FolderView : Box
     void Activate(int position)
     {
         var changePath = controller.GetChangePath(position);
-        controller = Controller.GetFromPath(changePath, controller, ColumnView, FolderViewController);
+        controller = Controller.GetFromPath(changePath, controller, ColumnView, FolderViewController, Context);
         controller.ChangePath(changePath);
     }
 
@@ -78,6 +79,9 @@ class FolderView : Box
 
     [Widget(Name = "columnview")]
     public readonly ColumnView ColumnView = null!;
+
+    [Widget]
+    public readonly EditableLabel editablePath = null!;
 
     Controller controller;
 }
