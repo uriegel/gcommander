@@ -30,6 +30,8 @@ class FolderView : ColumnView
         //Context.ExifData = controller.GetExifData(CurrentPos);
     }
 
+    public void OnWidth() => controller.OnWidth(Width);
+
     public void OnItemsChange(bool start) => ItemsChange?.Invoke(start);
 
     void Activate(int position)

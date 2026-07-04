@@ -13,8 +13,7 @@
             <property name="hexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="folderpaned" >
-              </object>
+              <object class="GtkBox" id="folderpaned"/>
             </child>
             <child>
               <object class="GtkActionBar" id="actionBar">

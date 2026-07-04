@@ -11,7 +11,7 @@ class MainWindow : ApplicationWindow
 
         DataContext = MainContext.Instance;
         statusText.Binding("label", nameof(MainContext.SelectedPath), BindingFlags.Default);
-        folderpaned.SetInitialFocus();
+        folderpaned.SetFocus();
 //        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
     }
 

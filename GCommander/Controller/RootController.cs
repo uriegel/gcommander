@@ -5,7 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO when size reaches treshold minimze column titles and vice versa
+// GTK4
+
+// TODO When activation DirectoryController for the first time, the column implodes
+// TODO display path in ActionBar and counts
 // TODO show hidden files
 // TODO Mount unmounted drive
 // TODO Display Error
@@ -63,6 +66,26 @@ class RootController : Controller
         finally
         {
             locker.Release();
+        }
+    }
+
+    public override void OnWidth(int w)
+    {
+        if (!imploded && w < 320)
+        {
+            using var cols = view.GetColumns();
+            var colArray = cols.ToArray();
+            colArray[3].Visible = false;
+            colArray[4].Visible = false;
+            imploded = true;
+        }
+        else if (imploded && w > 320)
+        {
+            using var cols = view.GetColumns();
+            var colArray = cols.ToArray();
+            colArray[3].Visible = true;
+            colArray[4].Visible = true;
+            imploded = false;
         }
     }
 
@@ -254,6 +277,8 @@ class RootController : Controller
     VolumeMonitor? volumeMonitor;
     string? latestName;
     bool reverseSortOrder;
+
+    bool imploded;
 
     #region IDisposable
 

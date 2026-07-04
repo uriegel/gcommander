@@ -18,6 +18,8 @@ abstract class Controller : IDisposable
 
     public abstract void Refresh();
 
+    public virtual void OnWidth(int w) {}
+
     protected Controller(CustomFilter? filter, Func<SortListModel, SelectionModel> getModel)
     {
         this.filter = filter;
