@@ -10,16 +10,15 @@ class FolderViewController
         var controller = ClickGesture.New();
         controller.OnPressed += (c, _, _) =>
         {
-            int pos = view.GetFocusedItemPos();
+            int pos = view.ColumnView.GetFocusedItemPos();
             CheckCurrentChanged(pos);
         };
-        view.AddController(controller);
+        view.ColumnView.AddController(controller);
 
         var kec = KeyEventController.New();
         kec.SetPropagationPhase(PropagationPhase.Capture);
         kec.OnKeyPressed += OnKey;
-        view.AddController(kec);
-
+        view.ColumnView.AddController(kec);
     }
     
     bool OnKey(char key, KeyModifiers mod)
@@ -28,36 +27,36 @@ class FolderViewController
         {
             case (char)ConsoleKey.UpArrow:
             case (char)ConsoleKey.DownArrow:
-                var pos = view.GetFocusedItemPos();
+                var pos = view.ColumnView.GetFocusedItemPos();
                 var newPos = key switch
                 {
                     (char)ConsoleKey.UpArrow => Math.Max(pos - 1, 0),
-                    (char)ConsoleKey.DownArrow => Math.Min(pos + 1, view.ItemsCount() - 1),
+                    (char)ConsoleKey.DownArrow => Math.Min(pos + 1, view.ColumnView.ItemsCount() - 1),
                     _ => 0
                 };
-                view.ScrollTo(newPos, ListScrollFlags.ScrollFocus);
+                view.ColumnView.ScrollTo(newPos, ListScrollFlags.ScrollFocus);
                 CheckCurrentChanged(newPos);
                 return true;
             case (char)ConsoleKey.Home:
-                view.ScrollTo(0, ListScrollFlags.ScrollFocus);
+                view.ColumnView.ScrollTo(0, ListScrollFlags.ScrollFocus);
                 CheckCurrentChanged(0);
                 return true;
             case (char)ConsoleKey.End:
-                var total = view.ItemsCount() - 1;
-                view.ScrollTo(total, ListScrollFlags.ScrollFocus);
+                var total = view.ColumnView.ItemsCount() - 1;
+                view.ColumnView.ScrollTo(total, ListScrollFlags.ScrollFocus);
                 CheckCurrentChanged(total);
                 return true;
             case (char)ConsoleKey.PageUp:
             case (char)ConsoleKey.PageDown:
-                var pageSize = GetNumberOfVisibleRows(view);
-                pos = view.GetFocusedItemPos();
+                var pageSize = GetNumberOfVisibleRows(view.ColumnView);
+                pos = view.ColumnView.GetFocusedItemPos();
                 newPos = key switch
                 {
                     (char)ConsoleKey.PageUp => Math.Max(pos - pageSize, 0),
-                    (char)ConsoleKey.PageDown => Math.Min(pos + pageSize, view.ItemsCount() - 1),
+                    (char)ConsoleKey.PageDown => Math.Min(pos + pageSize, view.ColumnView.ItemsCount() - 1),
                     _ => 0
                 };
-                view.ScrollTo(newPos, ListScrollFlags.ScrollFocus);
+                view.ColumnView.ScrollTo(newPos, ListScrollFlags.ScrollFocus);
                 CheckCurrentChanged(newPos);
                 return true;
         }

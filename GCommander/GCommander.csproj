@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="9.0.42-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.45-beta" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +17,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/folderpaned.ui">
       <LogicalName>folderpaned</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/folderview.ui">
+      <LogicalName>folderview</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/icon-name-item.ui">
       <LogicalName>icon-name-item</LogicalName>

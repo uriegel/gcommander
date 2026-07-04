@@ -7,49 +7,15 @@
   <requires lib="libadwaita" version="1.7"/>
   <object class="GtkPaned" id="folderpaned">
     <property name="end-child">
-      <object class="GtkBox">
+      <object class="GtkBox" id="folderViewRight">
         <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkEditableLabel" id="pathRight"/>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="hexpand">True</property>
-            <property name="hscrollbar-policy">never</property>
-            <child>
-              <object class="GtkColumnView" id="columnviewRight">
-                <property name="enable-rubberband">True</property>
-                <property name="hexpand">True</property>
-                <property name="tab-behavior">item</property>
-                <property name="vexpand">True</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
+      </object>      
     </property>
     <property name="hexpand">True</property>
     <property name="start-child">
-      <object class="GtkBox">
+      <object class="GtkBox" id="folderViewLeft">
         <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkEditableLabel" id="pathLeft"/>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="hexpand">True</property>
-            <property name="hscrollbar-policy">never</property>
-            <child>
-              <object class="GtkColumnView" id="columnviewLeft">
-                <property name="enable-rubberband">True</property>
-                <property name="hexpand">True</property>
-                <property name="tab-behavior">item</property>
-                <property name="vexpand">True</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
+      </object>      
     </property>
     <property name="vexpand">True</property>
   </object>

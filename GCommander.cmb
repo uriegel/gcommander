@@ -4,5 +4,6 @@
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
   <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="a7e3d4cf614e2cdc20d2034d1ab4eedd51b23fad3de67a1464585ab408314709"/>
   <ui filename="GCommander/Resources/UI/icon-name-item.ui" sha256="0bf48e345c4a98cc78339508b83dca6dc6c9877822c3312326a1e19e5b1907a6"/>
-  <ui filename="GCommander/Resources/UI/folderpaned.ui" sha256="6ee4e5d8f6ec003cc34a4731f7cd7702e1ff010736920d830a1167f407e93537"/>
+  <ui filename="GCommander/Resources/UI/folderpaned.ui" sha256="5b9ade6b69d3bd5a19cb9dec571eda857eb6f8fb8b67ce52f244f55c289a84a5"/>
+  <ui filename="GCommander/Resources/UI/folderview.ui" sha256="a89736c0dcd5056393af7bbe83c6ff4a11844267bddde2baa930435868a6ecf4"/>
 </cambalache-project>

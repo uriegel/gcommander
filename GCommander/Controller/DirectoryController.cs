@@ -26,6 +26,7 @@ class DirectoryController : Controller
         view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         folderView.CheckCurrentChanged(pos, true);
 
+        MainContext.Instance.PropertyChanged -= OnPropertyChanged;
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
     }
 

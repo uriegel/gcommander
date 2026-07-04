@@ -5,26 +5,26 @@ class FolderPaned : Paned
     public FolderPaned(Builder builder, string name) : base(builder, name)
     {
         this["position"].OnNotify += OnPosition;
-        columnviewLeft.ItemsSet += OnItemsSet;
-        columnviewRight.ItemsSet += OnItemsSet;
-        columnviewLeft.ItemsChange += OnItemsChange;
-        columnviewRight.ItemsChange += OnItemsChange;
+        folderViewLeft.ItemsSet += OnItemsSet;
+        folderViewRight.ItemsSet += OnItemsSet;
+        folderViewLeft.ItemsChange += OnItemsChange;
+        folderViewRight.ItemsChange += OnItemsChange;
 
-        activeView = columnviewLeft;    
-        MainContext.Instance.ChangeFolderContext(columnviewLeft.Context);
+        activeView = folderViewLeft;    
+        MainContext.Instance.ChangeFolderContext(folderViewLeft.Context);
 
         var leftEvents = FocusEventController.New();
         leftEvents.OnEnter += () =>
         {
             if (onItemsSet)
                 return;
-            MainContext.Instance.ChangeFolderContext(columnviewLeft.Context);
-            activeView = columnviewLeft;
-            lastActiveView = columnviewLeft;
+            MainContext.Instance.ChangeFolderContext(folderViewLeft.Context);
+            activeView = folderViewLeft;
+            lastActiveView = folderViewLeft;
         };
         leftEvents.OnLeave += () =>
         {
-            lastActiveView = columnviewRight;
+            lastActiveView = folderViewRight;
             activeView = null;
         };
         var rightEvents = FocusEventController.New();
@@ -32,17 +32,17 @@ class FolderPaned : Paned
         {
             if (onItemsSet)
                 return;
-            MainContext.Instance.ChangeFolderContext(columnviewRight.Context);
-            activeView = columnviewRight;
-            lastActiveView = columnviewRight;
+            MainContext.Instance.ChangeFolderContext(folderViewRight.Context);
+            activeView = folderViewRight;
+            lastActiveView = folderViewRight;
         };
         rightEvents.OnLeave += () =>
         {
-            lastActiveView = columnviewLeft;
+            lastActiveView = folderViewLeft;
             activeView = null;
         };
-        columnviewLeft.AddController(leftEvents);
-        columnviewRight.AddController(rightEvents);
+        folderViewLeft.AddController(leftEvents);
+        folderViewRight.AddController(rightEvents);
 
         var kec = KeyEventController.New();
         kec.SetPropagationPhase(PropagationPhase.Capture);
@@ -56,10 +56,10 @@ class FolderPaned : Paned
 
     void OnPosition()
     {
-        if (columnviewLeft.Width == 0 && columnviewRight.Width == 0)
+        if (folderViewLeft.ColumnView.Width == 0 && folderViewRight.ColumnView.Width == 0)
             return;
-        columnviewLeft.OnWidth();
-        columnviewRight.OnWidth();
+        folderViewLeft.OnWidth();
+        folderViewRight.OnWidth();
     }
     
     async void OnItemsSet(bool start) => onItemsSet = start;
@@ -86,22 +86,16 @@ class FolderPaned : Paned
             return false;
     }
 
-    ColumnView GetInactiveView() => columnviewLeft == lastActiveView ? columnviewRight : columnviewLeft;
+    FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
 
-    [Widget]
-    readonly FolderView columnviewLeft = null!;
+    [Widget(Template = "folderview")]
+    readonly FolderView folderViewLeft = null!;
 
-    [Widget]
-    readonly FolderView columnviewRight = null!;
+    [Widget(Template = "folderview")]
+    readonly FolderView folderViewRight = null!;
 
-    [Widget]
-    readonly Widget pathLeft = null!;
-
-    [Widget]
-    readonly Widget pathRight = null!;
-
-    ColumnView? activeView;
-    ColumnView lastActiveView = null!;
+    FolderView? activeView;
+    FolderView lastActiveView = null!;
 
     bool onItemsSet;
     
