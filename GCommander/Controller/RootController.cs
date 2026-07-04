@@ -23,7 +23,9 @@ class RootController : Controller
 
     public override async void ChangePath(string? path)
     {
+        folderView.OnItemsGet(true);
         var items = await Get();
+        folderView.OnItemsGet(false);
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
         folderView.OnItemsChange(false);

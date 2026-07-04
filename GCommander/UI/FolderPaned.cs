@@ -5,6 +5,8 @@ class FolderPaned : Paned
     public FolderPaned(Builder builder, string name) : base(builder, name)
     {
         this["position"].OnNotify += OnPosition;
+        columnviewLeft.ItemsSet += OnItemsSet;
+        columnviewRight.ItemsSet += OnItemsSet;
         columnviewLeft.ItemsChange += OnItemsChange;
         columnviewRight.ItemsChange += OnItemsChange;
 
@@ -14,6 +16,8 @@ class FolderPaned : Paned
         var leftEvents = FocusEventController.New();
         leftEvents.OnEnter += () =>
         {
+            if (onItemsSet)
+                return;
             MainContext.Instance.ChangeFolderContext(columnviewLeft.Context);
             activeView = columnviewLeft;
             lastActiveView = columnviewLeft;
@@ -26,6 +30,8 @@ class FolderPaned : Paned
         var rightEvents = FocusEventController.New();
         rightEvents.OnEnter += () =>
         {
+            if (onItemsSet)
+                return;
             MainContext.Instance.ChangeFolderContext(columnviewRight.Context);
             activeView = columnviewRight;
             lastActiveView = columnviewRight;
@@ -53,7 +59,9 @@ class FolderPaned : Paned
         columnviewLeft.OnWidth();
         columnviewRight.OnWidth();
     }
-
+    
+    async void OnItemsSet(bool start) => onItemsSet = start;
+    
     async void OnItemsChange(bool start)
     {
         if (start)
@@ -86,5 +94,8 @@ class FolderPaned : Paned
 
     ColumnView? activeView;
     ColumnView lastActiveView = null!;
+
+    bool onItemsSet;
+    
     int lastPosition;
 }

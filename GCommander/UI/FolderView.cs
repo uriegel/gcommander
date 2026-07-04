@@ -3,6 +3,7 @@ using Gtk4DotNet;
 class FolderView : ColumnView
 {
     public event Action<bool>? ItemsChange;
+    public event Action<bool>? ItemsSet;
 
     public FolderContext Context { get; } = new();
 
@@ -35,7 +36,8 @@ class FolderView : ColumnView
     public void OnWidth() => controller.OnWidth(Width);
 
     public void OnItemsChange(bool start) => ItemsChange?.Invoke(start);
-
+    public void OnItemsGet(bool start) => ItemsSet?.Invoke(start);
+    
     void Activate(int position)
     {
         var changePath = controller.GetChangePath(position);
