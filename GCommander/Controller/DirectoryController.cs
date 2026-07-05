@@ -15,6 +15,7 @@ class DirectoryController : Controller
         var items = await Get(path);
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
+        StartExifResolving(items);
         folderView.OnItemsChange(false);
         int pos = folderToSelect != null
             ? model
@@ -76,7 +77,16 @@ class DirectoryController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<DirectoryItem>();
+                label.DataContext = item;
                 label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
+                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, i => (i as ExifData)?.DateTime?.ToString("g") ?? label.Text);
+                label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData)?.DateTime.HasValue == true);
+            })
+            .Unbind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                label.UnsetBinding("label");                
+                label.DataContext = null;
             });
 
         var sizefactory = SignalListItemFactory
@@ -152,7 +162,34 @@ class DirectoryController : Controller
     public override int GetDirectoryCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.Directory);
     public override int GetFileCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.File);
 
-    static bool FilterHidden(DirectoryItem? item) 
+    void StartExifResolving(DirectoryItem[] items)
+    {
+        // TODO 
+//        var token = cancellation.Token;
+        Task.Run(() =>
+        {
+            // TODO
+            // folderView.Context.BackgroundAction = BackgroundAction.ExifDatas;
+            try
+            {
+                foreach (var item in items
+                        .Where(item => 
+//                        .Where(item => !token.IsCancellationRequested &&
+                            (item.Name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
+                                || item.Name.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase)
+                                || item.Name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))))
+                    item.ExifData = ExifReader.GetExifData(context.CurrentPath.AppendPath(item.Name));
+            }
+            finally
+            {
+                // TODO
+                //folderView.Context.BackgroundAction = BackgroundAction.None;
+                //folderView.InvalidateFocus();
+            }
+        });
+    }
+
+    static bool FilterHidden(DirectoryItem? item)
         => MainContext.Instance.ShowHiddenItems || item?.IsHidden != true;
 
     int NameOrExtensionOrder(DirectoryItem? item1, DirectoryItem? item2)
