@@ -9,7 +9,7 @@ class DirectoryController : Controller
             ? directoryController
             : new DirectoryController(id, current, view, folderView, context);
 
-    public override async void ChangePath(string path)
+    public override async Task ChangePathAsync(string path)
     {
         var folderToSelect = path.EndsWith("..") ? context.CurrentPath.SubstringAfterLast('/') : null;
         var items = await Get(path);

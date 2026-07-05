@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Display Error
 // TODO Exif infos
 // TODO DirectoryWatcher
 // TODO Restriction
@@ -22,7 +21,7 @@ class RootController : Controller
 {
     public const string Name = "root";
 
-    public override async void ChangePath(string? path)
+    public override async Task ChangePathAsync(string? path)
     {
         folderView.OnItemsGet(true);
         var items = await Get();
@@ -60,7 +59,7 @@ class RootController : Controller
         if (item.MountPoint == "")
             return await Mount(item.Name);
         else
-            return "";
+            return item.MountPoint;
     }
         
 

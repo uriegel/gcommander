@@ -70,6 +70,28 @@ class MainContext : INotifyPropertyChanged
         }
     }
 
+    public string ErrorText
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(ErrorText));
+                if (value != "")
+                {
+                    Reset();
+                    async void Reset()
+                    {
+                        await Task.Delay(6000);
+                        ErrorText = "";
+                    }
+                }
+            }
+        }
+    } = "";
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public void ChangeFolderContext(FolderContext? folderContext)

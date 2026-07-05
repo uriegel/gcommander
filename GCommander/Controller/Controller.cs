@@ -16,7 +16,7 @@ abstract class Controller : IDisposable
 
     public abstract Task<string> GetChangePath(int pos);
 
-    public abstract void ChangePath(string path);
+    public abstract Task ChangePathAsync(string path);
 
     public abstract void Refresh();
 

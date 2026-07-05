@@ -23,9 +23,12 @@ class MainWindow : ApplicationWindow
         labelFiles.Binding("label", nameof(MainContext.CurrentFileCount));
         folderpaned.SetFocus();
 
+        banner.SetBinding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => (v as string) != "");
+        banner.SetBinding("title", nameof(MainContext.ErrorText));
+        banner.OnButtonClicked += () => banner.IsRevealed = false;
         viewer.SetBinding("visible", nameof(MainContext.ViewerVisible));
 
-        //        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
+        //AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
 
@@ -52,6 +55,9 @@ class MainWindow : ApplicationWindow
 
     [Widget]
     readonly Label labelFiles = null!;
+
+    [Widget]
+    readonly AdwBanner banner = null!;
 
     [Widget(Template = "viewer")]
     readonly Viewer viewer = null!;

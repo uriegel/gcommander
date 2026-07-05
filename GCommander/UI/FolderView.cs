@@ -72,10 +72,23 @@ class FolderView : Box
         ChangePath(changePath);
     }
 
-    void ChangePath(string path)
+    async void ChangePath(string path)
     {
-        controller = Controller.GetFromPath(id, path, controller, ColumnView, FolderViewController, Context);
-        controller.ChangePath(path);
+        try
+        {
+            controller = Controller.GetFromPath(id, path, controller, ColumnView, FolderViewController, Context);
+            await controller.ChangePathAsync(path);
+        }
+        catch (DirectoryNotFoundException dnfe)
+        {
+            Console.Error.WriteLine($"Der Pfad konnte nicht geändert werden: {dnfe}");
+            MainContext.Instance.ErrorText = "Verzeichnis nicht vorhanden";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Der Pfad konnte nicht geändert werden: {e}");
+            MainContext.Instance.ErrorText = "Verzeichnis konnte nicht gewechselt werden";
+        }
     }
 
     static void ReplacePlaceHolder(string name, nint parent, nint widget)
