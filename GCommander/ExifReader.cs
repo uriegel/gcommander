@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 
 record ExifData(
-    DateTime? DateTime,
+    DateTime DateTime,
     double? Latitude,
     double? Longitude
 );
@@ -17,7 +17,7 @@ class ExifReader : IDisposable
 
             var latitude = (double?)null;
             var longitude = (double?)null;
-            var dateTime = (DateTime?)null;
+            var dateTime = DateTime.MinValue;
 
             if (reader.GetTagValue<double>(ExifTags.GPSLatitude, out var d))
                 latitude = !double.IsNaN(d) ? d : null;
@@ -28,7 +28,7 @@ class ExifReader : IDisposable
                 dateTime = res;
             else if (reader.GetTagValue(ExifTags.DateTime, out res))
                 dateTime = res;
-            return latitude == null && longitude == null && dateTime == null
+            return latitude == null && longitude == null && dateTime == DateTime.MinValue
                 ? null
                 : new ExifData(dateTime, latitude, longitude);
         }

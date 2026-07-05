@@ -79,8 +79,8 @@ class DirectoryController : Controller
                 var item = listitem.GetItem<DirectoryItem>();
                 label.DataContext = item;
                 label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
-                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, i => (i as ExifData)?.DateTime?.ToString("g") ?? label.Text);
-                label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData)?.DateTime.HasValue == true);
+                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, e => GetExifDate(e as ExifData, label.Text));
+                label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
             })
             .Unbind(listitem =>
             {
@@ -229,7 +229,7 @@ class DirectoryController : Controller
             : 0;
         return reverseOrder ? -order : order;
     }
-    
+
     void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainContext.ShowHiddenItems))
@@ -238,7 +238,12 @@ class DirectoryController : Controller
             folderView.CountsChanged(GetDirectoryCount(), GetFileCount());
         }
     }
-
+    
+    static string GetExifDate(ExifData? exif, string altValue)
+        => exif != null && exif.DateTime != DateTime.MinValue 
+            ? exif.DateTime.ToString("g") 
+            : altValue;
+        
     readonly FolderViewController folderView;
     readonly ColumnView view;
     bool reverseOrder;
