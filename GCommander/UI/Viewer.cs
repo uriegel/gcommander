@@ -41,7 +41,8 @@ class Viewer : Stack
 
     static bool IsImage(string? file) 
         => file?.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) == true
-        || file?.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) == true;
+        || file?.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) == true
+        || file?.EndsWith(".heic", StringComparison.InvariantCultureIgnoreCase) == true;
 
     static bool IsNotImage(string? file) => !IsImage(file);
     static void ReplacePlaceHolder(nint parent, nint widget)
