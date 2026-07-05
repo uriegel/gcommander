@@ -5,10 +5,12 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Preview pane
 // TODO Save settings, like last pathes, window positions in GSettings
 // TODO Mount unmounted drive
 // TODO Display Error
+// TODO Exif infos
+// TODO DirectoryWatcher
+// TODO Restriction
 
 // TODO Order by extension not working (especially in 2023/1)
 // TODO After Actions grabFocus to paned

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Gtk4DotNet;
 
 class FolderPaned : Paned
@@ -53,7 +52,7 @@ class FolderPaned : Paned
 
         async void setPositionSetLater()
         {
-            await Task.Delay(300);
+            await Task.Delay(600);
             SetBool("position-set", true);
         }
     }

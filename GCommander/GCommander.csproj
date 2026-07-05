@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="9.0.45-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.46-beta" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +24,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/icon-name-item.ui">
       <LogicalName>icon-name-item</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/viewer.ui">
+      <LogicalName>viewer</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>

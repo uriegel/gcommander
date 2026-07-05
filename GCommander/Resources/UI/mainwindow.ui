@@ -13,7 +13,15 @@
             <property name="hexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="folderpaned"/>
+              <object class="GtkPaned" id="viewerPaned">
+                <property name="end-child">
+                  <object class="GtkBox" id="viewer"/>
+                </property>
+                <property name="orientation">vertical</property>
+                <property name="start-child">
+                  <object class="GtkBox" id="folderpaned"/>
+                </property>
+              </object>
             </child>
             <child>
               <object class="GtkActionBar" id="actionBar">
@@ -85,6 +93,13 @@
               <object class="GtkMenuButton">
                 <property name="icon-name">open-menu-symbolic</property>
                 <property name="menu-model">main-menu</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkToggleButton">
+                <property name="action-name">win.fileview</property>
+                <property name="icon-name">image-x-generic</property>
+                <property name="tooltip-text">Dateiansicht</property>
               </object>
             </child>
           </object>

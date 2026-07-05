@@ -18,6 +18,19 @@ class MainContext : INotifyPropertyChanged
         }
     }
 
+    public bool ViewerVisible
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(ViewerVisible));
+            }
+        }
+    }
+
     public int CurrentFileCount
     {
         get;
