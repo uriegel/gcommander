@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Save settings, like last pathes, window positions in GSettings
 // TODO Mount unmounted drive
 // TODO Display Error
 // TODO Exif infos
@@ -35,12 +34,13 @@ class RootController : Controller
         folderView.OnItemsChange(false);
         view.ScrollTo(0, ListScrollFlags.ScrollFocus);
         folderView.CheckCurrentChanged(0, true);
+        Application.Settings.SetString($"path-{Id}", "");
     }
 
-    public static RootController Get(Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static RootController Get(string id, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
         => current is RootController rootController
             ? rootController
-            : new RootController(current, view, folderView, context);
+            : new RootController(id, current, view, folderView, context);
 
     public override string GetItemPath(int pos)
     {
@@ -112,8 +112,8 @@ class RootController : Controller
     //     }
     // }
 
-    public RootController(Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(null, NoSelection.New, context)
+    public RootController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
+        : base(id, null, NoSelection.New, context)
     {
         this.view = view;
         this.folderView = folderView;

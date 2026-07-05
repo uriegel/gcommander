@@ -4,10 +4,10 @@ using Gtk4DotNet;
 
 class DirectoryController : Controller
 {
-    public static DirectoryController Get(Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static DirectoryController Get(string id, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
         => current is DirectoryController directoryController
             ? directoryController
-            : new DirectoryController(current, view, folderView, context);
+            : new DirectoryController(id, current, view, folderView, context);
 
     public override async void ChangePath(string path)
     {
@@ -40,8 +40,8 @@ class DirectoryController : Controller
         throw new NotImplementedException();
     }
 
-    public DirectoryController(Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New, context)
+    public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
+        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New, context)
     {
         this.view = view;
         this.folderView = folderView;
@@ -141,6 +141,7 @@ class DirectoryController : Controller
                         .Select(DirectoryItem.CreateFileItem)
                         .ToArray();
         context.CurrentPath = dirInfo.FullName;
+        Application.Settings.SetString($"path-{Id}", dirInfo.FullName);
         return [
             new DirectoryItem("..", DirectoryItemType.Parent, false),
             .. dirs,

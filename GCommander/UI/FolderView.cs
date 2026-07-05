@@ -9,9 +9,10 @@ class FolderView : Box
 
     public FolderViewController FolderViewController { get; }
 
-    public FolderView(Builder builder, string name, nint parent) 
+    public FolderView(Builder builder, string name, nint parent)
         : base(builder, "folderview", widget => ReplacePlaceHolder(name, parent, widget))
     {
+        id = name == "folderViewLeft" ? "left" : "right";
         editablePath.DataContext = Context;
         editablePath["editing"].OnNotify += () =>
         {
@@ -25,8 +26,7 @@ class FolderView : Box
         editablePath.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
 
         FolderViewController = new(this);
-        controller = Controller.GetFromPath(null, null, ColumnView, FolderViewController, Context)!;
-        controller.ChangePath("");
+        controller = Controller.GetFromPath(id, null, null, ColumnView, FolderViewController, Context)!;
 
         ColumnView.OnActivate += Activate;
 
@@ -34,6 +34,12 @@ class FolderView : Box
         {
             controller.Dispose();
         });
+    }
+    
+    public void Initialize()
+    {
+        var path = Application.Settings.GetString($"path-{id}") ?? "";
+        ChangePath(path);
     }
 
     public void StartEditing() => editablePath.StartEditing();
@@ -68,7 +74,7 @@ class FolderView : Box
 
     void ChangePath(string path)
     {
-        controller = Controller.GetFromPath(path, controller, ColumnView, FolderViewController, Context);
+        controller = Controller.GetFromPath(id, path, controller, ColumnView, FolderViewController, Context);
         controller.ChangePath(path);
     }
 
@@ -87,5 +93,7 @@ class FolderView : Box
     public readonly EditableLabel editablePath = null!;
 
     Controller controller;
+
+    readonly string id;
 }
 

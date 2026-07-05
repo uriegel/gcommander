@@ -12,10 +12,6 @@ class FolderContext : INotifyPropertyChanged
             if (field != value)
             {
                 field = value;
-                // if (IsLeft)
-                //     Storage.SaveLeftPath(value);
-                // else
-                //     Storage.SaveRightPath(value);
                 OnChanged(nameof(CurrentPath));
             }
         }

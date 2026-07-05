@@ -8,9 +8,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="9.0.46-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.47-beta" />
     <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <GSchemaXml Include="./Resources/*.gschema.xml" />
+  </ItemGroup>
+
+  <Target Name="CompileGSettingsSchemas" BeforeTargets="CoreCompile">
+
+    <!-- Create a temporary schema directory in obj -->
+    <MakeDir Directories="$(IntermediateOutputPath)gsettings" />
+
+    <!-- Copy XML schemas -->
+    <Copy SourceFiles="@(GSchemaXml)" DestinationFolder="$(IntermediateOutputPath)gsettings" />
+
+    <!-- Generate gschemas.compiled -->
+    <Exec Command="glib-compile-schemas &quot;$(IntermediateOutputPath)gsettings&quot;" />
+
+  </Target>
 
   <ItemGroup>
     <EmbeddedResource Include="./Resources/UI/mainwindow.ui">
@@ -31,6 +48,9 @@
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./obj/$(Configuration)/net10.0/gsettings/gschemas.compiled">
+      <LogicalName>gschemas</LogicalName>
+    </EmbeddedResource> 
   </ItemGroup>
 
 </Project>

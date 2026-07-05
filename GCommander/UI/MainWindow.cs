@@ -1,3 +1,4 @@
+using System.Globalization;
 using Gtk4DotNet;
 
 class MainWindow : ApplicationWindow
@@ -8,6 +9,13 @@ class MainWindow : ApplicationWindow
             Display.GetDefault(),
             CssProvider.New().FromResource("style"),
             StyleProviderPriority.Application);
+
+        var w = Application.Settings.GetInt("width");
+        var h = Application.Settings.GetInt("height");
+        if (w.HasValue && w.Value > 0 && h.HasValue && h.Value > 0)
+            SetDefaultSize(w.Value, h.Value);
+
+        OnRealize += () => folderpaned.Initialize(Width);
 
         DataContext = MainContext.Instance;
         statusText.Binding("label", nameof(MainContext.SelectedPath));
@@ -20,7 +28,14 @@ class MainWindow : ApplicationWindow
         //        AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
+
         viewerPaned.Position = Height - 300;
+
+        OnFinalize(() =>
+        {
+            Application.Settings.SetInt("width", Width);
+            Application.Settings.SetInt("height", Height);
+        });
     }
 
     [Widget(Template = "folderpaned")]

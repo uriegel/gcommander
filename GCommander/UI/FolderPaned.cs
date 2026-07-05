@@ -8,7 +8,7 @@ class FolderPaned : Paned
 
         folderViewLeft.ItemsSet += OnItemsSet;
         folderViewRight.ItemsSet += OnItemsSet;
-
+        
         activeView = folderViewLeft;
         MainContext.Instance.ChangeFolderContext(folderViewLeft.Context);
 
@@ -47,19 +47,17 @@ class FolderPaned : Paned
         kec.SetPropagationPhase(PropagationPhase.Capture);
         kec.OnKeyPressed += OnKey;
         AddController(kec);
+    }
 
-        setPositionSetLater();
-
-        async void setPositionSetLater()
-        {
-            await Task.Delay(600);
-            SetBool("position-set", true);
-        }
+    public void Initialize(int width)
+    {
+        Position = width / 2;
+        folderViewLeft.Initialize();
+        folderViewRight.Initialize();
+        SetFocus();
     }
 
     public void SetFocus() => activeView?.ColumnView.GrabFocus();
-
-    public void ShowHidden(bool show) { }
 
     void OnPosition()
     {

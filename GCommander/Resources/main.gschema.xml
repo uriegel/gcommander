@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/de/uriegel/gcommander/" id="de.uriegel.gcommander">
+    <key name="width" type="i">
+      <default>0</default>
+      <summary>Window width</summary>
+    </key>    
+    <key name="height" type="i">
+      <default>0</default>
+      <summary>Window height</summary>
+    </key>    
+    <key name="path-left" type="s">
+      <default>""</default>
+      <summary>Left path</summary>
+    </key>    
+    <key name="path-right" type="s">
+      <default>""</default>
+      <summary>Right path</summary>
+    </key>    
+  </schema>
+</schemalist>

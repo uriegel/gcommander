@@ -2,13 +2,15 @@ using Gtk4DotNet;
 
 abstract class Controller : IDisposable
 {
-    public static Controller GetFromPath(string? path, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static Controller GetFromPath(string id, string? path, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
     {
         if (path == null || path == "/.." || path.Length == 0 || path == RootController.Name)
-            return RootController.Get(current, view, folderView, context);
+            return RootController.Get(id, current, view, folderView, context);
         else 
-            return DirectoryController.Get(current, view, folderView, context);
+            return DirectoryController.Get(id, current, view, folderView, context);
     }
+
+    public string Id { get; }
 
     public abstract string GetItemPath(int pos);
 
@@ -24,8 +26,9 @@ abstract class Controller : IDisposable
     public virtual int GetDirectoryCount() => 0;
 
 
-    protected Controller(CustomFilter? filter, Func<SortListModel, SelectionModel> getModel, FolderContext context)
+    protected Controller(string id, CustomFilter? filter, Func<SortListModel, SelectionModel> getModel, FolderContext context)
     {
+        Id = id;
         this.filter = filter;
         this.context = context;
         store = ListStore.New();
