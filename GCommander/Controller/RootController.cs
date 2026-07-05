@@ -5,6 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO Exif infos: set binding only for exifs (unset always, is ok)
 // TODO Exif infos: cancel action
 // TODO Exif infos: show action in actionbar
 // TODO Exif infos: UnsetCssBinding
