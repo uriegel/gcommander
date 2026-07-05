@@ -30,7 +30,7 @@ class DirectoryController : Controller
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
     }
 
-    public override string GetChangePath(int pos) => GetItemPath(pos);
+    public override Task<string> GetChangePath(int pos) => GetItemPath(pos).ToAsync();
 
     public override string GetItemPath(int pos)
         => context.CurrentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");

@@ -47,4 +47,7 @@ actionbar.info>revealer>box{
 .custom-accent { 
     color: @accent_color; 
 }
-
+.editable-path {
+    font-size: smaller;
+    font-family: "Noto Sans";
+}

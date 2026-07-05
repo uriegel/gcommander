@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Mount unmounted drive
 // TODO Display Error
 // TODO Exif infos
 // TODO DirectoryWatcher
@@ -53,8 +52,17 @@ class RootController : Controller
 
     public override int GetDirectoryCount() => model.GetItems<RootItem>().Count();
 
-    public override string GetChangePath(int pos)
-        => model.GetItem<RootItem>(pos)?.MountPoint ?? "";
+    public override async Task<string> GetChangePath(int pos)
+    {
+        var item = model.GetItem<RootItem>(pos);
+        if (item == null)
+            return "";
+        if (item.MountPoint == "")
+            return await Mount(item.Name);
+        else
+            return "";
+    }
+        
 
     public override async void Refresh()
     {
@@ -95,22 +103,6 @@ class RootController : Controller
             imploded = false;
         }
     }
-
-    // public static async Task<string> Mount(string device)
-    // {
-    //     try
-    //     {
-    //         var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
-    //         return output.SubstringAfter(" at ").Trim();
-    //     }
-    //     catch (Exception)
-    //     {
-    //         // if (e.Message.Contains("already mounted"))
-    //         //     throw new AlreadyMountedException();
-    //         // else
-    //         //     throw new MountException(e.Message);
-    //     }
-    // }
 
     public RootController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
         : base(id, null, NoSelection.New, context)
@@ -254,6 +246,23 @@ class RootController : Controller
                 (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
+
+    static async Task<string> Mount(string device)
+    {
+        try
+        {
+            var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
+            return output.SubstringAfter(" at ").Trim();
+        }
+        catch (Exception)
+        {
+            throw;
+            // if (e.Message.Contains("already mounted"))
+            //     throw new AlreadyMountedException();
+            // else
+            //     throw new MountException(e.Message);
+        }
+    }
 
     void StartMonitoring()
     {

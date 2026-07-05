@@ -66,9 +66,9 @@ class FolderView : Box
 
     public void OnItemsGet(bool start) => ItemsSet?.Invoke(start);
 
-    void Activate(int position)
+    async void Activate(int position)
     {
-        var changePath = controller.GetChangePath(position);
+        var changePath = await controller.GetChangePath(position);
         ChangePath(changePath);
     }
 

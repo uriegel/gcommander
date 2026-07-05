@@ -8,7 +8,9 @@
   <object class="GtkBox" id="folderview">
     <property name="orientation">vertical</property>
     <child>
-      <object class="GtkEditableLabel" id="editablePath"/>
+      <object class="GtkEditableLabel" id="editablePath">
+        <property name="css-classes">editable-path</property>
+      </object>
     </child>
     <child>
       <object class="GtkScrolledWindow">
