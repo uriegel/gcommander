@@ -15,6 +15,10 @@ class DirectoryController : Controller
         cancellation.Cancel();
         cancellation = new();
         var items = await Get(path);
+        var enableEvents = watcher.Path == "";
+        watcher.Path = context.CurrentPath;
+        if (enableEvents)
+            watcher.EnableRaisingEvents = true;
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
         StartExifResolving(items);
@@ -48,6 +52,15 @@ class DirectoryController : Controller
     {
         this.view = view;
         this.folderView = folderView;
+        watcher.Created += WatchCreated;
+        watcher.Deleted += WatchDeleted;
+        watcher.Changed += WatchChanged;        
+        watcher.Renamed += WatchRenamed;
+        watcher.NotifyFilter = NotifyFilters.CreationTime
+                    | NotifyFilters.DirectoryName
+                    | NotifyFilters.FileName
+                    | NotifyFilters.LastWrite
+                    | NotifyFilters.Size;
 
         var namefactory = SignalListItemFactory
             .New()
@@ -137,8 +150,6 @@ class DirectoryController : Controller
         viewsorter.OnChanged -= SortOrderChanged;
         viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
-
-        //StartMonitoring();
     }
 
     async Task<DirectoryItem[]> Get(string path)
@@ -238,19 +249,43 @@ class DirectoryController : Controller
             folderView.CountsChanged(GetDirectoryCount(), GetFileCount());
         }
     }
-    
+
     static string GetExifDate(ExifData? exif, string altValue)
-        => exif != null && exif.DateTime != DateTime.MinValue 
-            ? exif.DateTime.ToString("g") 
+        => exif != null && exif.DateTime != DateTime.MinValue
+            ? exif.DateTime.ToString("g")
             : altValue;
+
+    void WatchCreated(object _, FileSystemEventArgs e)
+        => store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(e.FullPath))]);
+
+    void WatchDeleted(object _, FileSystemEventArgs e)
+    {
+        var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.Name).Count();
+        store.Splice<DirectoryItem>(pos, 1, []);
+    }
+        
+    void WatchChanged(object _, FileSystemEventArgs e)
+    {
+        Console.WriteLine($"Datei geändert: {e.Name}");
+        // TODO Size and DateTime
+        //   => Process(() => new(JobType.Changed, Directory.FolderId, Directory.RequestID, fsw?.Path!, Directory.Change(e.Name, idx => CreateItem(e.FullPath, idx))));
+    }
+
+    void WatchRenamed(object _, RenamedEventArgs e)
+    {
+        // TODO In ListItem set DataContext to Box
+        // TODO Take PropertyNotify event => change iconname and name
+        // TODO Unbind (Dispose)
+        Console.WriteLine($"Datei umbenannt: {e.OldName} => {e.Name}");
+    }
         
     readonly FolderViewController folderView;
     readonly ColumnView view;
+    readonly FileSystemWatcher watcher = new();
     bool reverseOrder;
     bool extensionSearch;
     string lastSearchTitle = "";
     ColumnViewColumn? nameOrExt;
-
     const string NAME = "Name";
     const string ERWEITERUNG = "Erweiterung";
 
@@ -265,6 +300,7 @@ class DirectoryController : Controller
             if (disposing)
             {
                 cancellation.Cancel();
+                watcher.Dispose();
                 MainContext.Instance.PropertyChanged -= OnPropertyChanged;
                 //                volumeMonitor?.Dispose();
             }
