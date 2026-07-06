@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryWatcher
+// TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected
 // TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
 
 // TODO Idea:
