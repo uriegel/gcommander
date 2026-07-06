@@ -56,6 +56,19 @@ class FolderContext : INotifyPropertyChanged
         }
     } = "";
 
+    public BackgroundAction BackgroundAction
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(BackgroundAction));
+            }
+        }
+    }
+
     public bool IsEditing { get; set; }
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));

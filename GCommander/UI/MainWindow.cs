@@ -19,14 +19,17 @@ class MainWindow : ApplicationWindow
 
         DataContext = MainContext.Instance;
         statusText.Binding("label", nameof(MainContext.SelectedPath));
+        statusText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.Status);
         labelDirs.Binding("label", nameof(MainContext.CurrentDirectoryCount));
         labelFiles.Binding("label", nameof(MainContext.CurrentFileCount));
         folderpaned.SetFocus();
-
         banner.SetBinding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => (v as string) != "");
         banner.SetBinding("title", nameof(MainContext.ErrorText));
         banner.OnButtonClicked += () => banner.IsRevealed = false;
         viewer.SetBinding("visible", nameof(MainContext.ViewerVisible));
+        backgroundActionText.SetBinding("label", nameof(MainContext.BackgroundAction), BindingFlags.Default, GetBackgroundAction);
+        backgroundActionText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.BackgroundAction);
+        actionBar.SetBindingToCss("info", nameof(MainContext.StatusChoice), s => (StatusChoice?)s == StatusChoice.BackgroundAction);
 
         //AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
@@ -39,6 +42,16 @@ class MainWindow : ApplicationWindow
             Application.Settings.SetInt("width", Width);
             Application.Settings.SetInt("height", Height);
         });
+    }
+
+    string GetBackgroundAction(object? value)
+    {
+        if (value is BackgroundAction ba)
+        {
+            if (ba == BackgroundAction.ExifDatas)
+                return "Exif-Daten werden geholt...";
+        }
+        return "";
     }
 
     [Widget(Template = "folderpaned")]
@@ -56,6 +69,12 @@ class MainWindow : ApplicationWindow
     [Widget]
     readonly Label labelFiles = null!;
 
+    [Widget]
+    readonly Label backgroundActionText = null!;
+
+    [Widget]
+    readonly Widget actionBar = null!;
+    
     [Widget]
     readonly AdwBanner banner = null!;
 

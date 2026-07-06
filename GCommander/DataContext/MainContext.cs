@@ -92,6 +92,59 @@ class MainContext : INotifyPropertyChanged
         }
     } = "";
 
+    public string? Restriction
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(Restriction));
+                OnChanged(nameof(StatusChoice));
+            }
+        }
+    }
+
+    public int SelectedFiles
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(SelectedFiles));
+                OnChanged(nameof(StatusChoice));
+            }
+        }
+    }
+
+    public StatusChoice StatusChoice
+    {
+        get => Restriction?.Trim()?.Length > 0
+                ? StatusChoice.Restriction
+                : BackgroundAction != BackgroundAction.None
+                ? StatusChoice.BackgroundAction
+                : SelectedFiles > 0
+                ? StatusChoice.SelectedItems
+                : StatusChoice.Status;
+    }
+
+    public BackgroundAction BackgroundAction
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(BackgroundAction));
+                OnChanged(nameof(StatusChoice));
+            }
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public void ChangeFolderContext(FolderContext? folderContext)
@@ -106,7 +159,7 @@ class MainContext : INotifyPropertyChanged
             CurrentFileCount = folderContext.CurrentFileCount;
             SelectedPath = folderContext.SelectedPath;
             // ExifData = folderContext.ExifData;
-            // BackgroundAction = folderContext.BackgroundAction;
+            BackgroundAction = folderContext.BackgroundAction;
             // SelectedFiles = folderContext.SelectedFiles;
         }
     }
@@ -131,9 +184,9 @@ class MainContext : INotifyPropertyChanged
                 // case nameof(SelectedFiles):
                 //     SelectedFiles = folderContext.SelectedFiles;
                 //     break;
-                // case nameof(BackgroundAction):
-                //     BackgroundAction = folderContext.BackgroundAction;
-                //     break;
+                case nameof(BackgroundAction):
+                    BackgroundAction = folderContext.BackgroundAction;
+                    break;
             }
     }
 

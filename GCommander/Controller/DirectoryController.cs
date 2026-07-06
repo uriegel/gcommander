@@ -169,8 +169,7 @@ class DirectoryController : Controller
 //        var token = cancellation.Token;
         Task.Run(() =>
         {
-            // TODO
-            // folderView.Context.BackgroundAction = BackgroundAction.ExifDatas;
+            context.BackgroundAction = BackgroundAction.ExifDatas;
             try
             {
                 foreach (var item in items
@@ -183,8 +182,8 @@ class DirectoryController : Controller
             }
             finally
             {
+                context.BackgroundAction = BackgroundAction.None;
                 // TODO
-                //folderView.Context.BackgroundAction = BackgroundAction.None;
                 //folderView.InvalidateFocus();
             }
         });
