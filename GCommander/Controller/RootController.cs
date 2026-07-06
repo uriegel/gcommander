@@ -5,11 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Exif infos: UnsetCssBinding, test with 2023 1 first 3 are mp4
-// TODO Exif infos: set binding only for exifs (unset always, is ok)
-// TODO Exif infos: cancel action
-// TODO Exif infos: show action in actionbar
-// TODO Exif infos: Exiting program (has to wait till action is stopped)
+// TODO Exif infos: show action in actionbar (backgroundaction)
+// TODO Exif infos: cancel action, test with 2023 1 first 3 are mp4
+// TODO Exif infos: Exiting program (has to wait till action is stopped), test with 2023 1 first 3 are mp4
+// TODO Exif infos: set binding only for exifs (unset always, is ok), test with 2023 1 first 3 are mp4
 // TODO DirectoryWatcher
 // TODO Restriction
 

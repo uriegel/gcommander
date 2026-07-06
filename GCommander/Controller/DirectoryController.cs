@@ -85,7 +85,8 @@ class DirectoryController : Controller
             .Unbind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
-                label.UnsetBinding("label");                
+                label.UnsetBinding("label");
+                label.UnsetBindingToCss("exif");
                 label.DataContext = null;
             });
 
