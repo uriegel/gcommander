@@ -5,7 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Exif infos: Exiting program (has to wait till action is stopped), test with 2023 1 first 3 are mp4
+// TODO Exif infos: Exiting program (has to wait till action is stopped), test with 2023 1 first 3 are mp4:
+    // All async void Background tasks in one Dictionary
+    // When task has finished, it removes itself from the dictionary
+    // OnCloseAsync waits on all Tasks, tasks have to be cancelled
+
 // TODO Exif infos: set binding only for exifs (unset always, is ok), test with 2023 1 first 3 are mp4
 // TODO DirectoryWatcher
 // TODO Restriction
