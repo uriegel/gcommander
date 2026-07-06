@@ -167,8 +167,9 @@ class DirectoryController : Controller
 
     void StartExifResolving(DirectoryItem[] items)
     {
-        var token = cancellation.Token;
-        Task.Run(() =>
+        var taskId = BackgroundTasks.GetId();
+        var token = BackgroundTasks.GetCancellationToken(cancellation.Token);
+        BackgroundTasks.Add(taskId, Task.Run(() =>
         {
             context.BackgroundAction = BackgroundAction.ExifDatas;
             try
@@ -182,11 +183,10 @@ class DirectoryController : Controller
             }
             finally
             {
+                BackgroundTasks.Remove(taskId);
                 context.BackgroundAction = BackgroundAction.None;
-                // TODO
-                //folderView.InvalidateFocus();
             }
-        });
+        }));
     }
 
     static bool FilterHidden(DirectoryItem? item)

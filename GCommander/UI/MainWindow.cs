@@ -36,6 +36,12 @@ class MainWindow : ApplicationWindow
 
         viewerPaned.Position = Height - 300;
 
+        OnClose(async _ =>
+        {
+            await BackgroundTasks.CancelAllAsync();
+            return false;
+        });
+
         OnFinalize(() =>
         {
             Application.Settings.SetInt("width", Width);
