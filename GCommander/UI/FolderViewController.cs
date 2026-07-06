@@ -15,10 +15,10 @@ class FolderViewController
         };
         view.ColumnView.AddController(controller);
 
-        var kec = KeyEventController.New();
-        kec.SetPropagationPhase(PropagationPhase.Capture);
-        kec.OnKeyPressed += OnKey;
-        view.ColumnView.AddController(kec);
+        // var kec = KeyEventController.New();
+        // kec.SetPropagationPhase(PropagationPhase.Capture);
+        // kec.OnKeyPressed += OnKey;
+        // view.ColumnView.AddController(kec);
     }
     
     bool OnKey(char key, KeyModifiers mod)

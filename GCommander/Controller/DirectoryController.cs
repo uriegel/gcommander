@@ -48,7 +48,7 @@ class DirectoryController : Controller
     }
 
     public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), MultiSelection.New, context)
+        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), NoSelection.New, context)
     {
         this.view = view;
         this.folderView = folderView;
@@ -274,7 +274,7 @@ class DirectoryController : Controller
     void WatchRenamed(object _, RenamedEventArgs e)
     {
         // TODO In ListItem set DataContext to Box
-        // TODO Take PropertyNotify event => change iconname and name
+        // TODO Take PropertyNotify event => change iconname and name, change hidden
         // TODO Unbind (Dispose)
         Console.WriteLine($"Datei umbenannt: {e.OldName} => {e.Name}");
     }

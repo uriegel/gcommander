@@ -6,6 +6,19 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // TODO DirectoryWatcher
+// TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
+
+// TODO Idea:
+//    1. Custom selection model ("No selection")
+//      Selection is attached to DirectoryItem as bool flag and bound to RowItem
+//    2. KeyController with "press" (timespan when last press) 
+//      I think not!!!!!!!!!!!!!
+
+// TODO Selection with Binding
+// TODO select all, select ...
+// TODO Test with (especially in 2023/1) 10k files
+// TODO GetSelectedItems stopwatch
+
 // TODO Restriction
 
 // TODO Order by extension not working (especially in 2023/1)
