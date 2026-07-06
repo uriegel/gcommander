@@ -1,4 +1,3 @@
-using System.Globalization;
 using Gtk4DotNet;
 
 class MainWindow : ApplicationWindow

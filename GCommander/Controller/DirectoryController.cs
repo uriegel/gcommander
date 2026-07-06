@@ -12,6 +12,8 @@ class DirectoryController : Controller
     public override async Task ChangePathAsync(string path)
     {
         var folderToSelect = path.EndsWith("..") ? context.CurrentPath.SubstringAfterLast('/') : null;
+        cancellation.Cancel();
+        cancellation = new();
         var items = await Get(path);
         folderView.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
@@ -165,16 +167,14 @@ class DirectoryController : Controller
 
     void StartExifResolving(DirectoryItem[] items)
     {
-        // TODO 
-//        var token = cancellation.Token;
+        var token = cancellation.Token;
         Task.Run(() =>
         {
             context.BackgroundAction = BackgroundAction.ExifDatas;
             try
             {
                 foreach (var item in items
-                        .Where(item => 
-//                        .Where(item => !token.IsCancellationRequested &&
+                        .Where(item => !token.IsCancellationRequested &&
                             (item.Name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
                                 || item.Name.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase)
                                 || item.Name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))))
@@ -254,6 +254,8 @@ class DirectoryController : Controller
     const string NAME = "Name";
     const string ERWEITERUNG = "Erweiterung";
 
+    CancellationTokenSource cancellation = new();
+
     #region IDisposable
 
     protected override void Dispose(bool disposing)
@@ -262,6 +264,7 @@ class DirectoryController : Controller
         {
             if (disposing)
             {
+                cancellation.Cancel();
                 MainContext.Instance.PropertyChanged -= OnPropertyChanged;
                 //                volumeMonitor?.Dispose();
             }
