@@ -31,7 +31,7 @@ class DirectoryController : Controller
                 ?? 0
             : 0;
         view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
-        folderView.CheckCurrentChanged(pos, true);
+        folderView.SelectionChanged(pos);
 
         MainContext.Instance.PropertyChanged -= OnPropertyChanged;
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
@@ -48,10 +48,8 @@ class DirectoryController : Controller
     }
 
     public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), NoSelection.New, context)
+        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, folderView, context)
     {
-        this.view = view;
-        this.folderView = folderView;
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
         watcher.Changed += WatchChanged;        
@@ -81,8 +79,6 @@ class DirectoryController : Controller
                     iconname?.SetFromIconName("folder-open");
                 else
                     iconname?.SetIcon(item?.Name ?? "");
-                var row = iconname?.GetParent()?.GetParent();
-                row?.AddCssClass("hiddenItem", item?.IsHidden == true);
             });
 
         var datefactory = SignalListItemFactory
@@ -96,12 +92,18 @@ class DirectoryController : Controller
                 label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
                 label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, e => GetExifDate(e as ExifData, label.Text));
                 label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
+
+                var row = label?.GetParent()?.GetParent();
+                row?.AddCssClass("hiddenItem", item?.IsHidden == true);
+                row?.SetBindingToCss("selection", nameof(item.IsSelected));
             })
             .Unbind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
                 label.UnsetBinding("label");
                 label.UnsetBindingToCss("exif");
+                var row = label.GetParent()?.GetParent();
+                row?.UnsetBindingToCss("selection");
                 label.DataContext = null;
             });
 
@@ -273,14 +275,21 @@ class DirectoryController : Controller
 
     void WatchRenamed(object _, RenamedEventArgs e)
     {
-        // TODO In ListItem set DataContext to Box
-        // TODO Take PropertyNotify event => change iconname and name, change hidden
-        // TODO Unbind (Dispose)
-        Console.WriteLine($"Datei umbenannt: {e.OldName} => {e.Name}");
+        int focused = view.GetFocusedItemPos(); // TODO only check!!!
+        var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+        bool focusNew = pos == focused;
+        store.Splice(pos, 1, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
+        if (focusNew)
+        {
+            var newPos = model
+                .GetItems<DirectoryItem>()
+                .Select((n, i) => new DirItemPos(Item: n, Pos: i))
+                .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
+            if (newPos.HasValue)
+                view.ScrollTo(newPos.Value, ListScrollFlags.ScrollFocus);    
+        }
     }
         
-    readonly FolderViewController folderView;
-    readonly ColumnView view;
     readonly FileSystemWatcher watcher = new();
     bool reverseOrder;
     bool extensionSearch;

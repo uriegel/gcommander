@@ -5,19 +5,15 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected
-// TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
-
-// TODO Idea:
-//    1. Custom selection model ("No selection")
-//      Selection is attached to DirectoryItem as bool flag and bound to RowItem
-//    2. KeyController with "press" (timespan when last press) 
-//      I think not!!!!!!!!!!!!!
-
 // TODO Selection with Binding
 // TODO select all, select ...
 // TODO Test with (especially in 2023/1) 10k files
 // TODO GetSelectedItems stopwatch
+
+// TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected
+// TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
+
+// TODO Viewer not visible: do not set image
 
 // TODO Restriction
 
@@ -43,7 +39,7 @@ class RootController : Controller
         store.Splice(0, store.ItemsCount(), items);
         folderView.OnItemsChange(false);
         view.ScrollTo(0, ListScrollFlags.ScrollFocus);
-        folderView.CheckCurrentChanged(0, true);
+        folderView.SelectionChanged(0);
         Application.Settings.SetString($"path-{Id}", "");
     }
 
@@ -85,7 +81,7 @@ class RootController : Controller
                 .Select((n, i) => new ItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == latestName)?.Pos
                     ?? 0;
-            folderView.CheckCurrentChanged(pos);
+            folderView.SelectionChanged(pos);
             view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         }
         finally
@@ -115,10 +111,8 @@ class RootController : Controller
     }
 
     public RootController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(id, null, NoSelection.New, context)
+        : base(id, null, view, folderView, context)
     {
-        this.view = view;
-        this.folderView = folderView;
 
         var namefactory = SignalListItemFactory
             .New()
@@ -297,8 +291,6 @@ class RootController : Controller
         return reverseSortOrder ? -order : order;
     }
 
-    readonly FolderViewController folderView;
-    readonly ColumnView view;
     readonly SemaphoreSlim locker = new(1, 1);
     VolumeMonitor? volumeMonitor;
     string? latestName;

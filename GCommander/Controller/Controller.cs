@@ -21,19 +21,20 @@ abstract class Controller : IDisposable
     public abstract void Refresh();
 
     public virtual void OnWidth(int w) { }
-    
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;
 
-
-    protected Controller(string id, CustomFilter? filter, Func<SortListModel, SelectionModel> getModel, FolderContext context)
+    protected Controller(string id, CustomFilter? filter, ColumnView view, FolderViewController folderView, FolderContext context)
     {
         Id = id;
+        this.view = view;
+        this.folderView = folderView;
         this.filter = filter;
         this.context = context;
         store = ListStore.New();
         sortModel = SortListModel.New(FilterListModel.New(store, filter), null);
-        model = getModel(sortModel);
+        model = SingleSelection.New(sortModel);
+        model.OnSelectionChanged += OnSelectionChange;
     }
 
     protected static int SortSize(long? s1, long? s2)
@@ -49,10 +50,15 @@ abstract class Controller : IDisposable
 
     protected void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
 
-    protected SelectionModel model;
+    void OnSelectionChange(int _, int __) => folderView.SelectionChanged(model.Selected);
+        
+ 
+    protected SingleSelection model;
     protected SortListModel sortModel;
     protected ListStore store;
     protected CustomFilter? filter;
+    readonly protected ColumnView view;
+    readonly protected FolderViewController folderView;
 
     #region IDisposable
 
@@ -63,6 +69,7 @@ abstract class Controller : IDisposable
             if (disposing)
             {
                 // Verwalteten Zustand (verwaltete Objekte) bereinigen
+                model.OnSelectionChanged -= OnSelectionChange;
                 model.Dispose();
             }
 

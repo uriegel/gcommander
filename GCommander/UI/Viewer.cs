@@ -13,7 +13,7 @@ class Viewer : Stack
                 handler => MainContext.Instance.PropertyChanged -= handler)
             .Where(e => e.EventArgs.PropertyName == nameof(MainContext.SelectedPath))
             .Select(n => MainContext.Instance.SelectedPath)
-            .Throttle(TimeSpan.FromMilliseconds(40));
+            .Throttle(TimeSpan.FromMilliseconds(150));
 
         imageObserver = observer.
             Where(IsImage)
