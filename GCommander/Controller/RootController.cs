@@ -5,9 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected
+// TODO Gtk4: store.GetItems _> store.GetItemsCount()
+
 // TODO select all, select ...
 // TODO DirectoryWatcher: change
+// TODO DirectoryWatcher: rename when exists: change
 // TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
 
 // TODO Viewer not visible: do not set image

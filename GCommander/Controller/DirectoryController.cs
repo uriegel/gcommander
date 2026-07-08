@@ -277,7 +277,13 @@ class DirectoryController : Controller
             : altValue;
 
     void WatchCreated(object _, FileSystemEventArgs e)
-        => store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(e.FullPath))]);
+    {
+        try
+        {
+            store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(e.FullPath))]);
+        }
+        catch { }
+    }
 
     void WatchDeleted(object _, FileSystemEventArgs e)
     {
@@ -294,16 +300,21 @@ class DirectoryController : Controller
 
     void WatchRenamed(object _, RenamedEventArgs e)
     {
+        Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
         int focused = model.Selected;
         var pos = model.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-        int del = 1;
-        if (pos == model.ItemsCount())
-        {
-            pos = 0;
-            del = 0;
-        }
         bool focusNew = pos == focused;
-        store.Splice(pos, del, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
+
+        var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+        if (pos != store.GetItems())
+            store.Remove(posToRemove);
+        if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
+            store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
+        else
+        {
+            // TODO changed
+        }
+
         if (focusNew)
         {
             var newPos = model
