@@ -5,6 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO lastSelected is wrong side
 // TODO select all, select ...
 // TODO Style selected item light / dark, exif
 // TODO GetSelectedItems stopwatch

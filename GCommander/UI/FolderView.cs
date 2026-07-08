@@ -44,6 +44,10 @@ class FolderView : Box
 
     public void StartEditing() => editablePath.StartEditing();
 
+    public void SelectAll() => controller.SelectAll();
+
+    public void SelectNone() => controller.SelectNone();
+
     public void Refresh() => controller.Refresh();
 
     public void SelectionChanged(int pos)

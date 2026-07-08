@@ -20,6 +20,10 @@ abstract class Controller : IDisposable
 
     public abstract void Refresh();
 
+    public virtual void SelectAll() { }
+    
+    public virtual void SelectNone() {}
+
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;

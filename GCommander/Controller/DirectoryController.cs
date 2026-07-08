@@ -48,12 +48,30 @@ class DirectoryController : Controller
         throw new NotImplementedException();
     }
 
+    public override void SelectAll()
+    {
+        foreach (var item in store.GetItems<DirectoryItem>())
+        {
+            if (item.Type != DirectoryItemType.Parent)
+                item.IsSelected = true;
+        }
+    }
+
+    public override void SelectNone()
+    {
+        foreach (var item in store.GetItems<DirectoryItem>())
+        {
+            if (item.Type != DirectoryItemType.Parent)
+                item.IsSelected = false;
+        }
+    }
+
     public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
         : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, folderView, context)
     {
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
-        watcher.Changed += WatchChanged;        
+        watcher.Changed += WatchChanged;
         watcher.Renamed += WatchRenamed;
         watcher.NotifyFilter = NotifyFilters.CreationTime
                     | NotifyFilters.DirectoryName

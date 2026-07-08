@@ -67,6 +67,9 @@ class FolderPaned : Paned
         folderViewRight.OnWidth();
     }
 
+    public void SelectAll() => lastActiveView?.SelectAll();
+    public void SelectNone() => lastActiveView?.SelectNone();
+
     async void OnItemsSet(bool start) => onItemsSet = start;
 
     bool OnKey(char chr, KeyModifiers key)

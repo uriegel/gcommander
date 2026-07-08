@@ -30,7 +30,8 @@ class MainWindow : ApplicationWindow
         backgroundActionText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.BackgroundAction);
         actionBar.SetBindingToCss("info", nameof(MainContext.StatusChoice), s => (StatusChoice?)s == StatusChoice.BackgroundAction);
 
-        //AddActions(new SimpleAction("refresh", columnviewLeft.Refresh, "<Ctrl>R"));
+        AddActions(new SimpleAction("selectall", folderpaned.SelectAll, "KP_Add"));
+        AddActions(new SimpleAction("selectnone", folderpaned.SelectNone, "KP_Subtract"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
 
