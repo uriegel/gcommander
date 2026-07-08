@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Gtk4DotNet;
 
 record DirectoryItem(
     string Name,
@@ -19,6 +18,7 @@ record DirectoryItem(
             OnChanged(nameof(ExifData));
         }
     }
+
     public bool IsSelected
     {
         get;
@@ -27,7 +27,7 @@ record DirectoryItem(
             field = value;
             OnChanged(nameof(IsSelected));
         }
-    } = true;
+    } 
 
     public static DirectoryItem CreateDirItem(DirectoryInfo info)
         => new(info.Name, DirectoryItemType.Directory, (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'))
@@ -37,10 +37,10 @@ record DirectoryItem(
 
     public static DirectoryItem CreateFileItem(FileInfo info)
         => new(info.Name, DirectoryItemType.File, (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'))
-            {
-                Size = info.Length,
-                DateTime = info.LastWriteTime
-            };
+        {
+            Size = info.Length,
+            DateTime = info.LastWriteTime,
+        };
     public event PropertyChangedEventHandler? PropertyChanged;
 
     //void OnChanged(string name) => Gtk.BeginInvoke(200, () => PropertyChanged?.Invoke(this, new(name)));

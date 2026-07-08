@@ -5,9 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Selection with Binding
 // TODO select all, select ...
-// TODO Test with (especially in 2023/1) 10k files
+// TODO Style selected item light / dark, exif
 // TODO GetSelectedItems stopwatch
 
 // TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected

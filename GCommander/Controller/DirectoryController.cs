@@ -94,6 +94,7 @@ class DirectoryController : Controller
                 label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
 
                 var row = label?.GetParent()?.GetParent();
+                row?.DataContext = item;
                 row?.AddCssClass("hiddenItem", item?.IsHidden == true);
                 row?.SetBindingToCss("selection", nameof(item.IsSelected));
             })
@@ -104,6 +105,7 @@ class DirectoryController : Controller
                 label.UnsetBindingToCss("exif");
                 var row = label.GetParent()?.GetParent();
                 row?.UnsetBindingToCss("selection");
+                row?.DataContext = null;
                 label.DataContext = null;
             });
 
