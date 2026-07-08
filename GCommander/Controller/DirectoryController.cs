@@ -100,30 +100,33 @@ class DirectoryController : Controller
 
         var datefactory = SignalListItemFactory
             .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+            .Setup(listitem =>
+            {
+                using var builder = Builder.FromDotNetResource("date-exif");
+                var item = new DateExif(builder);
+                listitem.SetManagedChild(item);
+            })
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var dateexif = listitem.GetManagedChild<DateExif>();
                 var item = listitem.GetItem<DirectoryItem>();
-                label.DataContext = item;
-                label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
-                label.SetBinding("label", nameof(item.DateTime), BindingFlags.Default, v => (DateTime?)v != null ? ((DateTime)v).ToString("g") : "");
-//                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, e => GetExifDate(e as ExifData, label.Text));
-                label.SetBindingToCss("exif", nameof(item.DateTime), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
-                var row = label?.GetParent()?.GetParent();
+                dateexif?.DataContext = item;
+                dateexif?.SetDateTimeBinding();
+                dateexif?.SetExifBinding();
+                var row = dateexif?.GetParent()?.GetParent();
                 row?.DataContext = item;
                 row?.AddCssClass("hiddenItem", item?.IsHidden == true);
                 row?.SetBindingToCss("selection", nameof(item.IsSelected));
             })
             .Unbind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
-                label.UnsetBinding("label");
-                label.UnsetBindingToCss("exif");
-                var row = label.GetParent()?.GetParent();
+                var dateexif = listitem.GetManagedChild<DateExif>();
+                dateexif?.UnsetDateTimeBinding();
+                dateexif?.UnsetExifBinding();
+                var row = dateexif?.GetParent()?.GetParent();
                 row?.UnsetBindingToCss("selection");
                 row?.DataContext = null;
-                label.DataContext = null;
+                dateexif?.DataContext = null;
             });
 
         var sizefactory = SignalListItemFactory
@@ -180,14 +183,19 @@ class DirectoryController : Controller
         sortModel.SetSorter(viewsorter);
     }
 
+    public static string GetExifDate(ExifData? exif, string altValue)
+        => exif != null && exif.DateTime != DateTime.MinValue
+            ? exif.DateTime.ToString("g")
+            : altValue;
+
     async Task<DirectoryItem[]> Get(string path)
     {
         var dirInfo = new DirectoryInfo(path);
-            var dirs = dirInfo
-                            .GetDirectories()
-                            .Select(DirectoryItem.CreateDirItem)
-                            .OrderBy(n => n.Name)
-                            .ToArray();
+        var dirs = dirInfo
+                        .GetDirectories()
+                        .Select(DirectoryItem.CreateDirItem)
+                        .OrderBy(n => n.Name)
+                        .ToArray();
         var files = dirInfo
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
@@ -278,11 +286,6 @@ class DirectoryController : Controller
         }
     }
 
-    static string GetExifDate(ExifData? exif, string altValue)
-        => exif != null && exif.DateTime != DateTime.MinValue
-            ? exif.DateTime.ToString("g")
-            : altValue;
-
     void WatchCreated(object _, FileSystemEventArgs e)
     {
         try
@@ -300,9 +303,10 @@ class DirectoryController : Controller
         
     void WatchChanged(object _, FileSystemEventArgs e)
     {
-        Console.WriteLine($"Datei geändert: {e.Name}");
-        // TODO Size and DateTime
-        //   => Process(() => new(JobType.Changed, Directory.FolderId, Directory.RequestID, fsw?.Path!, Directory.Change(e.Name, idx => CreateItem(e.FullPath, idx))));
+        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
+        var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
+        item?.DateTime = fileInfo.LastWriteTime;
+        item?.Size = fileInfo.Length;
     }
 
     void WatchRenamed(object _, RenamedEventArgs e)

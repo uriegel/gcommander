@@ -5,10 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryController item bind to Exif, set visible: 
-
-// TODO DirectoryWatcher rename create delete directory
-
 // TODO select all, select ...
 
 // TODO Viewer not visible: do not set image
