@@ -64,6 +64,15 @@ class DirectoryController : Controller
         }
     }
 
+    public override void ToggleSelection()
+    {
+        var pos = model.Selected;
+        var item = model.GetItem<DirectoryItem>(pos);
+        item?.IsSelected = item.IsSelected !=true;
+        SetSelection(Math.Min(pos + 1, model.GetItems() -1));
+        
+    }
+
     public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
         : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, folderView, context)
     {

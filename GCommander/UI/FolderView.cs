@@ -48,6 +48,8 @@ class FolderView : Box
 
     public void SelectNone() => controller.SelectNone();
 
+    public void ToggleSelection() => controller.ToggleSelection();
+
     public void Refresh() => controller.Refresh();
 
     public void SelectionChanged(int pos)

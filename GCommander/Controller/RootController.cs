@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO select all, select ...
+// TODO select Up, Select down, Select via ctrl + mouse
 
 // TODO Viewer not visible: do not set image
 
