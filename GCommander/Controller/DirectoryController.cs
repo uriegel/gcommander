@@ -30,9 +30,7 @@ class DirectoryController : Controller
                 .FirstOrDefault(n => n.Item.Name == folderToSelect)?.Pos
                 ?? 0
             : 0;
-        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
-        model.Selected = pos;
-        folderView.SelectionChanged(pos);
+        SetSelection(pos);
 
         MainContext.Instance.PropertyChanged -= OnPropertyChanged;
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
@@ -296,10 +294,16 @@ class DirectoryController : Controller
 
     void WatchRenamed(object _, RenamedEventArgs e)
     {
-        int focused = view.GetFocusedItemPos(); // TODO only check!!!
-        var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+        int focused = model.Selected;
+        var pos = model.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+        int del = 1;
+        if (pos == model.ItemsCount())
+        {
+            pos = 0;
+            del = 0;
+        }
         bool focusNew = pos == focused;
-        store.Splice(pos, 1, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
+        store.Splice(pos, del, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
         if (focusNew)
         {
             var newPos = model
@@ -307,7 +311,7 @@ class DirectoryController : Controller
                 .Select((n, i) => new DirItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
             if (newPos.HasValue)
-                view.ScrollTo(newPos.Value, ListScrollFlags.ScrollFocus);    
+                SetSelection(newPos.Value);
         }
     }
         

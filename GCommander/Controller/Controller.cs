@@ -28,6 +28,13 @@ abstract class Controller : IDisposable
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;
 
+    public void SetSelection(int pos)
+    {
+        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        model.Selected = pos;
+        folderView.SelectionChanged(pos);
+    }
+
     protected Controller(string id, CustomFilter? filter, ColumnView view, FolderViewController folderView, FolderContext context)
     {
         Id = id;

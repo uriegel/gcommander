@@ -8,7 +8,6 @@ using static CsTools.ProcessCmd;
 // TODO DirectoryWatcher: rename: delete old, create new, select new when old was selected
 // TODO select all, select ...
 // TODO DirectoryWatcher: change
-
 // TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
 
 // TODO Viewer not visible: do not set image
