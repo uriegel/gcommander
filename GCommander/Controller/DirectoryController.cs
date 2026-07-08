@@ -31,6 +31,7 @@ class DirectoryController : Controller
                 ?? 0
             : 0;
         view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        model.Selected = pos;
         folderView.SelectionChanged(pos);
 
         MainContext.Instance.PropertyChanged -= OnPropertyChanged;
