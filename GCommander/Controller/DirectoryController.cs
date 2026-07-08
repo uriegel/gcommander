@@ -107,9 +107,9 @@ class DirectoryController : Controller
                 var item = listitem.GetItem<DirectoryItem>();
                 label.DataContext = item;
                 label.Text = item != null && item.DateTime.HasValue ? item.DateTime.Value.ToString("g") : "";
-                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, e => GetExifDate(e as ExifData, label.Text));
-                label.SetBindingToCss("exif", nameof(item.ExifData), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
-
+                label.SetBinding("label", nameof(item.DateTime), BindingFlags.Default, v => (DateTime?)v != null ? ((DateTime)v).ToString("g") : "");
+//                label.SetBinding("label", nameof(item.ExifData), BindingFlags.Default, e => GetExifDate(e as ExifData, label.Text));
+                label.SetBindingToCss("exif", nameof(item.DateTime), v => (v as ExifData) != null && (v as ExifData)?.DateTime != DateTime.MinValue);
                 var row = label?.GetParent()?.GetParent();
                 row?.DataContext = item;
                 row?.AddCssClass("hiddenItem", item?.IsHidden == true);
@@ -133,7 +133,14 @@ class DirectoryController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<DirectoryItem>();
-                label.Text = item?.Size.FormatSize() ?? "";
+                label.DataContext = item;
+                label.SetBinding("label", nameof(item.Size), BindingFlags.Default, s => ((long?)s).FormatSize());
+            })
+            .Unbind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                label.UnsetBinding("label");
+                label.DataContext = null;
             });
 
         view.SetModel(null);
@@ -308,11 +315,15 @@ class DirectoryController : Controller
         var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
         if (pos != store.GetItems())
             store.Remove(posToRemove);
+
+        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
         if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
-            store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(context.CurrentPath.AppendPath(e.Name)))]);
+            store.Splice(0, 0, [ DirectoryItem.CreateFileItem(fileInfo) ]);
         else
         {
-            // TODO changed
+            var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
+            item?.DateTime = fileInfo.LastWriteTime;
+            item?.Size = fileInfo.Length;
         }
 
         if (focusNew)
@@ -347,11 +358,9 @@ class DirectoryController : Controller
                 cancellation.Cancel();
                 watcher.Dispose();
                 MainContext.Instance.PropertyChanged -= OnPropertyChanged;
-                //                volumeMonitor?.Dispose();
             }
 
             // Free unmanaged resources owned by DerivedClass
-
             disposed = true;
         }
 

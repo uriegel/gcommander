@@ -5,12 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Gtk4: store.GetItems _> store.GetItemsCount()
+// TODO DirectoryController item bind to Exif, set visible: 
+
+// TODO DirectoryWatcher rename create delete directory
 
 // TODO select all, select ...
-// TODO DirectoryWatcher: change
-// TODO DirectoryWatcher: rename when exists: change
-// TODO Each Column is bound to INotifyPropertyChanged of Item, but not Gtk type, manuell. 
 
 // TODO Viewer not visible: do not set image
 

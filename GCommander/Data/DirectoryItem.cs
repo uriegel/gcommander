@@ -4,11 +4,28 @@ record DirectoryItem(
     string Name,
     DirectoryItemType Type,
     bool IsHidden,
-    string? IconPath = null,
-    DateTime? DateTime = null,
-    long? Size = null
+    string? IconPath = null
 ) : INotifyPropertyChanged
 {
+    public DateTime? DateTime
+    {
+        get;
+        set
+        {
+            field = value;
+            OnChanged(nameof(DateTime));
+        }
+    }
+    public long? Size
+    {
+        get;
+        set
+        {
+            field = value;
+            OnChanged(nameof(Size));
+        }
+    }
+
     public ExifData? ExifData
     {
         get;
@@ -43,7 +60,6 @@ record DirectoryItem(
         };
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    //void OnChanged(string name) => Gtk.BeginInvoke(200, () => PropertyChanged?.Invoke(this, new(name)));
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
 }
 
