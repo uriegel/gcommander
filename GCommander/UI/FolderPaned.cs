@@ -21,11 +21,7 @@ class FolderPaned : Paned
             activeView = folderViewLeft;
             lastActiveView = folderViewLeft;
         };
-        leftEvents.OnLeave += () =>
-        {
-            lastActiveView = folderViewRight;
-            activeView = null;
-        };
+        leftEvents.OnLeave += () => activeView = null;
         var rightEvents = FocusEventController.New();
         rightEvents.OnEnter += () =>
         {
@@ -35,11 +31,8 @@ class FolderPaned : Paned
             activeView = folderViewRight;
             lastActiveView = folderViewRight;
         };
-        rightEvents.OnLeave += () =>
-        {
-            lastActiveView = folderViewLeft;
-            activeView = null;
-        };
+        rightEvents.OnLeave += () => activeView = null;
+        
         folderViewLeft.AddController(leftEvents);
         folderViewRight.AddController(rightEvents);
 

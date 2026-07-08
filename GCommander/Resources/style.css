@@ -17,8 +17,17 @@ listview row:focus {
 }
 
 listview row.selection {
-    background-color: color-mix(in srgb, @theme_selected_bg_color 60%, transparent);
+    background-color: color-mix(in srgb, @theme_selected_bg_color 20%, transparent);
+    border-color: color-mix(in srgb, @theme_selected_bg_color 20%, transparent);
 } 
+
+listview row.selection:selected {
+    border-color: color-mix(in srgb, @theme_selected_bg_color 45%, transparent);
+}
+
+listview row.selection:focus {
+    border-color: color-mix(in srgb, @theme_selected_bg_color 80%, transparent);
+}
 
 listview row cell {
     padding: 0px;
@@ -57,3 +66,4 @@ actionbar.info>revealer>box{
     font-size: smaller;
     font-family: "Noto Sans";
 }
+
