@@ -15,7 +15,6 @@ abstract class Controller : IDisposable
     public abstract string GetItemPath(int pos);
     public abstract Task<string> GetChangePath(int pos);
     public abstract Task ChangePathAsync(string path);
-    public abstract void Refresh();
     public virtual void SelectAll() { }
     public virtual void SelectNone() { }
     public virtual void SelectAllAbove() { }

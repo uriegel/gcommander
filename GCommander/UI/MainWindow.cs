@@ -30,13 +30,17 @@ class MainWindow : ApplicationWindow
         backgroundActionText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.BackgroundAction);
         actionBar.SetBindingToCss("info", nameof(MainContext.StatusChoice), s => (StatusChoice?)s == StatusChoice.BackgroundAction);
 
+        AddActions(new SimpleAction("refresh", folderpaned.Refresh, "<Ctrl>R"));
         AddActions(new SimpleAction("selectall", folderpaned.SelectAll, "KP_Add"));
         AddActions(new SimpleAction("selectnone", folderpaned.SelectNone, "KP_Subtract"));
         AddActions(new SimpleAction("sel-all-above", folderpaned.SelectAllAbove, "<Shift>Home"));
         AddActions(new SimpleAction("sel-all-beneath", folderpaned.SelectAllBeneath, "<Shift>End"));
         AddActions(new SimpleAction("toggleselection", folderpaned.ToggleSelection, "Insert"));
+        AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
+        AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
+
 
         viewerPaned.Position = Height - 300;
 

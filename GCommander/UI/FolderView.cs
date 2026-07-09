@@ -98,8 +98,7 @@ class FolderView : Box
     public void SelectAllBeneath() => controller.SelectAllBeneath();
     public void ToggleSelection() => controller.ToggleSelection();
     public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
-
-    public void Refresh() => controller.Refresh();
+    public void Refresh() => ChangePath(Context.CurrentPath);
 
     public void SelectionChanged(int pos)
     {
@@ -128,13 +127,7 @@ class FolderView : Box
 
     public void OnItemsGet(bool start) => ItemsSet?.Invoke(start);
 
-    async void Activate(int position)
-    {
-        var changePath = await controller.GetChangePath(position);
-        ChangePath(changePath);
-    }
-
-    async void ChangePath(string path)
+    public async void ChangePath(string path)
     {
         try
         {
@@ -152,6 +145,12 @@ class FolderView : Box
             Console.Error.WriteLine($"Der Pfad konnte nicht geändert werden: {e}");
             MainContext.Instance.ErrorText = "Verzeichnis konnte nicht gewechselt werden";
         }
+    }
+
+    async void Activate(int position)
+    {
+        var changePath = await controller.GetChangePath(position);
+        ChangePath(changePath);
     }
 
     void StopRestriction()

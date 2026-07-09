@@ -41,11 +41,6 @@ class DirectoryController : Controller
     public override string GetItemPath(int pos)
         => context.CurrentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
 
-    public override void Refresh()
-    {
-        throw new NotImplementedException();
-    }
-
     public override void SelectAll()
     {
         foreach (var item in store.GetItems<DirectoryItem>())

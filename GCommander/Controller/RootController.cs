@@ -5,7 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Adapt path
+// TODO Gtk4DotNet: NavigationView
+
+// TODO History
 // TODO Favorites
 
 // TODO Order by extension not working (especially in 2023/1)
@@ -59,26 +61,6 @@ class RootController : Controller
             return await Mount(item.Name);
         else
             return item.MountPoint;
-    }
-
-    public override async void Refresh()
-    {
-        await locker.WaitAsync();
-        try
-        {
-            var items = await Get();
-            store.Splice(0, model.ItemsCount(), items);
-            int pos = model.GetItems<RootItem>()
-                .Select((n, i) => new ItemPos(Item: n, Pos: i))
-                .FirstOrDefault(n => n.Item.Name == latestName)?.Pos
-                    ?? 0;
-            view.SelectionChanged(pos);
-            view.ColumnView.ScrollTo(pos, ListScrollFlags.ScrollFocus);
-        }
-        finally
-        {
-            locker.Release();
-        }
     }
 
     public override void OnWidth(int w)
@@ -241,6 +223,26 @@ class RootController : Controller
                 (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
+
+    async void Refresh()
+    {
+        await locker.WaitAsync();
+        try
+        {
+            var items = await Get();
+            store.Splice(0, model.ItemsCount(), items);
+            int pos = model.GetItems<RootItem>()
+                .Select((n, i) => new ItemPos(Item: n, Pos: i))
+                .FirstOrDefault(n => n.Item.Name == latestName)?.Pos
+                    ?? 0;
+            view.SelectionChanged(pos);
+            view.ColumnView.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        }
+        finally
+        {
+            locker.Release();
+        }
+    }
 
     static async Task<string> Mount(string device)
     {

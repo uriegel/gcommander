@@ -60,11 +60,13 @@ class FolderPaned : Paned
         folderViewRight.OnWidth();
     }
 
+    public void Refresh() => lastActiveView?.Refresh();
     public void SelectAll() => lastActiveView?.SelectAll();
     public void SelectNone() => lastActiveView?.SelectNone();
     public void SelectAllAbove() => lastActiveView?.SelectAllAbove();
     public void SelectAllBeneath() => lastActiveView?.SelectAllBeneath();
     public void ToggleSelection() => lastActiveView?.ToggleSelection();
+    public void AdaptPath() => GetInactiveView().ChangePath(lastActiveView.Context.CurrentPath);
 
     async void OnItemsSet(bool start) => onItemsSet = start;
 
