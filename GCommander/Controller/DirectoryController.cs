@@ -4,10 +4,10 @@ using Gtk4DotNet;
 
 class DirectoryController : Controller
 {
-    public static DirectoryController Get(string id, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static DirectoryController Get(string id, Controller? current, FolderView view, FolderContext context)
         => current is DirectoryController directoryController
             ? directoryController
-            : new DirectoryController(id, current, view, folderView, context);
+            : new DirectoryController(id, current, view, context);
 
     public override async Task ChangePathAsync(string path)
     {
@@ -19,10 +19,10 @@ class DirectoryController : Controller
         watcher.Path = context.CurrentPath;
         if (enableEvents)
             watcher.EnableRaisingEvents = true;
-        folderView.OnItemsChange(true);
+        view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
         StartExifResolving(items);
-        folderView.OnItemsChange(false);
+        view.OnItemsChange(false);
         int pos = folderToSelect != null
             ? model
                 .GetItems<DirectoryItem>()
@@ -97,8 +97,8 @@ class DirectoryController : Controller
             item.IsSelected = true;
     }
 
-    public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, folderView, context)
+    public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
+        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, context)
     {
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
@@ -179,9 +179,9 @@ class DirectoryController : Controller
                 label.DataContext = null;
             });
 
-        view.SetModel(null);
-        view.ClearColumns();
-        view.SetModel(model);
+        view.ColumnView.SetModel(null);
+        view.ColumnView.ClearColumns();
+        view.ColumnView.SetModel(model);
 
         previous?.Dispose();
 
@@ -191,8 +191,8 @@ class DirectoryController : Controller
             .New(NAME, namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
-        view.AppendColumn(firstCol);
-        view.SortByColumn(firstCol);
+        view.ColumnView.AppendColumn(firstCol);
+        view.ColumnView.SortByColumn(firstCol);
 
         using var dateSorter = CustomSorter.New<DirectoryItem>((item1, item2) => (item1?.DateTime ?? DateTime.MinValue).CompareTo(item2?.DateTime ?? DateTime.MinValue));
         using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(dateSorter);
@@ -200,7 +200,7 @@ class DirectoryController : Controller
             .New("Datum", datefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
-        view.AppendColumn(dateCol);
+        view.ColumnView.AppendColumn(dateCol);
 
         using var sizeSorter = CustomSorter.New<DirectoryItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
         using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(sizeSorter);
@@ -208,9 +208,9 @@ class DirectoryController : Controller
             .New("Größe", sizefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter));
-        view.AppendColumn(sizeCol);
+        view.ColumnView.AppendColumn(sizeCol);
 
-        using var viewsorter = view.GetSorter();
+        using var viewsorter = view.ColumnView.GetSorter();
         viewsorter.OnChanged -= SortOrderChanged;
         viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
@@ -315,7 +315,7 @@ class DirectoryController : Controller
         if (e.PropertyName == nameof(MainContext.ShowHiddenItems))
         {
             FilterChanged(MainContext.Instance.ShowHiddenItems ? FilterChange.LessStrict : FilterChange.MoreStrict);
-            folderView.CountsChanged(GetDirectoryCount(), GetFileCount());
+            view.CountsChanged(GetDirectoryCount(), GetFileCount());
         }
     }
 
@@ -324,6 +324,7 @@ class DirectoryController : Controller
         try
         {
             store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(e.FullPath))]);
+            view.CountsChanged(GetDirectoryCount(), GetFileCount());
         }
         catch { }
     }
@@ -332,6 +333,7 @@ class DirectoryController : Controller
     {
         var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.Name).Count();
         store.Splice<DirectoryItem>(pos, 1, []);
+        view.CountsChanged(GetDirectoryCount(), GetFileCount());
     }
         
     void WatchChanged(object _, FileSystemEventArgs e)
@@ -353,15 +355,16 @@ class DirectoryController : Controller
         if (pos != store.GetItemsCount())
             store.Remove(posToRemove);
 
-        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
+        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
         if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
-            store.Splice(0, 0, [ DirectoryItem.CreateFileItem(fileInfo) ]);
+            store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
         else
         {
             var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
             item?.DateTime = fileInfo.LastWriteTime;
             item?.Size = fileInfo.Length;
         }
+        view.CountsChanged(GetDirectoryCount(), GetFileCount());
 
         if (focusNew)
         {

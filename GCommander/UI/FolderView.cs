@@ -7,7 +7,7 @@ class FolderView : Box
 
     public FolderContext Context { get; } = new();
 
-    public FolderViewController FolderViewController { get; }
+    public int CurrentPos { get; private set; } = -1;
 
     public FolderView(Builder builder, string name, nint parent)
         : base(builder, "folderview", widget => ReplacePlaceHolder(name, parent, widget))
@@ -25,10 +25,19 @@ class FolderView : Box
         };
         editablePath.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
 
-        FolderViewController = new(this);
-        controller = Controller.GetFromPath(id, null, null, ColumnView, FolderViewController, Context)!;
+        controller = Controller.GetFromPath(id, null, null, this, Context)!;
 
         ColumnView.OnActivate += Activate;
+
+        var clickGesture = ClickGesture.New();
+        clickGesture.OnPressed += (c, x, y, keys) =>
+        {
+            int pos = ColumnView.GetFocusedItemPos();
+            SelectionChanged(pos);
+            if (keys.HasFlag(KeyModifiers.Control))
+                ToggleSelection(pos);
+        };
+        ColumnView.AddController(clickGesture);
 
         OnFinalize(() =>
         {
@@ -54,9 +63,16 @@ class FolderView : Box
 
     public void SelectionChanged(int pos)
     {
+        CurrentPos = pos;
         Context.SelectedPath = controller.GetItemPath(pos);
         //Context.ExifData = controller.GetExifData(CurrentPos);
     }
+
+    public void CountsChanged(int dirCount, int fileCount)
+    {
+        Context.CurrentDirectoryCount = dirCount;
+        Context.CurrentFileCount = fileCount;
+    } 
 
     public void OnWidth() => controller.OnWidth(Width);
 
@@ -82,7 +98,7 @@ class FolderView : Box
     {
         try
         {
-            controller = Controller.GetFromPath(id, path, controller, ColumnView, FolderViewController, Context);
+            controller = Controller.GetFromPath(id, path, controller, this, Context);
             await controller.ChangePathAsync(path);
         }
         catch (DirectoryNotFoundException dnfe)

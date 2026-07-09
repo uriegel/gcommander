@@ -7,8 +7,6 @@ using static CsTools.ProcessCmd;
 
 // TODO Shortcuts in Deutsch
 
-// TODO Eliminate FolderViewController
-
 // TODO Viewer not visible: do not set image
 
 // TODO Restriction
@@ -27,22 +25,22 @@ class RootController : Controller
 
     public override async Task ChangePathAsync(string? path)
     {
-        folderView.OnItemsGet(true);
+        view.OnItemsGet(true);
         var items = await Get();
         context.CurrentPath = "root";
-        folderView.OnItemsGet(false);
-        folderView.OnItemsChange(true);
+        view.OnItemsGet(false);
+        view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
-        folderView.OnItemsChange(false);
-        view.ScrollTo(0, ListScrollFlags.ScrollFocus);
-        folderView.SelectionChanged(0);
+        view.OnItemsChange(false);
+        view.ColumnView.ScrollTo(0, ListScrollFlags.ScrollFocus);
+        view.SelectionChanged(0);
         Application.Settings.SetString($"path-{Id}", "");
     }
 
-    public static RootController Get(string id, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static RootController Get(string id, Controller? current, FolderView view, FolderContext context)
         => current is RootController rootController
             ? rootController
-            : new RootController(id, current, view, folderView, context);
+            : new RootController(id, current, view, context);
 
     public override string GetItemPath(int pos)
     {
@@ -77,8 +75,8 @@ class RootController : Controller
                 .Select((n, i) => new ItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == latestName)?.Pos
                     ?? 0;
-            folderView.SelectionChanged(pos);
-            view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+            view.SelectionChanged(pos);
+            view.ColumnView.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         }
         finally
         {
@@ -90,7 +88,7 @@ class RootController : Controller
     {
         if (!imploded && w < 320)
         {
-            using var cols = view.GetColumns();
+            using var cols = view.ColumnView.GetColumns();
             var colArray = cols.ToArray();
             colArray[3].Visible = false;
             colArray[4].Visible = false;
@@ -98,7 +96,7 @@ class RootController : Controller
         }
         else if (imploded && w > 320)
         {
-            using var cols = view.GetColumns();
+            using var cols = view.ColumnView.GetColumns();
             var colArray = cols.ToArray();
             colArray[3].Visible = true;
             colArray[4].Visible = true;
@@ -106,8 +104,8 @@ class RootController : Controller
         }
     }
 
-    public RootController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
-        : base(id, null, view, folderView, context)
+    public RootController(string id, Controller? previous, FolderView view, FolderContext context)
+        : base(id, null, view, context)
     {
 
         var namefactory = SignalListItemFactory
@@ -171,9 +169,9 @@ class RootController : Controller
                 label.Text = item?.Size.FormatSize() ?? "";
             });
 
-        view.SetModel(null);
-        view.ClearColumns();
-        view.SetModel(model);
+        view.ColumnView.SetModel(null);
+        view.ColumnView.ClearColumns();
+        view.ColumnView.SetModel(model);
 
         previous?.Dispose();
 
@@ -184,12 +182,12 @@ class RootController : Controller
             //.New("N", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
-        view.AppendColumn(firstCol);
-        view.SortByColumn(firstCol);
+        view.ColumnView.AppendColumn(firstCol);
+        view.ColumnView.SortByColumn(firstCol);
 
         using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
         using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(descriptionSorter);
-        view.AppendColumn(ColumnViewColumn
+        view.ColumnView.AppendColumn(ColumnViewColumn
             .New("Bez.", descriptionfactory)
             //.New("B", descriptionfactory)
             .Expand()
@@ -197,7 +195,7 @@ class RootController : Controller
         );
         using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
         using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(mountPointSorter);
-        view.AppendColumn(ColumnViewColumn
+        view.ColumnView.AppendColumn(ColumnViewColumn
             .New("Mount", mountPointfactory)
             //.New("M", mountPointfactory)
             .Expand()
@@ -205,19 +203,19 @@ class RootController : Controller
         );
         using var useSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
         using var useMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(useSorter);
-        view.AppendColumn(ColumnViewColumn
+        view.ColumnView.AppendColumn(ColumnViewColumn
             .New("%", usefactory)
             .SideEffect(cvc => cvc.SetSorter(useMultiSorter))
         );
         using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
         using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(sizeSorter);
-        view.AppendColumn(ColumnViewColumn
+        view.ColumnView.AppendColumn(ColumnViewColumn
             .New("Größe", sizefactory)
             //.New("G", sizefactory)
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
         );
 
-        using var viewsorter = view.GetSorter();
+        using var viewsorter = view.ColumnView.GetSorter();
         viewsorter.OnChanged -= SortOrderChanged;
         viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);

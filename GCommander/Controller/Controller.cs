@@ -2,12 +2,12 @@ using Gtk4DotNet;
 
 abstract class Controller : IDisposable
 {
-    public static Controller GetFromPath(string id, string? path, Controller? current, ColumnView view, FolderViewController folderView, FolderContext context)
+    public static Controller GetFromPath(string id, string? path, Controller? current, FolderView view, FolderContext context)
     {
         if (path == null || path == "/.." || path.Length == 0 || path == RootController.Name)
-            return RootController.Get(id, current, view, folderView, context);
+            return RootController.Get(id, current, view, context);
         else 
-            return DirectoryController.Get(id, current, view, folderView, context);
+            return DirectoryController.Get(id, current, view, context);
     }
 
     public string Id { get; }
@@ -28,16 +28,15 @@ abstract class Controller : IDisposable
 
     public void SetSelection(int pos)
     {
-        view.ScrollTo(pos, ListScrollFlags.ScrollFocus);
+        view.ColumnView.ScrollTo(pos, ListScrollFlags.ScrollFocus);
         model.Selected = pos;
-        folderView.SelectionChanged(pos);
+        view.SelectionChanged(pos);
     }
 
-    protected Controller(string id, CustomFilter? filter, ColumnView view, FolderViewController folderView, FolderContext context)
+    protected Controller(string id, CustomFilter? filter, FolderView view, FolderContext context)
     {
         Id = id;
         this.view = view;
-        this.folderView = folderView;
         this.filter = filter;
         this.context = context;
         store = ListStore.New();
@@ -59,16 +58,15 @@ abstract class Controller : IDisposable
 
     protected void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
 
-    void OnSelectionChange(int _, int __) => folderView.SelectionChanged(model.Selected);
+    void OnSelectionChange(int _, int __) => view.SelectionChanged(model.Selected);
         
  
     protected SingleSelection model;
     protected SortListModel sortModel;
     protected ListStore store;
     protected CustomFilter? filter;
-    readonly protected ColumnView view;
-    readonly protected FolderViewController folderView;
-
+    readonly protected FolderView view;
+ 
     #region IDisposable
 
     protected virtual void Dispose(bool disposing)
