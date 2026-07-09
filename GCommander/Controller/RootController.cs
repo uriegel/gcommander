@@ -5,9 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO PDF viewer in Gtk4 with Soup
-// TODO Pdf viewer
-
 // TODO Restriction
 
 // TODO Order by extension not working (especially in 2023/1)

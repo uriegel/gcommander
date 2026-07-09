@@ -6,6 +6,6 @@
   <ui filename="GCommander/Resources/UI/icon-name-item.ui" sha256="0bf48e345c4a98cc78339508b83dca6dc6c9877822c3312326a1e19e5b1907a6"/>
   <ui filename="GCommander/Resources/UI/folderpaned.ui" sha256="55698a32b0255f340ad836b0e32f0dbc845630dbf7733176db8d6b5f4940cdff"/>
   <ui filename="GCommander/Resources/UI/folderview.ui" sha256="95c4b747c40ad0f0fdb4e07b03935d932ffebbf1b5cb0bdcc9b6c9e3e6544637"/>
-  <ui filename="GCommander/Resources/UI/viewer.ui" sha256="10b4a9af720841e33e6e42e4f6f55f33dc3abf82808d60c30e46b40a1006913e"/>
+  <ui filename="GCommander/Resources/UI/viewer.ui" sha256="32667c85128d16f0a44c4261af1809b12bc2fdf33970c4fb76a6bf593e94b458"/>
   <ui filename="GCommander/Resources/UI/date-exif.ui" sha256="bd11f6ddb5a70cff3f8076caa81705b3a7ec88897ddf2ee26d2f2232e66e988b"/>
 </cambalache-project>

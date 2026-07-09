@@ -15,17 +15,30 @@ class Viewer : Stack
             {
                 if (IsImage(fileName))
                 {
-                    image.Visible = true;
-                    image.SetFileName(fileName ?? "");
                     video.Visible = false;
                     video.SetFileName("");
+                    webview.Visible = false;
+                    webview.LoadUri("");
+                    image.Visible = true;
+                    image.SetFileName(fileName ?? "");
                 }
                 else if (IsVideo(fileName))
                 {
                     image.Visible = false;
                     image.SetFileName("");
+                    webview.Visible = false;
+                    webview.LoadUri("");
                     video.Visible = true;
                     video.SetFileName(fileName ?? "");
+                }
+                else if (IsPdf(fileName))
+                {
+                    image.Visible = false;
+                    image.SetFileName("");
+                    video.Visible = false;
+                    video.SetFileName("");
+                    webview.Visible = true;
+                    webview.LoadUri($"file://{fileName ?? ""}");
                 }
                 else
                 {
@@ -33,6 +46,8 @@ class Viewer : Stack
                     image.SetFileName("");
                     video.Visible = false;
                     video.SetFileName("");
+                    webview.Visible = false;
+                    webview.LoadUri("");
                 }
             }
             else
@@ -41,6 +56,8 @@ class Viewer : Stack
                 image.SetFileName("");
                 video.Visible = false; 
                 video.SetFileName("");                   
+                webview.Visible = false;
+                webview.LoadUri("");
             }
         };
 
@@ -60,6 +77,8 @@ class Viewer : Stack
                 video.SetFileName("");                   
                 if (!Visible)
                     return;
+                webview.Visible = false;
+                webview.LoadUri($"");
                 image.Visible = true;
                 image.SetFileName(file ?? "");
             });
@@ -74,8 +93,25 @@ class Viewer : Stack
                 image.Visible = false;
                 if (!Visible)
                     return;
+                webview.Visible = false;
+                webview.LoadUri("");
                 video.Visible = true;
                 video.SetFileName(file ?? "");
+            });
+
+        videoObserver = observer.
+            Where(IsPdf)
+            .Subscribe(file =>
+            {
+                fileName = file;
+                image.SetFileName("");
+                image.Visible = false;
+                video.Visible = false;
+                video.SetFileName("");
+                if (!Visible)
+                    return;
+                webview.Visible = true;
+                webview.LoadUri($"file://{fileName ?? ""}");
             });
 
         noObserver = observer.
@@ -83,12 +119,14 @@ class Viewer : Stack
             .Subscribe(_ =>
             {
                 fileName = null;
-                if (!Visible)
-                    return;
                 image.SetFileName("");
                 image.Visible = false;
                 video.Visible = false; 
                 video.SetFileName("");                   
+                if (!Visible)
+                    return;
+                webview.Visible = false;
+                webview.LoadUri("");
             });
 
         OnFinalize(() =>
@@ -108,7 +146,10 @@ class Viewer : Stack
         => file?.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) == true
         || file?.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) == true;
 
-    static bool IsNotViewable(string? file) => !IsVideo(file) && !IsImage(file);
+    static bool IsPdf(string? file)
+        => file?.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase) == true;
+
+    static bool IsNotViewable(string? file) => !IsVideo(file) && !IsImage(file) && !IsPdf(file);
 
     static void ReplacePlaceHolder(nint parent, nint widget)
         => parent.PanedSetEndChild(widget);
@@ -118,6 +159,9 @@ class Viewer : Stack
 
     [Widget]
     readonly Video video = null!;
+
+    [Widget]
+    readonly WebView webview = null!;
 
     readonly IDisposable imageObserver;
     readonly IDisposable videoObserver;
