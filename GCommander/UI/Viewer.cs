@@ -8,6 +8,24 @@ class Viewer : Stack
         : base(builder, name, widget => ReplacePlaceHolder(parent, widget))
     {
         Visible = false;
+
+        this["visible"].OnNotify += () =>
+        {
+            if (Visible)
+            {
+                if (IsImage(fileName))
+                {
+                    image.Visible = true;
+                    image.SetFileName(fileName ?? "");
+                }
+                else
+                {
+                    image.Visible = false;
+                    image.SetFileName("");
+                }
+            }
+        };
+
         var observer = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 handler => MainContext.Instance.PropertyChanged += handler,
                 handler => MainContext.Instance.PropertyChanged -= handler)
@@ -19,6 +37,9 @@ class Viewer : Stack
             Where(IsImage)
             .Subscribe(file =>
             {
+                fileName = file;
+                if (!Visible)
+                    return;
                 image.Visible = true;
                 image.SetFileName(file ?? "");
             });
@@ -28,6 +49,9 @@ class Viewer : Stack
             Where(IsNotImage)
             .Subscribe(_ =>
             {
+                fileName = null;
+                if (!Visible)
+                    return;
                 image.SetFileName("");
                 image.Visible = false;
             });
@@ -53,4 +77,6 @@ class Viewer : Stack
 
     readonly IDisposable imageObserver;
     readonly IDisposable noObserver;
+
+    string? fileName;
 }

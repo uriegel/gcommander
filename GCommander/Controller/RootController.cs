@@ -5,9 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Shortcuts in Deutsch
-
-// TODO Viewer not visible: do not set image
+// TODO Video viewer
+// TODO Pdf viewer
 
 // TODO Restriction
 
