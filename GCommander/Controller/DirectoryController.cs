@@ -309,7 +309,7 @@ class DirectoryController : Controller
     int SortDirectoriesFirst(DirectoryItem? item1, DirectoryItem? item2)
     {
         var order = item1?.Type == DirectoryItemType.Parent
-            ? 1
+            ? -1
             : item2?.Type == DirectoryItemType.Parent
             ? 1
             : item1?.Type == DirectoryItemType.Directory && item2?.Type == DirectoryItemType.File

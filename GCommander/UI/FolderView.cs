@@ -158,7 +158,7 @@ class FolderView : Box
         => Gtk.BeginInvoke(200, () =>
             {
                 Context.Restriction = string.Empty;
-                controller.FilterChanged(FilterChange.Different);
+                controller.FilterChanged(FilterChange.LessStrict);
             });
 
     static void ReplacePlaceHolder(string name, nint parent, nint widget)

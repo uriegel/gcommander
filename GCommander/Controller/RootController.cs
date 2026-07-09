@@ -16,8 +16,6 @@ using static CsTools.ProcessCmd;
 // TODO Percentage as progress?
 // TODO DriveType??
 
-// TODO Restriction Esc not working when last element was restricted
-
 class RootController : Controller
 {
     public const string Name = "root";
