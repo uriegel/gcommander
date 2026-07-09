@@ -2,7 +2,7 @@
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
 <!-- Created with Cambalache 1.0.3 -->
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
-  <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="5d226d962b9ba5b7af40e9a42309121b70bb1f3578de908cfdc9a5114fa3e164"/>
+  <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="1c06922750dad8a1d002ddc94d0922a4541591426cfd584cf7d52d792de443a1"/>
   <ui filename="GCommander/Resources/UI/icon-name-item.ui" sha256="0bf48e345c4a98cc78339508b83dca6dc6c9877822c3312326a1e19e5b1907a6"/>
   <ui filename="GCommander/Resources/UI/folderpaned.ui" sha256="55698a32b0255f340ad836b0e32f0dbc845630dbf7733176db8d6b5f4940cdff"/>
   <ui filename="GCommander/Resources/UI/folderview.ui" sha256="95c4b747c40ad0f0fdb4e07b03935d932ffebbf1b5cb0bdcc9b6c9e3e6544637"/>

@@ -8,33 +8,16 @@ class FolderViewController
     {
         this.view = view;
         var controller = ClickGesture.New();
-        controller.OnPressed += (c, _, _) =>
+        controller.OnPressed += (c, x, y, keys) =>
         {
             int pos = view.ColumnView.GetFocusedItemPos();
             SelectionChanged(pos);
+            if (keys.HasFlag(KeyModifiers.Control))
+                view.ToggleSelection(pos);
         };
         view.ColumnView.AddController(controller);
-
-        var kec = KeyEventController.New();
-        kec.SetPropagationPhase(PropagationPhase.Capture);
-        kec.OnKeyPressed += OnKey;
-        view.ColumnView.AddController(kec);
     }
     
-    bool OnKey(char key, KeyModifiers mod)
-    {
-        // switch (key)
-        // {
-        //     case (char)ConsoleKey.UpArrow:
-        //     case (char)ConsoleKey.DownArrow:
-        //     case (char)ConsoleKey.Home:
-        //     case (char)ConsoleKey.End:
-        //     case (char)ConsoleKey.PageUp:
-        //     case (char)ConsoleKey.PageDown:
-        // }
-        return false;
-    }
-
     public void SelectionChanged(int newPos)
     {
         CurrentPos = newPos;

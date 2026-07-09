@@ -13,19 +13,15 @@ abstract class Controller : IDisposable
     public string Id { get; }
 
     public abstract string GetItemPath(int pos);
-
     public abstract Task<string> GetChangePath(int pos);
-
     public abstract Task ChangePathAsync(string path);
-
     public abstract void Refresh();
-
     public virtual void SelectAll() { }
-
     public virtual void SelectNone() { }
-    
+    public virtual void SelectAllAbove() { }
+    public virtual void SelectAllBeneath() { }
     public virtual void ToggleSelection() { }
-
+    public virtual void ToggleSelection(int pos) { }
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;

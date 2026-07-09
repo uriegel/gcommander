@@ -43,12 +43,12 @@ class FolderView : Box
     }
 
     public void StartEditing() => editablePath.StartEditing();
-
     public void SelectAll() => controller.SelectAll();
-
     public void SelectNone() => controller.SelectNone();
-
+    public void SelectAllAbove() => controller.SelectAllAbove();
+    public void SelectAllBeneath() => controller.SelectAllBeneath();
     public void ToggleSelection() => controller.ToggleSelection();
+    public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
 
     public void Refresh() => controller.Refresh();
 

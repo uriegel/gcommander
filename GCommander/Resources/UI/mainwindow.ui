@@ -198,6 +198,14 @@
             <attribute name="action">win.toggleselection</attribute>
             <attribute name="label">Selektion _wechseln</attribute>
           </item>
+          <item>
+            <attribute name="action">win.sel-all-above</attribute>
+            <attribute name="label">_Oberhalb</attribute>
+          </item>
+          <item>
+            <attribute name="action">win.sel-all-beneath</attribute>
+            <attribute name="label">_Unterhalb</attribute>
+          </item>
         </section>
         <section>
           <item>

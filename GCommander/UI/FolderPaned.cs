@@ -62,6 +62,8 @@ class FolderPaned : Paned
 
     public void SelectAll() => lastActiveView?.SelectAll();
     public void SelectNone() => lastActiveView?.SelectNone();
+    public void SelectAllAbove() => lastActiveView?.SelectAllAbove();
+    public void SelectAllBeneath() => lastActiveView?.SelectAllBeneath();
     public void ToggleSelection() => lastActiveView?.ToggleSelection();
 
     async void OnItemsSet(bool start) => onItemsSet = start;

@@ -68,9 +68,33 @@ class DirectoryController : Controller
     {
         var pos = model.Selected;
         var item = model.GetItem<DirectoryItem>(pos);
-        item?.IsSelected = item.IsSelected !=true;
-        SetSelection(Math.Min(pos + 1, model.GetItems() -1));
-        
+        item?.IsSelected = item.IsSelected != true;
+        SetSelection(Math.Min(pos + 1, model.GetItemsCount() - 1));
+    }
+
+    public override void ToggleSelection(int pos)
+    {
+        if (pos > 0)
+        {
+            var item = model.GetItem<DirectoryItem>(pos);
+            item?.IsSelected = item.IsSelected != true;
+        }
+    }
+
+    public override void SelectAllAbove()
+    {
+        foreach (var item in model.GetItems<DirectoryItem>().Skip(1).Take(model.Selected + 1))
+            item.IsSelected = true;
+        foreach (var item in model.GetItems<DirectoryItem>().Skip(model.Selected + 1))
+            item.IsSelected = false;
+    }
+    
+    public override void SelectAllBeneath()
+    {
+        foreach (var item in model.GetItems<DirectoryItem>().Take(model.Selected))
+            item.IsSelected = false;
+        foreach (var item in model.GetItems<DirectoryItem>().Skip(model.Selected))
+            item.IsSelected = true;
     }
 
     public DirectoryController(string id, Controller? previous, ColumnView view, FolderViewController folderView, FolderContext context)
@@ -326,7 +350,7 @@ class DirectoryController : Controller
         bool focusNew = pos == focused;
 
         var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-        if (pos != store.GetItems())
+        if (pos != store.GetItemsCount())
             store.Remove(posToRemove);
 
         var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 

@@ -5,7 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO select Up, Select down, Select via ctrl + mouse
+// TODO Shortcuts in Deutsch
+
+// TODO Eliminate FolderViewController
 
 // TODO Viewer not visible: do not set image
 
