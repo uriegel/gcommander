@@ -11,5 +11,10 @@
         <property name="name">image</property>
       </object>
     </child>
+    <child>
+      <object class="GtkVideo" id="video">
+        <property name="autoplay">True</property>
+      </object>
+    </child>
   </object>
 </interface>

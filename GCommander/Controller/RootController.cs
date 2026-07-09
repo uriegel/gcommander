@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Video viewer
+// TODO PDF viewer in Gtk4 with Soup
 // TODO Pdf viewer
 
 // TODO Restriction

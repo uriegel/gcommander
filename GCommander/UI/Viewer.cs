@@ -17,12 +17,30 @@ class Viewer : Stack
                 {
                     image.Visible = true;
                     image.SetFileName(fileName ?? "");
+                    video.Visible = false;
+                    video.SetFileName("");
+                }
+                else if (IsVideo(fileName))
+                {
+                    image.Visible = false;
+                    image.SetFileName("");
+                    video.Visible = true;
+                    video.SetFileName(fileName ?? "");
                 }
                 else
                 {
                     image.Visible = false;
                     image.SetFileName("");
+                    video.Visible = false;
+                    video.SetFileName("");
                 }
+            }
+            else
+            {
+                image.Visible = false;
+                image.SetFileName("");
+                video.Visible = false; 
+                video.SetFileName("");                   
             }
         };
 
@@ -38,6 +56,8 @@ class Viewer : Stack
             .Subscribe(file =>
             {
                 fileName = file;
+                video.Visible = false; 
+                video.SetFileName("");                   
                 if (!Visible)
                     return;
                 image.Visible = true;
@@ -45,8 +65,21 @@ class Viewer : Stack
             });
                 
 
+        videoObserver = observer.
+            Where(IsVideo)
+            .Subscribe(file =>
+            {
+                fileName = file;
+                image.SetFileName("");
+                image.Visible = false;
+                if (!Visible)
+                    return;
+                video.Visible = true;
+                video.SetFileName(file ?? "");
+            });
+
         noObserver = observer.
-            Where(IsNotImage)
+            Where(IsNotViewable)
             .Subscribe(_ =>
             {
                 fileName = null;
@@ -54,11 +87,14 @@ class Viewer : Stack
                     return;
                 image.SetFileName("");
                 image.Visible = false;
+                video.Visible = false; 
+                video.SetFileName("");                   
             });
 
         OnFinalize(() =>
         {
             imageObserver.Dispose();
+            videoObserver.Dispose();
             noObserver.Dispose();
         });
     }
@@ -68,14 +104,23 @@ class Viewer : Stack
         || file?.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) == true
         || file?.EndsWith(".heic", StringComparison.InvariantCultureIgnoreCase) == true;
 
-    static bool IsNotImage(string? file) => !IsImage(file);
+    static bool IsVideo(string? file)
+        => file?.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) == true
+        || file?.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) == true;
+
+    static bool IsNotViewable(string? file) => !IsVideo(file) && !IsImage(file);
+
     static void ReplacePlaceHolder(nint parent, nint widget)
         => parent.PanedSetEndChild(widget);
 
     [Widget]
     readonly Picture image = null!;
 
+    [Widget]
+    readonly Video video = null!;
+
     readonly IDisposable imageObserver;
+    readonly IDisposable videoObserver;
     readonly IDisposable noObserver;
 
     string? fileName;
