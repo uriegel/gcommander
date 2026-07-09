@@ -98,7 +98,7 @@ class DirectoryController : Controller
     }
 
     public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
-        : base(id, CustomFilter.New<DirectoryItem>(FilterHidden), view, context)
+        : base(id, view, context)
     {
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
@@ -245,6 +245,13 @@ class DirectoryController : Controller
     public override int GetDirectoryCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.Directory);
     public override int GetFileCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.File);
 
+    public override bool CheckRestriction(string searchKey)
+        => model
+            .GetItems<DirectoryItem>()
+            .Any(n => n.Name.StartsWith(searchKey, StringComparison.CurrentCultureIgnoreCase));
+
+    protected override CustomFilter? CreateFilter() => CustomFilter.New<DirectoryItem>(Filter);
+
     void StartExifResolving(DirectoryItem[] items)
     {
         var taskId = BackgroundTasks.GetId();
@@ -269,8 +276,11 @@ class DirectoryController : Controller
         }));
     }
 
-    static bool FilterHidden(DirectoryItem? item)
-        => MainContext.Instance.ShowHiddenItems || item?.IsHidden != true;
+    bool Filter(DirectoryItem? item)
+        => (MainContext.Instance.ShowHiddenItems || item?.IsHidden != true)
+            && (view.Context.Restriction == null
+                || item?.Name.StartsWith(view.Context.Restriction, StringComparison.CurrentCultureIgnoreCase) == true);
+
 
     int NameOrExtensionOrder(DirectoryItem? item1, DirectoryItem? item2)
         => extensionSearch

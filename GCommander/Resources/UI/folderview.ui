@@ -8,6 +8,15 @@
   <object class="GtkBox" id="folderview">
     <property name="orientation">vertical</property>
     <child>
+      <object class="GtkSearchBar" id="searchBar">
+        <child>
+          <object class="GtkSearchEntry" id="searchEntry">
+            <property name="sensitive">False</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkEditableLabel" id="editablePath">
         <property name="css-classes">editable-path</property>
       </object>

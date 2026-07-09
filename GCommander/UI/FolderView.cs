@@ -13,7 +13,7 @@ class FolderView : Box
         : base(builder, "folderview", widget => ReplacePlaceHolder(name, parent, widget))
     {
         id = name == "folderViewLeft" ? "left" : "right";
-        editablePath.DataContext = Context;
+        DataContext = Context;
         editablePath["editing"].OnNotify += () =>
         {
             Context.IsEditing = editablePath.IsEditing;
@@ -23,7 +23,9 @@ class FolderView : Box
                 ChangePath(editablePath.Text);
             }
         };
-        editablePath.Binding("text", nameof(FolderContext.CurrentPath), BindingFlags.Default);
+        editablePath.Binding("text", nameof(FolderContext.CurrentPath));
+        searchBar.SetBinding("search-mode-enabled", nameof(FolderContext.Restriction), BindingFlags.Default, obj => ((string?)obj)?.Length > 0);
+        searchEntry.SetBinding("text", nameof(FolderContext.Restriction), BindingFlags.Bidirectional);
 
         controller = Controller.GetFromPath(id, null, null, this, Context)!;
 
@@ -38,6 +40,44 @@ class FolderView : Box
                 ToggleSelection(pos);
         };
         ColumnView.AddController(clickGesture);
+
+        var keyController = KeyEventController.New();
+        keyController.OnKeyPressed += (chr, modifiers) =>
+        {
+            if (chr == (char)ConsoleKey.Escape)
+                StopRestriction();
+            else if (chr == (char)ConsoleKey.Backspace)
+            {
+                if (Context.Restriction == string.Empty)
+                {
+                    StopRestriction();
+                    //                    var path = history.Get(modifiers.HasFlag(KeyModifiers.Shift));
+                    // if (path != null)
+                    //     ChangePath(path, false);
+                }
+                else
+                {
+                    Context.Restriction = Context.Restriction[..^1];
+                    if (Context.Restriction?.Length == 0)
+                        Context.Restriction = string.Empty;
+                    controller.FilterChanged(FilterChange.LessStrict);
+                }
+            }
+            else
+            {
+                if (chr != '\0')
+                {
+                    var searchKey = Context.Restriction + chr;
+                    if (controller.CheckRestriction(searchKey))
+                    {
+                        Context.Restriction = searchKey;
+                        controller.FilterChanged(FilterChange.MoreStrict);
+                    }
+                }
+            }
+            return false;
+        };
+        ColumnView.AddController(keyController);
 
         OnFinalize(() =>
         {
@@ -98,6 +138,7 @@ class FolderView : Box
     {
         try
         {
+            StopRestriction();
             controller = Controller.GetFromPath(id, path, controller, this, Context);
             await controller.ChangePathAsync(path);
         }
@@ -113,6 +154,13 @@ class FolderView : Box
         }
     }
 
+    void StopRestriction()
+        => Gtk.BeginInvoke(200, () =>
+            {
+                Context.Restriction = string.Empty;
+                controller.FilterChanged(FilterChange.Different);
+            });
+
     static void ReplacePlaceHolder(string name, nint parent, nint widget)
     {
         if (name == "folderViewLeft")
@@ -126,6 +174,12 @@ class FolderView : Box
 
     [Widget]
     public readonly EditableLabel editablePath = null!;
+
+    [Widget]
+    public readonly SearchBar searchBar = null!;
+
+    [Widget]
+    readonly SearchEntry searchEntry = null!;
 
     Controller controller;
 

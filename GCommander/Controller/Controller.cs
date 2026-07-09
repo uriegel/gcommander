@@ -33,17 +33,23 @@ abstract class Controller : IDisposable
         view.SelectionChanged(pos);
     }
 
-    protected Controller(string id, CustomFilter? filter, FolderView view, FolderContext context)
+    public void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
+
+    public virtual bool CheckRestriction(string searchKey) => false;
+
+    protected Controller(string id, FolderView view, FolderContext context)
     {
         Id = id;
         this.view = view;
-        this.filter = filter;
+        this.filter = CreateFilter();
         this.context = context;
         store = ListStore.New();
         sortModel = SortListModel.New(FilterListModel.New(store, filter), null);
         model = SingleSelection.New(sortModel);
         model.OnSelectionChanged += OnSelectionChange;
     }
+
+    protected virtual CustomFilter? CreateFilter() => null;
 
     protected static int SortSize(long? s1, long? s2)
     {
@@ -55,8 +61,6 @@ abstract class Controller : IDisposable
             ? -1
             : 0;
     }
-
-    protected void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
 
     void OnSelectionChange(int _, int __) => view.SelectionChanged(model.Selected);
         

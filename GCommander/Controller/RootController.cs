@@ -5,7 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Restriction
+// TODO Adapt path
+// TODO Favorites
 
 // TODO Order by extension not working (especially in 2023/1)
 // TODO After Actions grabFocus to paned
@@ -14,6 +15,8 @@ using static CsTools.ProcessCmd;
 
 // TODO Percentage as progress?
 // TODO DriveType??
+
+// TODO Restriction Esc not working when last element was restricted
 
 class RootController : Controller
 {
@@ -101,7 +104,7 @@ class RootController : Controller
     }
 
     public RootController(string id, Controller? previous, FolderView view, FolderContext context)
-        : base(id, null, view, context)
+        : base(id, view, context)
     {
 
         var namefactory = SignalListItemFactory

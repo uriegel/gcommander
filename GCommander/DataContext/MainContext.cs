@@ -92,20 +92,6 @@ class MainContext : INotifyPropertyChanged
         }
     } = "";
 
-    public string? Restriction
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnChanged(nameof(Restriction));
-                OnChanged(nameof(StatusChoice));
-            }
-        }
-    }
-
     public int SelectedFiles
     {
         get => field;
@@ -122,9 +108,7 @@ class MainContext : INotifyPropertyChanged
 
     public StatusChoice StatusChoice
     {
-        get => Restriction?.Trim()?.Length > 0
-                ? StatusChoice.Restriction
-                : BackgroundAction != BackgroundAction.None
+        get => BackgroundAction != BackgroundAction.None
                 ? StatusChoice.BackgroundAction
                 : SelectedFiles > 0
                 ? StatusChoice.SelectedItems

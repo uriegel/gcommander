@@ -15,7 +15,7 @@ class FolderContext : INotifyPropertyChanged
                 OnChanged(nameof(CurrentPath));
             }
         }
-    } = "";
+    } = string.Empty;
     
     public int CurrentFileCount
     {
@@ -54,7 +54,20 @@ class FolderContext : INotifyPropertyChanged
                 OnChanged(nameof(SelectedPath));
             }
         }
-    } = "";
+    } = string.Empty;
+
+    public string Restriction
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(Restriction));
+            }
+        }
+    } = string.Empty;
 
     public BackgroundAction BackgroundAction
     {
