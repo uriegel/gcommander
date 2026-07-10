@@ -41,6 +41,9 @@ class DirectoryController : Controller
     public override string GetItemPath(int pos)
         => context.CurrentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
 
+    public override ExifData? GetExifData(int pos)
+        => model.GetItem<DirectoryItem>(pos)?.ExifData;
+
     public override void SelectAll()
     {
         foreach (var item in store.GetItems<DirectoryItem>())

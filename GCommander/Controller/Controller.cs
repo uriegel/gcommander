@@ -13,6 +13,7 @@ abstract class Controller : IDisposable
     public string Id { get; }
 
     public abstract string GetItemPath(int pos);
+    public virtual ExifData? GetExifData(int pos) => null;
     public abstract Task<string> GetChangePath(int pos);
     public abstract Task ChangePathAsync(string path);
     public virtual void SelectAll() { }

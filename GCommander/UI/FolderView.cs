@@ -104,7 +104,7 @@ class FolderView : Box
     {
         CurrentPos = pos;
         Context.SelectedPath = controller.GetItemPath(pos);
-        //Context.ExifData = controller.GetExifData(CurrentPos);
+        Context.ExifData = controller.GetExifData(CurrentPos);
     }
 
     public void CountsChanged(int dirCount, int fileCount)

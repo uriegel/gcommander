@@ -117,7 +117,7 @@ class MainContext : INotifyPropertyChanged
 
     public BackgroundAction BackgroundAction
     {
-        get => field;
+        get;
         set
         {
             if (field != value)
@@ -128,6 +128,20 @@ class MainContext : INotifyPropertyChanged
             }
         }
     }
+
+    public ExifData? ExifData
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                Console.WriteLine($"Exife Data: {value}");
+                field = value;
+                OnChanged(nameof(ExifData));
+            }
+        }
+    }    
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -142,7 +156,7 @@ class MainContext : INotifyPropertyChanged
             CurrentDirectoryCount = folderContext.CurrentDirectoryCount;
             CurrentFileCount = folderContext.CurrentFileCount;
             SelectedPath = folderContext.SelectedPath;
-            // ExifData = folderContext.ExifData;
+            ExifData = folderContext.ExifData;
             BackgroundAction = folderContext.BackgroundAction;
             // SelectedFiles = folderContext.SelectedFiles;
         }
@@ -162,9 +176,9 @@ class MainContext : INotifyPropertyChanged
                 case nameof(SelectedPath):
                     SelectedPath = folderContext.SelectedPath;
                     break;
-                // case nameof(ExifData):
-                //     ExifData = folderContext.ExifData;
-                //     break;
+                case nameof(ExifData):
+                    ExifData = folderContext.ExifData;
+                    break;
                 // case nameof(SelectedFiles):
                 //     SelectedFiles = folderContext.SelectedFiles;
                 //     break;

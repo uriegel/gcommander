@@ -82,6 +82,19 @@ class FolderContext : INotifyPropertyChanged
         }
     }
 
+    public ExifData? ExifData
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(ExifData));
+            }
+        }
+    }    
+
     public bool IsEditing { get; set; }
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
