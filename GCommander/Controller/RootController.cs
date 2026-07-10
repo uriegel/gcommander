@@ -5,7 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Gtk4DotNet: NavigationView
+// TODO NavigationView: Toggle visibility Image - Image/Location - Location
+// TODO NavigationView: bind to exif
+// TODO TrackView
+// TODO Video view with Stream
+// TODO Video view aspect ratio
 
 // TODO History
 // TODO Favorites

@@ -54,6 +54,12 @@
     <EmbeddedResource Include="./Resources/Websites/location/index.html">
       <LogicalName>location/index.html</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Websites/location/styles/style.css">
+      <LogicalName>location/styles/style.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Websites/location/scripts/script.js">
+      <LogicalName>location/scripts/script.js</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./obj/$(Configuration)/net10.0/gsettings/gschemas.compiled">
       <LogicalName>gschemas</LogicalName>
     </EmbeddedResource> 

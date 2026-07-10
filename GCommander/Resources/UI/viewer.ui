@@ -10,6 +10,7 @@
     <child>
       <object class="GtkGrid" id="imageContainer">
         <property name="column-homogeneous">True</property>
+        <property name="row-homogeneous">True</property>
         <child>
           <object class="GtkPicture" id="image">
             <property name="hexpand">True</property>
@@ -37,7 +38,10 @@
       </object>
     </child>
     <child>
-      <object class="WebKitWebView" id="webview"/>
+      <object class="WebKitWebView" id="webview">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+      </object>
     </child>
   </object>
 </interface>
