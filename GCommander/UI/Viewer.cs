@@ -8,8 +8,6 @@ class Viewer : Stack
         : base(builder, name, widget => ReplacePlaceHolder(parent, widget))
     {
         Visible = false;
-        location.LoadUri("https://uriegel.de");
-
 
         this["visible"].OnNotify += () =>
         {
@@ -148,7 +146,7 @@ class Viewer : Stack
     readonly Picture image = null!;
 
     [Widget]
-    readonly WebView location = null!;
+    readonly LocationViewer location = null!;
 
     [Widget]
     readonly Video video = null!;
