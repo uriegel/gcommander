@@ -16,53 +16,18 @@ class Viewer : Stack
             if (Visible)
             {
                 if (IsImage(fileName))
-                {
-                    video.Visible = false;
-                    video.SetFileName("");
-                    webview.Visible = false;
-                    webview.LoadUri("about:blank");
-                    imageContainer.Visible = true;
-                    image.SetFileName(fileName ?? "");
-                }
+                    SetImage();
                 else if (IsVideo(fileName))
-                {
-                    imageContainer.Visible = false;
-                    image.SetFileName("");
-                    webview.Visible = false;
-                    webview.LoadUri("about:blank");
-                    video.Visible = true;
-                    video.SetFileName(fileName ?? "");
-                }
+                    SetVideo();
                 else if (IsPdf(fileName))
-                {
-                    imageContainer.Visible = false;
-                    image.SetFileName("");
-                    video.Visible = false;
-                    video.SetFileName("");
-                    webview.Visible = true;
-                    webview.LoadUri($"file://{fileName ?? ""}");
-                }
+                    SetPdf();
                 else
-                {
-                    imageContainer.Visible = false;
-                    image.SetFileName("");
-                    video.Visible = false;
-                    video.SetFileName("");
-                    webview.Visible = false;
-                    webview.LoadUri("about:blank");
-                }
+                    SetNothing();
             }
             else
-            {
-                imageContainer.Visible = false;
-                image.SetFileName("");
-                video.Visible = false; 
-                video.SetFileName("");                   
-                webview.Visible = false;
-                webview.LoadUri("about:blank");
-            }
+                SetNothing();
         };
-
+        
         var observer = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 handler => MainContext.Instance.PropertyChanged += handler,
                 handler => MainContext.Instance.PropertyChanged -= handler)
@@ -75,14 +40,7 @@ class Viewer : Stack
             .Subscribe(file =>
             {
                 fileName = file;
-                video.Visible = false; 
-                video.SetFileName("");                   
-                if (!Visible)
-                    return;
-                webview.Visible = false;
-                webview.LoadUri("about:blank");
-                imageContainer.Visible = true;
-                image.SetFileName(file ?? "");
+                SetImage();
             });
                 
 
@@ -91,14 +49,7 @@ class Viewer : Stack
             .Subscribe(file =>
             {
                 fileName = file;
-                image.SetFileName("");
-                imageContainer.Visible = false;
-                if (!Visible)
-                    return;
-                webview.Visible = false;
-                webview.LoadUri("about:blank");
-                video.Visible = true;
-                video.SetFileName(file ?? "");
+                SetVideo();
             });
 
         videoObserver = observer.
@@ -106,14 +57,7 @@ class Viewer : Stack
             .Subscribe(file =>
             {
                 fileName = file;
-                image.SetFileName("");
-                imageContainer.Visible = false;
-                video.Visible = false;
-                video.SetFileName("");
-                if (!Visible)
-                    return;
-                webview.Visible = true;
-                webview.LoadUri($"file://{fileName ?? ""}");
+                SetPdf();
             });
 
         noObserver = observer.
@@ -121,14 +65,7 @@ class Viewer : Stack
             .Subscribe(_ =>
             {
                 fileName = null;
-                image.SetFileName("");
-                imageContainer.Visible = false;
-                video.Visible = false; 
-                video.SetFileName("");                   
-                if (!Visible)
-                    return;
-                webview.Visible = false;
-                webview.LoadUri("about:blank");
+                SetNothing();
             });
 
         OnFinalize(() =>
@@ -155,6 +92,54 @@ class Viewer : Stack
 
     static void ReplacePlaceHolder(nint parent, nint widget)
         => parent.PanedSetEndChild(widget);
+
+    void SetImage()
+    {
+        video.Visible = false;
+        video.SetFileName("");
+        if (!Visible)
+            return;
+        webview.Visible = false;
+        webview.LoadUri("about:blank");
+        imageContainer.Visible = true;
+        image.SetFileName(fileName ?? "");
+    }
+    
+    void SetVideo()
+    {
+        image.SetFileName("");
+        imageContainer.Visible = false;
+        if (!Visible)
+            return;
+        webview.Visible = false;
+        webview.LoadUri("about:blank");
+        video.Visible = true;
+        video.SetFileName(fileName ?? "");
+    }
+
+    void SetPdf()
+    {
+        image.SetFileName("");
+        imageContainer.Visible = false;
+        video.Visible = false;
+        video.SetFileName("");
+        if (!Visible)
+            return;
+        webview.Visible = true;
+        webview.LoadUri($"file://{fileName ?? ""}");
+    }
+
+    void SetNothing()
+    {
+        image.SetFileName("");
+        imageContainer.Visible = false;
+        video.Visible = false; 
+        video.SetFileName("");                   
+        if (!Visible)
+            return;
+        webview.Visible = false;
+        webview.LoadUri("about:blank");
+    }
 
     [Widget]
     readonly Grid imageContainer = null!;
