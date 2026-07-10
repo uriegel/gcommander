@@ -8,6 +8,8 @@ class Viewer : Stack
         : base(builder, name, widget => ReplacePlaceHolder(parent, widget))
     {
         Visible = false;
+        location.LoadUri("https://uriegel.de");
+
 
         this["visible"].OnNotify += () =>
         {
@@ -18,22 +20,22 @@ class Viewer : Stack
                     video.Visible = false;
                     video.SetFileName("");
                     webview.Visible = false;
-                    webview.LoadUri("");
-                    image.Visible = true;
+                    webview.LoadUri("about:blank");
+                    imageContainer.Visible = true;
                     image.SetFileName(fileName ?? "");
                 }
                 else if (IsVideo(fileName))
                 {
-                    image.Visible = false;
+                    imageContainer.Visible = false;
                     image.SetFileName("");
                     webview.Visible = false;
-                    webview.LoadUri("");
+                    webview.LoadUri("about:blank");
                     video.Visible = true;
                     video.SetFileName(fileName ?? "");
                 }
                 else if (IsPdf(fileName))
                 {
-                    image.Visible = false;
+                    imageContainer.Visible = false;
                     image.SetFileName("");
                     video.Visible = false;
                     video.SetFileName("");
@@ -42,22 +44,22 @@ class Viewer : Stack
                 }
                 else
                 {
-                    image.Visible = false;
+                    imageContainer.Visible = false;
                     image.SetFileName("");
                     video.Visible = false;
                     video.SetFileName("");
                     webview.Visible = false;
-                    webview.LoadUri("");
+                    webview.LoadUri("about:blank");
                 }
             }
             else
             {
-                image.Visible = false;
+                imageContainer.Visible = false;
                 image.SetFileName("");
                 video.Visible = false; 
                 video.SetFileName("");                   
                 webview.Visible = false;
-                webview.LoadUri("");
+                webview.LoadUri("about:blank");
             }
         };
 
@@ -78,8 +80,8 @@ class Viewer : Stack
                 if (!Visible)
                     return;
                 webview.Visible = false;
-                webview.LoadUri($"");
-                image.Visible = true;
+                webview.LoadUri("about:blank");
+                imageContainer.Visible = true;
                 image.SetFileName(file ?? "");
             });
                 
@@ -90,11 +92,11 @@ class Viewer : Stack
             {
                 fileName = file;
                 image.SetFileName("");
-                image.Visible = false;
+                imageContainer.Visible = false;
                 if (!Visible)
                     return;
                 webview.Visible = false;
-                webview.LoadUri("");
+                webview.LoadUri("about:blank");
                 video.Visible = true;
                 video.SetFileName(file ?? "");
             });
@@ -105,7 +107,7 @@ class Viewer : Stack
             {
                 fileName = file;
                 image.SetFileName("");
-                image.Visible = false;
+                imageContainer.Visible = false;
                 video.Visible = false;
                 video.SetFileName("");
                 if (!Visible)
@@ -120,13 +122,13 @@ class Viewer : Stack
             {
                 fileName = null;
                 image.SetFileName("");
-                image.Visible = false;
+                imageContainer.Visible = false;
                 video.Visible = false; 
                 video.SetFileName("");                   
                 if (!Visible)
                     return;
                 webview.Visible = false;
-                webview.LoadUri("");
+                webview.LoadUri("about:blank");
             });
 
         OnFinalize(() =>
@@ -155,7 +157,13 @@ class Viewer : Stack
         => parent.PanedSetEndChild(widget);
 
     [Widget]
+    readonly Grid imageContainer = null!;
+    
+    [Widget]
     readonly Picture image = null!;
+
+    [Widget]
+    readonly WebView location = null!;
 
     [Widget]
     readonly Video video = null!;

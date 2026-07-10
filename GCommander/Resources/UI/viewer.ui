@@ -8,8 +8,27 @@
   <requires lib="webkitgtk" version="6.0"/>
   <object class="GtkStack" id="viewer">
     <child>
-      <object class="GtkPicture" id="image">
-        <property name="name">image</property>
+      <object class="GtkGrid" id="imageContainer">
+        <property name="column-homogeneous">True</property>
+        <child>
+          <object class="GtkPicture" id="image">
+            <property name="hexpand">True</property>
+            <property name="name">image</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="WebKitWebView" id="location">
+            <property name="hexpand">True</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
       </object>
     </child>
     <child>
