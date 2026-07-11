@@ -9,7 +9,7 @@ class TrackViewer : WebView
     {
         WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
         OnFinalize(WebKitWebContext.DisposeUriSchemes);
-        LoadUri("res://location/index.html");
+        LoadUri("res://track/index.html");
     }
 
     static void OnResRequest(WebkitUriSchemeRequest request)

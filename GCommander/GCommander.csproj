@@ -60,6 +60,15 @@
     <EmbeddedResource Include="./Resources/Websites/location/scripts/script.js">
       <LogicalName>location/scripts/script.js</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Websites/track/index.html">
+      <LogicalName>track/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Websites/track/styles/style.css">
+      <LogicalName>track/styles/style.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Websites/track/scripts/script.js">
+      <LogicalName>track/scripts/script.js</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./obj/$(Configuration)/net10.0/gsettings/gschemas.compiled">
       <LogicalName>gschemas</LogicalName>
     </EmbeddedResource> 

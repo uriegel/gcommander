@@ -135,7 +135,6 @@ class Viewer : Stack
         if (!Visible)
             return;
         webview.Visible = false;
-        webview.LoadUri("about:blank");
         trackviewer.Visible = false;
         imageContainer.Visible = true;
         image.SetFileName(fileName ?? "");
@@ -148,7 +147,6 @@ class Viewer : Stack
         if (!Visible)
             return;
         webview.Visible = false;
-        webview.LoadUri("about:blank");
         trackviewer.Visible = false;
         video.Visible = true;
         video.SetFileName(fileName ?? "");
@@ -162,9 +160,9 @@ class Viewer : Stack
         video.SetFileName("");
         if (!Visible)
             return;
-        webview.Visible = true;
         trackviewer.Visible = false;
-        webview.LoadUri($"file://{fileName ?? ""}");
+        webview.Visible = true;
+        Gtk.BeginInvoke(200, () => webview.LoadUri($"file://{fileName ?? ""}"));
     }
 
     void SetTrack()
@@ -190,7 +188,6 @@ class Viewer : Stack
             return;
         webview.Visible = false;
         trackviewer.Visible = false;
-        webview.LoadUri("about:blank");
     }
 
     [Widget]
