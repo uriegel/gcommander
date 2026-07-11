@@ -13,9 +13,18 @@ class TrackViewer : WebView
             field = value;
             if (!string.IsNullOrEmpty(value))
             {
-                var gpx = TrackInfo.Get(value);
-                RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+                try
+                {
+                    var gpx = TrackInfo.Get(value);
+                    RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+                }
+                catch
+                {
+                    Visible = false;    
+                }
             }
+            else
+                Visible = false;
         }
     }
     public TrackViewer(Builder builder, string name)
