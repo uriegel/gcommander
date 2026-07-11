@@ -46,6 +46,16 @@ listview row.hiddenItem {
     color: white;
 }
 
+banner.warning widget {
+    background-color: #ff000099;
+	color: white;
+}
+
+banner.warning button {
+    background-color: darkred;
+	color: white;
+}
+
 actionbar {
     font-size: smaller;
     font-family: "Noto Sans";
