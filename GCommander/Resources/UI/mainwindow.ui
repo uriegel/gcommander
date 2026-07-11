@@ -102,10 +102,24 @@
               </object>
             </child>
             <child type="end">
-              <object class="GtkToggleButton">
+              <object class="GtkToggleButton" id="preview_button">
                 <property name="action-name">win.fileview</property>
                 <property name="icon-name">image-x-generic</property>
                 <property name="tooltip-text">Dateiansicht</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkDropDown" id="previewMode">
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item>Bild</item>
+                      <item>Bild+Ort</item>
+                      <item>Ort</item>
+                    </items>
+                  </object>
+                </property>
+                <property name="visible" bind-source="preview_button" bind-property="active" bind-flags="sync-create"/>
               </object>
             </child>
           </object>

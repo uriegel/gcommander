@@ -26,6 +26,28 @@ class Viewer : Stack
                 SetNothing();
         };
 
+        MainContext.Instance.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainContext.PreviewMode))
+            {
+                switch (MainContext.Instance.PreviewMode)
+                {
+                    case PreviewMode.Picture:
+                        image.Visible = true;
+                        location.Visible = false;
+                        break;
+                    case PreviewMode.PictureLocation:
+                        image.Visible = true;
+                        location.Visible = true;
+                        break;
+                    case PreviewMode.Location:
+                        image.Visible = false;
+                        location.Visible = true;
+                        break;
+                }
+            }
+        };
+
         var observer = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 handler => MainContext.Instance.PropertyChanged += handler,
                 handler => MainContext.Instance.PropertyChanged -= handler)

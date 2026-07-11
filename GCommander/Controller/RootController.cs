@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO NavigationView: Toggle visibility Image - Image/Location - Location
+// TODO NavigationView: Image/Location: when no exif/exif and only picture: no location
 // TODO TrackView
 // TODO Video view with Stream
 // TODO Video view aspect ratio

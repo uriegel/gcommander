@@ -29,6 +29,8 @@ class MainWindow : ApplicationWindow
         backgroundActionText.SetBinding("label", nameof(MainContext.BackgroundAction), BindingFlags.Default, GetBackgroundAction);
         backgroundActionText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.BackgroundAction);
         actionBar.SetBindingToCss("info", nameof(MainContext.StatusChoice), s => (StatusChoice?)s == StatusChoice.BackgroundAction);
+        
+        previewMode["selected"].OnNotify += () => MainContext.Instance.PreviewMode = previewMode.SelectedPos.GetPreviewMode();
 
         AddActions(new SimpleAction("refresh", folderpaned.Refresh, "<Ctrl>R"));
         AddActions(new SimpleAction("selectall", folderpaned.SelectAll, "KP_Add"));
@@ -87,10 +89,23 @@ class MainWindow : ApplicationWindow
 
     [Widget]
     readonly Widget actionBar = null!;
-    
+
     [Widget]
     readonly AdwBanner banner = null!;
 
+    [Widget]
+    readonly DropDown previewMode = null!;
+
     [Widget(Template = "viewer")]
     readonly Viewer viewer = null!;
+}
+
+static class WindowExtensions
+{
+    public static PreviewMode GetPreviewMode(this int pm)
+    => pm == 0
+        ? PreviewMode.Picture
+        : pm == 1
+        ? PreviewMode.PictureLocation
+        : PreviewMode.Location;
 }

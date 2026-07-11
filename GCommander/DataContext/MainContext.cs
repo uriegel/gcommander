@@ -94,7 +94,7 @@ class MainContext : INotifyPropertyChanged
 
     public int SelectedFiles
     {
-        get => field;
+        get;
         set
         {
             if (field != value)
@@ -106,15 +106,19 @@ class MainContext : INotifyPropertyChanged
         }
     }
 
-    public StatusChoice StatusChoice
+    public PreviewMode PreviewMode
     {
-        get => BackgroundAction != BackgroundAction.None
-                ? StatusChoice.BackgroundAction
-                : SelectedFiles > 0
-                ? StatusChoice.SelectedItems
-                : StatusChoice.Status;
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnChanged(nameof(PreviewMode));
+            }
+        }
     }
-
+    
     public BackgroundAction BackgroundAction
     {
         get;
@@ -142,6 +146,15 @@ class MainContext : INotifyPropertyChanged
             }
         }
     }    
+
+    public StatusChoice StatusChoice
+    {
+        get => BackgroundAction != BackgroundAction.None
+                ? StatusChoice.BackgroundAction
+                : SelectedFiles > 0
+                ? StatusChoice.SelectedItems
+                : StatusChoice.Status;
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -191,4 +204,11 @@ class MainContext : INotifyPropertyChanged
     FolderContext? folderContext;
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
+}
+
+enum PreviewMode
+{
+    Picture,
+    PictureLocation,
+    Location
 }
