@@ -22,8 +22,13 @@
           </object>
         </child>
         <child>
-          <object class="WebKitWebView" id="location">
-            <property name="hexpand">True</property>
+          <object class="GtkBox" id="location">
+            <property name="visible">False</property>
+            <child>
+              <object class="WebKitWebView" id="locationView">
+                <property name="hexpand">True</property>
+              </object>
+            </child>
             <layout>
               <property name="column">1</property>
               <property name="row">0</property>

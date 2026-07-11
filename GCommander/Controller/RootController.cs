@@ -5,10 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO NavigationView: Image/Location: when no exif/exif and only picture: no location
-// TODO Navigation in  a Box
-// When Box is visible set ExifData initial and react on changes
-// When Box is invisible don't react on changes
+// TODO NavigationView When Box is visible set ExifData initial and react on changes
+// TODO NavigationView When Box is invisible don't react on changes
 
 // TODO TrackView
 // TODO Video view with Stream

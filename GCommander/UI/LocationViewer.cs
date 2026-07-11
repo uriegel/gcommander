@@ -2,14 +2,14 @@ using System.Text;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
-class LocationViewer : WebView
+class LocationViewer : Box
 {
     public LocationViewer(Builder builder, string name)
         : base(builder, name)
     {
         WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
         OnFinalize(WebKitWebContext.DisposeUriSchemes);
-        LoadUri("res://location/index.html");
+        locationView.LoadUri("res://location/index.html");
 
         MainContext.Instance.PropertyChanged += (_, e) =>
         {
@@ -18,12 +18,12 @@ class LocationViewer : WebView
                 if (MainContext.Instance.ExifData?.Latitude.HasValue == true
                     && MainContext.Instance.ExifData?.Longitude.HasValue == true)
                 {
-                    Visible = true;
-                    RunJavascript(FormattableString.Invariant(
+                    locationView.Visible = true;
+                    locationView.RunJavascript(FormattableString.Invariant(
                         $"setLocation({MainContext.Instance.ExifData?.Latitude.Value}, {MainContext.Instance.ExifData?.Longitude.Value})"));
                 }
                 else
-                    Visible = false;
+                    locationView.Visible = false;
             }
         };
     }
@@ -66,5 +66,8 @@ class LocationViewer : WebView
         response.Status(code, status);
         request.Finish(response);
     }
+
+    [Widget]
+    readonly WebView locationView = null!;
 }
 
