@@ -48,5 +48,11 @@
         <property name="vexpand">True</property>
       </object>
     </child>
+    <child>
+      <object class="WebKitWebView" id="trackviewer">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+      </object>
+    </child>
   </object>
 </interface>

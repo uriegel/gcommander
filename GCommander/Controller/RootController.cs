@@ -13,7 +13,6 @@ using static CsTools.ProcessCmd;
 // TODO Favorites
 // TODO DirectorsyWatcher with Directory changes
 
-// TODO Order by extension not working (especially in 2023/1)
 // TODO After Actions grabFocus to paned
 
 // TODO public static void RemoveDrive(string mountPoint)

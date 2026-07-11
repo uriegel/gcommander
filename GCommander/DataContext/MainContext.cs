@@ -140,7 +140,6 @@ class MainContext : INotifyPropertyChanged
         {
             if (field != value)
             {
-                Console.WriteLine($"Exife Data: {value}");
                 field = value;
                 OnChanged(nameof(ExifData));
             }

@@ -19,6 +19,8 @@ class Viewer : Stack
                     SetVideo();
                 else if (IsPdf(fileName))
                     SetPdf();
+                else if (IsTrack(fileName))
+                    SetTrack();
                 else
                     SetNothing();
             }
@@ -72,7 +74,15 @@ class Viewer : Stack
                 SetVideo();
             });
 
-        videoObserver = observer.
+        trackObserver = observer.
+            Where(IsTrack)
+            .Subscribe(file =>
+            {
+                fileName = file;
+                SetTrack();
+            });
+
+        pdfObserver = observer.
             Where(IsPdf)
             .Subscribe(file =>
             {
@@ -92,6 +102,8 @@ class Viewer : Stack
         {
             imageObserver.Dispose();
             videoObserver.Dispose();
+            pdfObserver.Dispose();
+            trackObserver.Dispose();
             noObserver.Dispose();
         });
     }
@@ -108,7 +120,10 @@ class Viewer : Stack
     static bool IsPdf(string? file)
         => file?.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase) == true;
 
-    static bool IsNotViewable(string? file) => !IsVideo(file) && !IsImage(file) && !IsPdf(file);
+    static bool IsTrack(string? file)
+        => file?.EndsWith(".gpx", StringComparison.InvariantCultureIgnoreCase) == true;
+
+    static bool IsNotViewable(string? file) => !IsVideo(file) && !IsImage(file) && !IsPdf(file) && !IsTrack(file);
 
     static void ReplacePlaceHolder(nint parent, nint widget)
         => parent.PanedSetEndChild(widget);
@@ -121,6 +136,7 @@ class Viewer : Stack
             return;
         webview.Visible = false;
         webview.LoadUri("about:blank");
+        trackviewer.Visible = false;
         imageContainer.Visible = true;
         image.SetFileName(fileName ?? "");
     }
@@ -133,6 +149,7 @@ class Viewer : Stack
             return;
         webview.Visible = false;
         webview.LoadUri("about:blank");
+        trackviewer.Visible = false;
         video.Visible = true;
         video.SetFileName(fileName ?? "");
     }
@@ -146,7 +163,21 @@ class Viewer : Stack
         if (!Visible)
             return;
         webview.Visible = true;
+        trackviewer.Visible = false;
         webview.LoadUri($"file://{fileName ?? ""}");
+    }
+
+    void SetTrack()
+    {
+        image.SetFileName("");
+        imageContainer.Visible = false;
+        video.Visible = false;
+        video.SetFileName("");
+        if (!Visible)
+            return;
+        webview.Visible = false;
+        trackviewer.Visible = true;
+        // trackviewer.LoadUri($"file://{fileName ?? ""}");
     }
 
     void SetNothing()
@@ -158,6 +189,7 @@ class Viewer : Stack
         if (!Visible)
             return;
         webview.Visible = false;
+        trackviewer.Visible = false;
         webview.LoadUri("about:blank");
     }
 
@@ -176,8 +208,13 @@ class Viewer : Stack
     [Widget]
     readonly WebView webview = null!;
 
+    [Widget]
+    readonly TrackViewer trackviewer = null!;
+
     readonly IDisposable imageObserver;
     readonly IDisposable videoObserver;
+    readonly IDisposable pdfObserver;
+    readonly IDisposable trackObserver;
     readonly IDisposable noObserver;
 
     string? fileName;
