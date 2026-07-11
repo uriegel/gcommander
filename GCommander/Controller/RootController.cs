@@ -5,7 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO TrackView
+// TODO TrackView: set track
+// TODO TrackView: popups
 // TODO Video view with Stream
 // TODO Video view aspect ratio
 

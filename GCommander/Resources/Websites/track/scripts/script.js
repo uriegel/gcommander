@@ -5,3 +5,7 @@ const tiles = L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>'
 }).addTo(map)
 
+function setTrack(trk) {
+    //alert(trk.trackPoints[0].latitude)
+    map.setView([trk.trackPoints[0].latitude, trk.trackPoints[0].longitude], 13)
+}

@@ -175,7 +175,7 @@ class Viewer : Stack
             return;
         webview.Visible = false;
         trackviewer.Visible = true;
-        // trackviewer.LoadUri($"file://{fileName ?? ""}");
+        trackviewer.GpxTrack = fileName;
     }
 
     void SetNothing()

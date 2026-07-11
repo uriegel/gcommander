@@ -1,14 +1,29 @@
 using System.Text;
+using System.Text.Json;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
 class TrackViewer : WebView
 {
+    public string? GpxTrack
+    {
+        get;
+        set
+        {
+            field = value;
+            if (!string.IsNullOrEmpty(value))
+            {
+                var gpx = TrackInfo.Get(value);
+                RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+            }
+        }
+    }
     public TrackViewer(Builder builder, string name)
         : base(builder, name)
     {
         WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
         OnFinalize(WebKitWebContext.DisposeUriSchemes);
+        this.GetSettings().EnableDeveloperExtras = true;
         LoadUri("res://track/index.html");
     }
 
