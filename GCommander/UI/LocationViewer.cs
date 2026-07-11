@@ -10,6 +10,17 @@ class LocationViewer : WebView
         WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
         OnFinalize(WebKitWebContext.DisposeUriSchemes);
         LoadUri("res://location/index.html");
+
+        MainContext.Instance.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainContext.ExifData))
+            {
+                if (MainContext.Instance.ExifData?.Latitude.HasValue == true 
+                    && MainContext.Instance.ExifData?.Longitude.HasValue == true)
+                RunJavascript(FormattableString.Invariant(
+                    $"setLocation({MainContext.Instance.ExifData?.Latitude.Value}, {MainContext.Instance.ExifData?.Longitude.Value})"));
+            }
+        };
     }
 
     static void OnResRequest(WebkitUriSchemeRequest request)

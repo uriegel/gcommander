@@ -25,7 +25,7 @@ class Viewer : Stack
             else
                 SetNothing();
         };
-        
+
         var observer = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 handler => MainContext.Instance.PropertyChanged += handler,
                 handler => MainContext.Instance.PropertyChanged -= handler)
