@@ -16,7 +16,18 @@ class TrackViewer : WebView
                 try
                 {
                     var gpx = TrackInfo.Get(value);
-                    RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+                    if (!initial)
+                        RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+                    else
+                    {
+                        Gtk.BeginInvoke(200, async () =>
+                        {
+                            await Task.Delay(50);
+                            RunJavascript($"setTrack({JsonSerializer.Serialize(gpx, Json.Defaults)})");
+                        });
+                        initial = false;
+                    } 
+                        
                 }
                 catch
                 {
@@ -74,4 +85,6 @@ class TrackViewer : WebView
         response.Status(code, status);
         request.Finish(response);
     }
+
+    bool initial = true;
 }
