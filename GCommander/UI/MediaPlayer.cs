@@ -22,14 +22,16 @@ class MediaPlayer : Overlay
                 var h = (mediaFile as IPaintable).IntrinsicHeight;
                 mediaControls.SetMediaStream(mediaFile);
                 video.SetPaintable(mediaFile);
+                (mediaFile as IMediaStream).IsPlaying = true;
+
                 OnFinalize(() => mediaFile?.Dispose());
             }
             else
             {
                 mediaFile?.Dispose();
                 mediaFile = null;
-                video.SetPaintable(new MediaFile());
-                mediaControls.SetMediaStream(new MediaFile());
+                video.SetPaintable(null);
+                mediaControls.SetMediaStream(null);
                 Visible = false;
             }
         }

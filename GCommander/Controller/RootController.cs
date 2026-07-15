@@ -5,9 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO TrackView: slider and marker
 // TODO TrackView: popups
-// TODO Video view with Stream
-// TODO Video view aspect ratio
 
 // TODO History
 // TODO Favorites
