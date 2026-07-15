@@ -38,9 +38,27 @@
       </object>
     </child>
     <child>
-      <object class="GtkVideo" id="video">
-        <property name="autoplay">True</property>
-      </object>
+      <object class="GtkOverlay" id="mediaPlayer">
+        <child>
+          <object class="GdnAspectContainer" id="videoContainer">
+            <child>
+              <object class="GtkPicture" id="video">
+                <property name="keep-aspect-ratio">False</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="GtkRevealer">
+            <property name="child">
+              <object class="GtkMediaControls" id="mediaControls"/>
+            </property>
+            <property name="reveal-child">True</property>
+            <property name="transition-type">fade-slide-up</property>
+            <property name="valign">end</property>
+          </object>
+        </child>
+      </object>    
     </child>
     <child>
       <object class="WebKitWebView" id="webview">

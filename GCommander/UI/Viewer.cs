@@ -130,8 +130,7 @@ class Viewer : Stack
 
     void SetImage()
     {
-        video.Visible = false;
-        video.SetFileName("");
+        mediaPlayer.FileName = null;
         if (!Visible)
             return;
         webview.Visible = false;
@@ -148,16 +147,14 @@ class Viewer : Stack
             return;
         webview.Visible = false;
         trackviewer.Visible = false;
-        video.Visible = true;
-        video.SetFileName(fileName ?? "");
+        mediaPlayer.FileName = fileName;
     }
 
     void SetPdf()
     {
         image.SetFileName("");
         imageContainer.Visible = false;
-        video.Visible = false;
-        video.SetFileName("");
+        mediaPlayer.FileName = null;
         if (!Visible)
             return;
         trackviewer.Visible = false;
@@ -169,8 +166,7 @@ class Viewer : Stack
     {
         image.SetFileName("");
         imageContainer.Visible = false;
-        video.Visible = false;
-        video.SetFileName("");
+        mediaPlayer.FileName = null;
         if (!Visible)
             return;
         webview.Visible = false;
@@ -182,8 +178,7 @@ class Viewer : Stack
     {
         image.SetFileName("");
         imageContainer.Visible = false;
-        video.Visible = false; 
-        video.SetFileName("");                   
+        mediaPlayer.FileName = null;
         if (!Visible)
             return;
         webview.Visible = false;
@@ -200,7 +195,7 @@ class Viewer : Stack
     readonly LocationViewer location = null!;
 
     [Widget]
-    readonly Video video = null!;
+    readonly MediaPlayer mediaPlayer = null!;
 
     [Widget]
     readonly WebView webview = null!;
