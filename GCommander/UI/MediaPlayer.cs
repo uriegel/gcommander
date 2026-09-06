@@ -14,14 +14,19 @@ class MediaPlayer : Overlay
                 using var videos = info!.GetVideoStreams();
                 var videoInfo = videos.FirstOrDefault();
                 var dar = videoInfo?.DisplayAspectRatio ?? 1;
+                var w1 = videoInfo?.Width;
+                var h1 = videoInfo?.Height;
+                var taglist = info.GetTagList();
+                var orientation = taglist.Get("image-orientation");
+                dar = orientation?.Contains("90") == true || orientation?.Contains("270") == true ? 1 / dar : dar;
                 videoContainer.AspectRatio = dar;
                 mediaFile?.Dispose();
                 mediaFile = MediaFile.New(value);
+                mediaControls.SetMediaStream(mediaFile);
+                video.SetPaintable(mediaFile);
                 var asp = (mediaFile as IPaintable).IntrinsicAspectRatio;
                 var w = (mediaFile as IPaintable).IntrinsicWidth;
                 var h = (mediaFile as IPaintable).IntrinsicHeight;
-                mediaControls.SetMediaStream(mediaFile);
-                video.SetPaintable(mediaFile);
                 (mediaFile as IMediaStream).IsPlaying = true;
 
                 OnFinalize(() => mediaFile?.Dispose());
