@@ -42,6 +42,9 @@ class TrackViewer : WebView
         : base(builder, name)
     {
         GetSettings().EnableDeveloperExtras = true;
+#if Release        
+        DisableContextMenu()
+#endif
         LoadUri("res://track/index.html");
     }
 

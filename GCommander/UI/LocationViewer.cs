@@ -8,6 +8,10 @@ class LocationViewer : Box
         : base(builder, name)
     {
         locationView.LoadUri("res://location/index.html");
+#if Release        
+        locationView.DisableContextMenu()
+#endif
+
 
         this["visible"].OnNotify += () =>
         {
