@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO History: from directoryController to rootController, checkController
 // TODO Favorites
 // TODO DirectoryWatcher with Directory changes
 

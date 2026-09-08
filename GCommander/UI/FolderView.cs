@@ -53,10 +53,7 @@ class FolderView : Box
                     StopRestriction();
                     var path = Context.GetHistory(modifiers.HasFlag(KeyModifiers.Shift));
                     if (path != null)
-                    {
-                        ChangePath();
-                        async void ChangePath() => await controller.ChangePathAsync(path, true);
-                    }
+                        ChangePath(path, true);
                 }
                 else
                 {
@@ -130,13 +127,13 @@ class FolderView : Box
 
     public void OnItemsGet(bool start) => ItemsSet?.Invoke(start);
 
-    public async void ChangePath(string path)
+    public async void ChangePath(string path, bool fromHistory = false)
     {
         try
         {
             StopRestriction();
             controller = Controller.GetFromPath(id, path, controller, this, Context);
-            await controller.ChangePathAsync(path);
+            await controller.ChangePathAsync(path, fromHistory);
         }
         catch (DirectoryNotFoundException dnfe)
         {
