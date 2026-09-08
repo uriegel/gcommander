@@ -5,7 +5,7 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO TrackView: popups
+// TODO TrackView: trackpoint popup
 
 // TODO History
 // TODO Favorites

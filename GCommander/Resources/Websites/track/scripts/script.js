@@ -6,6 +6,13 @@ const tiles = L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}
 const polyline = L.polyline([], { fillColor: 'red', color: 'blue' }).addTo(map)
 const marker = L.marker([50, 9]).addTo(map)
 const range = document.getElementById("range")
+const distance = document.getElementById("distance")
+const duration = document.getElementById("duration")
+const averageSpeed = document.getElementById("averageSpeed")
+const maxSpeed = document.getElementById("maxSpeed")
+const averageHeartRate = document.getElementById("averageHeartRate")
+const maxHeartRate = document.getElementById("maxHeartRate")
+
 range.addEventListener("input", _ => {
     console.log("änderung, ", range.value, factor)
     marker.setLatLng(latLngs[Math.floor(range.value * factor)])
@@ -19,7 +26,24 @@ function setTrack(trk) {
     map.fitBounds(polyline.getBounds())
     range.value = 0
     marker.setLatLng(latLngs[0])
+    distance.innerText = `${trk.distance.toFixed(1)} km`
+    duration.innerText = `${formatDistance(trk.duration)}`
+    averageSpeed.innerText = `Ø ${trk.averageSpeed?.toFixed(1)} km/h`
+    maxSpeed.innerText = `Ø ${(trk.trackPoints ? Math.max(...trk.trackPoints.map(n => n.velocity)) : 0).toFixed(1)} km/h`
+    averageSpeed.innerText = `Ø ${trk.averageSpeed?.toFixed(1)} km/h`
+    averageHeartRate.innerText = `Ø❤️ ${trk.averageHeartRate}` 
+    maxHeartRate.innerText = `Max❤️ ${(trk.trackPoints ? Math.max(...trk.trackPoints.map(n => n.heartrate)) : 0)}` 
 }
+
+function formatDistance(dist) {
+    const pad = n => ('' + n).padStart(2, '0')
+
+    const hours = Math.floor(dist / 3600)
+    const min = Math.floor(dist % 3600 / 60)
+    
+    return `${pad(hours)}:${pad(min)}`
+}
+
 
 var factor
 var latLngs
