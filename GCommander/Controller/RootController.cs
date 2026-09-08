@@ -23,7 +23,7 @@ class RootController : Controller
     {
         view.OnItemsGet(true);
         var items = await Get();
-        SetNewPath("root", fromHistory);
+        SetNewPath(Name, fromHistory);
         view.OnItemsGet(false);
         view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
@@ -201,7 +201,7 @@ class RootController : Controller
 
     static async Task<RootItem[]> Get()
         => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME),
-            new RootItem("zzzfav", "Favoriten", null, "fav", true, "starred", null, DriveType.HOME),
+            new RootItem("zzzfav", "Favoriten", null, FavoriteController.Name, true, "starred", null, DriveType.HOME),
             new RootItem("zzzremotes", "Zugriff auf entfernte Geräte", null, "remotes", true, "network-server", null, DriveType.HOME),
             .. from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
