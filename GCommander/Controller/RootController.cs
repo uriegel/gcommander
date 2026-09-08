@@ -5,9 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO History
+// TODO History: from directoryController to rootController, checkController
 // TODO Favorites
-// TODO DirectorsyWatcher with Directory changes
+// TODO DirectoryWatcher with Directory changes
 
 // TODO After Actions grabFocus to paned
 
@@ -20,11 +20,11 @@ class RootController : Controller
 {
     public const string Name = "root";
 
-    public override async Task ChangePathAsync(string? path)
+    public override async Task ChangePathAsync(string? path, bool fromHistory)
     {
         view.OnItemsGet(true);
         var items = await Get();
-        context.CurrentPath = "root";
+        SetNewPath("root", fromHistory);
         view.OnItemsGet(false);
         view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);

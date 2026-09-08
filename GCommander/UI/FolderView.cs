@@ -51,9 +51,12 @@ class FolderView : Box
                 if (Context.Restriction == string.Empty)
                 {
                     StopRestriction();
-                    //                    var path = history.Get(modifiers.HasFlag(KeyModifiers.Shift));
-                    // if (path != null)
-                    //     ChangePath(path, false);
+                    var path = Context.GetHistory(modifiers.HasFlag(KeyModifiers.Shift));
+                    if (path != null)
+                    {
+                        ChangePath();
+                        async void ChangePath() => await controller.ChangePathAsync(path, true);
+                    }
                 }
                 else
                 {

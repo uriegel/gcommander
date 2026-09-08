@@ -15,7 +15,7 @@ abstract class Controller : IDisposable
     public abstract string GetItemPath(int pos);
     public virtual ExifData? GetExifData(int pos) => null;
     public abstract Task<string> GetChangePath(int pos);
-    public abstract Task ChangePathAsync(string path);
+    public abstract Task ChangePathAsync(string path, bool fromHistory = false);
     public virtual void SelectAll() { }
     public virtual void SelectNone() { }
     public virtual void SelectAllAbove() { }
@@ -47,6 +47,13 @@ abstract class Controller : IDisposable
         sortModel = SortListModel.New(FilterListModel.New(store, filter), null);
         model = SingleSelection.New(sortModel);
         model.OnSelectionChanged += OnSelectionChange;
+    }
+
+    protected void SetNewPath(string path, bool fromHistory = false)
+    {
+        if (!fromHistory)
+            context.AddHistory(path);
+        context.CurrentPath = path;
     }
 
     protected virtual CustomFilter? CreateFilter() => null;

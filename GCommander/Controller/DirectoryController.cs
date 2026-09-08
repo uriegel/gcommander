@@ -9,12 +9,12 @@ class DirectoryController : Controller
             ? directoryController
             : new DirectoryController(id, current, view, context);
 
-    public override async Task ChangePathAsync(string path)
+    public override async Task ChangePathAsync(string path, bool fromHistory)
     {
         var folderToSelect = path.EndsWith("..") ? context.CurrentPath.SubstringAfterLast('/') : null;
         cancellation.Cancel();
         cancellation = new();
-        var items = await Get(path);
+        var items = await Get(path, fromHistory);
         var enableEvents = watcher.Path == "";
         watcher.Path = context.CurrentPath;
         if (enableEvents)
@@ -219,7 +219,7 @@ class DirectoryController : Controller
             ? exif.DateTime.ToString("g")
             : altValue;
 
-    async Task<DirectoryItem[]> Get(string path)
+    async Task<DirectoryItem[]> Get(string path, bool fromHistory)
     {
         var dirInfo = new DirectoryInfo(path);
         var dirs = dirInfo
@@ -231,7 +231,7 @@ class DirectoryController : Controller
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
                         .ToArray();
-        context.CurrentPath = dirInfo.FullName;
+        SetNewPath(dirInfo.FullName, fromHistory);
         Application.Settings.SetString($"path-{Id}", dirInfo.FullName);
         return [
             new DirectoryItem("..", DirectoryItemType.Parent, false),

@@ -97,7 +97,27 @@ class FolderContext : INotifyPropertyChanged
 
     public bool IsEditing { get; set; }
 
+    public void AddHistory(string path)
+    {
+        if (history.Count == 0 || history[^1] != path)
+            history.Add(path);
+        historyPosition = history.Count - 1;
+    }
+
+    public string? GetHistory(bool forward)
+    {
+        if (history.Count == 0)
+            return null;
+        historyPosition = forward 
+            ? Math.Min(history.Count - 1, historyPosition + 1)
+            : Math.Max(0, historyPosition - 1);
+        return history[historyPosition];
+    }
+
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    readonly List<string> history = [];
+    int historyPosition = -1;
 }
