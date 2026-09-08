@@ -22,10 +22,13 @@ input {
     font-family: 'arial';
     background-color: rgba(240, 248, 255, 0.7);
     z-index: 100000;
-    top: 5px;
     right: 5px;
     font-size: small;
     position: absolute;
+}
+
+.bottom {
+    bottom: 30px;
 }
 
 .overlay>div {

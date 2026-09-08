@@ -12,10 +12,14 @@ const averageSpeed = document.getElementById("averageSpeed")
 const maxSpeed = document.getElementById("maxSpeed")
 const averageHeartRate = document.getElementById("averageHeartRate")
 const maxHeartRate = document.getElementById("maxHeartRate")
+const speed = document.getElementById("speed")
+const heartrate = document.getElementById("heartrate")
 
 range.addEventListener("input", _ => {
-    console.log("änderung, ", range.value, factor)
-    marker.setLatLng(latLngs[Math.floor(range.value * factor)])
+    const pos = Math.floor(range.value * factor)
+    marker.setLatLng(latLngs[pos])
+    speed.innerText = `${trackPoints[pos].velocity?.toFixed(1)} km/h`
+    heartrate.innerText = `❤️ ${trackPoints[pos].heartrate}`
 })
 
 function setTrack(trk) {
@@ -33,6 +37,9 @@ function setTrack(trk) {
     averageSpeed.innerText = `Ø ${trk.averageSpeed?.toFixed(1)} km/h`
     averageHeartRate.innerText = `Ø❤️ ${trk.averageHeartRate}` 
     maxHeartRate.innerText = `Max❤️ ${(trk.trackPoints ? Math.max(...trk.trackPoints.map(n => n.heartrate)) : 0)}` 
+    trackPoints = trk.trackPoints
+    speed.innerText = `${trackPoints[0].velocity?.toFixed(1)} km/h`
+    heartrate.innerText = `❤️ ${trackPoints[0].heartrate}`
 }
 
 function formatDistance(dist) {
@@ -47,3 +54,4 @@ function formatDistance(dist) {
 
 var factor
 var latLngs
+var trackPoints
