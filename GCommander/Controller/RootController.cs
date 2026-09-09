@@ -6,9 +6,9 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // TODO Favorites
-// TODO DirectoryWatcher with Directory changes
-
 // TODO After Actions grabFocus to paned
+
+// TODO DirectoryWatcher with Directory changes
 
 // TODO public static void RemoveDrive(string mountPoint)
 
