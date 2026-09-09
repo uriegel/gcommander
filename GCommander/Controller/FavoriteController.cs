@@ -82,17 +82,20 @@ class FavoriteController : Controller
         view.SelectionChanged(0);
     }
 
-    public override async Task<string> GetChangePath(int pos)
+    public override async Task<string?> GetChangePath(int pos)
     {
         var res = GetItemPath(pos);
         if (res == "")
         {
-            var dialog = AdwAlertDialog.New("Neuer Favorit", "Möchtest du einen neuen Favoriten hinzufügen?");
+            var path = MainWindow.GetInactiveView().Context.CurrentPath;
+            var dialog = AdwAlertDialog.New("Neuer Favorit", $"Möchtest du {path} als neuen Favoriten hinzufügen?");
             dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)
             ]);
-            await dialog.PresentAsync(MainWindow.Widget);            
+            var result = await dialog.PresentAsync(MainWindow.Instance);
+            if (result == "cancel")
+                return null;
         }
         return res;
     }

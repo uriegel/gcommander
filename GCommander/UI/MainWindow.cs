@@ -2,10 +2,10 @@ using Gtk4DotNet;
 
 class MainWindow : ApplicationWindow
 {
-    public static Widget Widget { get; private set; } = null!;
+    public static MainWindow Instance { get; private set; } = null!;
     public MainWindow(WindowBuilder builder) : base(builder)
     {
-        Widget = this;
+        Instance = this;
         StyleContext.AddProviderForDisplay(
             Display.GetDefault(),
             CssProvider.New().FromResource("style"),
@@ -60,6 +60,8 @@ class MainWindow : ApplicationWindow
             Application.Settings.SetInt("height", Height);
         });
     }
+
+    public static FolderView GetInactiveView() => Instance.folderpaned.GetInactiveView();
     
     string GetBackgroundAction(object? value)
     {

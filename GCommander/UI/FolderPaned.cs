@@ -69,6 +69,8 @@ class FolderPaned : Paned
     public void AdaptPath() => GetInactiveView().ChangePath(lastActiveView.Context.CurrentPath);
     public void ShowFavorites() => lastActiveView?.ShowFavorites();
 
+    public FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
+
     async void OnItemsSet(bool start) => onItemsSet = start;
 
     bool OnKey(char chr, KeyModifiers key)
@@ -84,8 +86,6 @@ class FolderPaned : Paned
         else
             return false;
     }
-
-    FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
 
     [Widget(Template = "folderview")]
     readonly FolderView folderViewLeft = null!;
