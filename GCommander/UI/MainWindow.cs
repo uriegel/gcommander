@@ -2,8 +2,10 @@ using Gtk4DotNet;
 
 class MainWindow : ApplicationWindow
 {
+    public static Widget Widget { get; private set; } = null!;
     public MainWindow(WindowBuilder builder) : base(builder)
     {
+        Widget = this;
         StyleContext.AddProviderForDisplay(
             Display.GetDefault(),
             CssProvider.New().FromResource("style"),
@@ -29,7 +31,7 @@ class MainWindow : ApplicationWindow
         backgroundActionText.SetBinding("label", nameof(MainContext.BackgroundAction), BindingFlags.Default, GetBackgroundAction);
         backgroundActionText.Binding("visible", nameof(MainContext.StatusChoice), BindingFlags.Default, s => (StatusChoice?)s == StatusChoice.BackgroundAction);
         actionBar.SetBindingToCss("info", nameof(MainContext.StatusChoice), s => (StatusChoice?)s == StatusChoice.BackgroundAction);
-        
+
         previewMode["selected"].OnNotify += () => MainContext.Instance.PreviewMode = previewMode.SelectedPos.GetPreviewMode();
 
         AddActions(new SimpleAction("refresh", folderpaned.Refresh, "<Ctrl>R"));
@@ -40,9 +42,9 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("toggleselection", folderpaned.ToggleSelection, "Insert"));
         AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
+        AddActions(new SimpleAction("favorites", folderpaned.ShowFavorites, "F1"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
-
 
         viewerPaned.Position = Height - 300;
 
@@ -58,7 +60,7 @@ class MainWindow : ApplicationWindow
             Application.Settings.SetInt("height", Height);
         });
     }
-
+    
     string GetBackgroundAction(object? value)
     {
         if (value is BackgroundAction ba)

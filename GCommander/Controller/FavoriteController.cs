@@ -73,7 +73,7 @@ class FavoriteController : Controller
     {
         view.OnItemsGet(true);
         var items = await Get();
-        SetNewPath(Name, false);
+        SetNewPath(Name, fromHistory);
         view.OnItemsGet(false);
         view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
@@ -84,12 +84,24 @@ class FavoriteController : Controller
 
     public override async Task<string> GetChangePath(int pos)
     {
-        return GetItemPath(pos);
+        var res = GetItemPath(pos);
+        if (res == "")
+        {
+            var dialog = AdwAlertDialog.New("Neuer Favorit", "Möchtest du einen neuen Favoriten hinzufügen?");
+            dialog.SetResponses([
+                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                new("cancel", "_Abbrechen", Cancel: true)
+            ]);
+            await dialog.PresentAsync(MainWindow.Widget);            
+        }
+        return res;
     }
 
     public override string GetItemPath(int pos)
     {
-        return RootController.Name;
+        return pos == 0
+        ? RootController.Name
+        : "";
     }
 
     static async Task<FavoriteItem[]> Get()

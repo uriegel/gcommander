@@ -99,6 +99,7 @@ class FolderView : Box
     public void ToggleSelection() => controller.ToggleSelection();
     public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
     public void Refresh() => ChangePath(Context.CurrentPath);
+    public void ShowFavorites() => ChangePath(FavoriteController.Name);
 
     public void SelectionChanged(int pos)
     {
