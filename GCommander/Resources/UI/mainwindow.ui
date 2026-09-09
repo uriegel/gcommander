@@ -236,7 +236,7 @@
         <attribute name="label">_Ansicht</attribute>
         <section>
           <item>
-            <attribute name="action">app.favorites</attribute>
+            <attribute name="action">win.favorites</attribute>
             <attribute name="label">_Favoriten</attribute>
           </item>
         </section>
