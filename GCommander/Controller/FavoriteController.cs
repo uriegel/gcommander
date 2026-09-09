@@ -24,9 +24,11 @@ class FavoriteController : Controller
             {
                 var iconname = listitem.GetManagedChild<IconNameItem>();
                 var item = listitem.GetItem<FavoriteItem>();
-                // iconname?.Name = item?.Name.RemoveZzz() ?? "";
-                // if (item?.IconName != null)
-                //     iconname?.SetFromIconName(item.IconName);
+                iconname?.Name = item?.Name ?? "";
+                if (item?.Name == "..")
+                    iconname?.SetFromIconName("go-up");
+                else 
+                    iconname?.SetFromIconName("add");
                 var row = iconname?.GetParent()?.GetParent();
             });
 
@@ -45,7 +47,6 @@ class FavoriteController : Controller
         view.ColumnView.SetModel(model);
 
         previous?.Dispose();
-
 
         using var nameSorter = CustomSorter.New<FavoriteItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
         var firstCol = ColumnViewColumn
@@ -81,18 +82,21 @@ class FavoriteController : Controller
         view.SelectionChanged(0);
     }
 
-    public override Task<string> GetChangePath(int pos)
+    public override async Task<string> GetChangePath(int pos)
     {
-        throw new NotImplementedException();
+        return GetItemPath(pos);
     }
 
     public override string GetItemPath(int pos)
     {
-        return "noch nicht";
+        return RootController.Name;
     }
 
     static async Task<FavoriteItem[]> Get()
     {
-        return [];
+        return [
+            new FavoriteItem("..", ""),
+            new FavoriteItem("Favoriten hinzufügen", "")
+        ];
     }
 }
