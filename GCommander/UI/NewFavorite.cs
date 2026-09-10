@@ -21,7 +21,7 @@ class NewFavorite : AdwAlertDialog
             var text = editable.Text;
             editable = pathEntry.AsEditable();
             var path = editable.Text;
-            return new(text, path);
+            return new(text, path, FavoriteItemType.Item);
         }
     }
     

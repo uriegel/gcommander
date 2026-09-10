@@ -1,4 +1,12 @@
 record FavoriteItem(
     string Name,
-    string Path
+    string Path,
+    FavoriteItemType Type
 );
+
+enum FavoriteItemType
+{
+    Parent,
+    Item,
+    New
+}

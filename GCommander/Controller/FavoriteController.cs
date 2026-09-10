@@ -26,10 +26,12 @@ class FavoriteController : Controller
                 var iconname = listitem.GetManagedChild<IconNameItem>();
                 var item = listitem.GetItem<FavoriteItem>();
                 iconname?.Name = item?.Name ?? "";
-                if (item?.Name == "..")
+                if (item?.Type == FavoriteItemType.Parent)
                     iconname?.SetFromIconName("go-up");
-                else
+                else if (item?.Type == FavoriteItemType.New)
                     iconname?.SetFromIconName("add");
+                else
+                    iconname?.SetFromIconName("starred");
                 var row = iconname?.GetParent()?.GetParent();
             });
 
@@ -50,23 +52,25 @@ class FavoriteController : Controller
         previous?.Dispose();
 
         using var nameSorter = CustomSorter.New<FavoriteItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<FavoriteItem>(SortFixedFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New("Name", namefactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(nameSorter));
+            .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
         using var pathSorter = CustomSorter.New<FavoriteItem>((item1, item2) => (item1?.Path ?? "").CompareTo(item2?.Path ?? ""));
+        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.New<FavoriteItem>(SortFixedFirst)).Append(pathSorter);
         view.ColumnView.AppendColumn(ColumnViewColumn
             .New("Path", pathfactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(pathSorter))
+            .SideEffect(cvc => cvc.SetSorter(pathMultiSorter))
         );
 
         using var viewsorter = view.ColumnView.GetSorter();
-        // viewsorter.OnChanged -= SortOrderChanged;
-        // viewsorter.OnChanged += SortOrderChanged;
+        viewsorter.OnChanged -= SortOrderChanged;
+        viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
     }
 
@@ -97,11 +101,9 @@ class FavoriteController : Controller
             var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0 
                  ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? [] 
                  : [];
-            Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([ ..favs, result ]));
-            //  MainWindow.Refresh();
-
-
-
+            Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([.. favs, result]));
+            MainWindow.Refresh();
+            return null;
         }
         return res;
     }
@@ -113,15 +115,22 @@ class FavoriteController : Controller
         : "";
     }
 
+    public override int GetDirectoryCount() => model.GetItems<FavoriteItem>().Count(n => n.Type == FavoriteItemType.Item);
+    public override int GetFileCount() => 0;
+
     static async Task<FavoriteItem[]> Get()
     {
+        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
+                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
+                : [];
+        //  var settings = ApplicationData.Current.LocalSettings.Values;
+
         return [
-            new FavoriteItem("..", ""),
-            new FavoriteItem("Favoriten hinzufügen", "")
+            new FavoriteItem("..", "", FavoriteItemType.Parent),
+            .. favs.Select(n => new FavoriteItem(n.Name, n.Path, FavoriteItemType.Item)),
+            new FavoriteItem("Favoriten hinzufügen", "", FavoriteItemType.New)
         ];
 
-        //  var settings = ApplicationData.Current.LocalSettings.Values;
-        //  var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
         //  items = [ 
         //      new Item("..", "iconFromRes/GoUp", [ "" ]),
         //      .. favs.Select(n => new Item(n.Name, "iconFromRes/Starred", [ n.Path ], IsSelectable: true)).OrderBy(n => n.Text),
@@ -130,6 +139,24 @@ class FavoriteController : Controller
         //  SetNewPath(Name, fromHistory);
         //  return (items, 0, items.Length - 2, 0);        
     }
+
+    int SortFixedFirst(FavoriteItem? item1, FavoriteItem? item2)
+    {
+        var order = item1?.Type == FavoriteItemType.Parent
+            ? -1
+            : item2?.Type == FavoriteItemType.Parent
+            ? 1
+            : item1?.Type == FavoriteItemType.Item && item2?.Type == FavoriteItemType.New
+            ? -1
+            : item2?.Type == FavoriteItemType.Item && item1?.Type == FavoriteItemType.New
+            ? 1
+            : 0;
+        return reverseOrder ? -order : order;
+    }
+
+    void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc) => reverseOrder = reverse;
+    
+    bool reverseOrder;
 }
 
 

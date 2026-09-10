@@ -62,6 +62,8 @@ class MainWindow : ApplicationWindow
     }
 
     public static FolderView GetInactiveView() => Instance.folderpaned.GetInactiveView();
+
+    public static void Refresh() => Instance.folderpaned.Refresh();
     
     string GetBackgroundAction(object? value)
     {
