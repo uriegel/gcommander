@@ -5,7 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Favorites
+// TODO Favorites change path
+// TODO Favorites rename
+// TODO Favorites delete
 // TODO Entry on enter
 // TODO After Actions grabFocus to paned
 
