@@ -58,7 +58,7 @@
             <property name="valign">end</property>
           </object>
         </child>
-      </object>    
+      </object>
     </child>
     <child>
       <object class="WebKitWebView" id="webview">

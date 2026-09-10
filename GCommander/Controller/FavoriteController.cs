@@ -88,12 +88,8 @@ class FavoriteController : Controller
         if (res == "")
         {
             var path = MainWindow.GetInactiveView().Context.CurrentPath;
-            var dialog = AdwAlertDialog.New("Neuer Favorit", $"Möchtest du {path} als neuen Favoriten hinzufügen?");
-            dialog.SetResponses([
-                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
-                new("cancel", "_Abbrechen", Cancel: true)
-            ]);
-            var result = await dialog.PresentAsync(MainWindow.Instance);
+
+            var result = await AdwAlertDialog.PresentFromTemplateAsync("new-favorite", "dialog", MainWindow.Instance, (builder, name) => new NewFavorite(builder, name, path));
             if (result == "cancel")
                 return null;
         }
