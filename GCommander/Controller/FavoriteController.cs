@@ -109,35 +109,25 @@ class FavoriteController : Controller
     }
 
     public override string GetItemPath(int pos)
-    {
-        return pos == 0
-        ? RootController.Name
-        : "";
-    }
-
+        => pos == 0
+            ? RootController.Name
+            : pos == items.Length + 1
+            ? ""
+            : context.CurrentPath.AppendPath(model.GetItem<FavoriteItem>(pos)?.Path ?? "");
+    
     public override int GetDirectoryCount() => model.GetItems<FavoriteItem>().Count(n => n.Type == FavoriteItemType.Item);
     public override int GetFileCount() => 0;
 
-    static async Task<FavoriteItem[]> Get()
+    async Task<FavoriteItem[]> Get()
     {
-        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
+        items = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
                 ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
                 : [];
-        //  var settings = ApplicationData.Current.LocalSettings.Values;
-
         return [
             new FavoriteItem("..", "", FavoriteItemType.Parent),
-            .. favs.Select(n => new FavoriteItem(n.Name, n.Path, FavoriteItemType.Item)),
+            .. items.Select(n => new FavoriteItem(n.Name, n.Path, FavoriteItemType.Item)),
             new FavoriteItem("Favoriten hinzufügen", "", FavoriteItemType.New)
         ];
-
-        //  items = [ 
-        //      new Item("..", "iconFromRes/GoUp", [ "" ]),
-        //      .. favs.Select(n => new Item(n.Name, "iconFromRes/Starred", [ n.Path ], IsSelectable: true)).OrderBy(n => n.Text),
-        //      new Item("Hinzuf�gen...", "iconFromRes/Plus", [ "" ])
-        //  ];
-        //  SetNewPath(Name, fromHistory);
-        //  return (items, 0, items.Length - 2, 0);        
     }
 
     int SortFixedFirst(FavoriteItem? item1, FavoriteItem? item2)
@@ -155,8 +145,9 @@ class FavoriteController : Controller
     }
 
     void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc) => reverseOrder = reverse;
-    
+
     bool reverseOrder;
+    FavoriteItem[] items = [];
 }
 
 
