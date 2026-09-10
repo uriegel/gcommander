@@ -27,7 +27,7 @@ class FavoriteController : Controller
                 iconname?.Name = item?.Name ?? "";
                 if (item?.Name == "..")
                     iconname?.SetFromIconName("go-up");
-                else 
+                else
                     iconname?.SetFromIconName("add");
                 var row = iconname?.GetParent()?.GetParent();
             });
@@ -68,7 +68,7 @@ class FavoriteController : Controller
         // viewsorter.OnChanged += SortOrderChanged;
         sortModel.SetSorter(viewsorter);
     }
-    
+
     public override async Task ChangePathAsync(string path, bool fromHistory = false)
     {
         view.OnItemsGet(true);
@@ -92,6 +92,17 @@ class FavoriteController : Controller
             var result = await AdwAlertDialog.PresentFromTemplateAsync("new-favorite", "dialog", MainWindow.Instance, (builder, name) => new NewFavorite(builder, name, path));
             if (result == "cancel")
                 return null;
+
+
+
+
+            //  var settings = ApplicationData.Current.LocalSettings.Values;
+            //  var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
+            //  settings["Favorites"] = JsonSerializer.Serialize<Favorite[]>([ ..favs, res ]);
+            //  MainWindow.Refresh();
+
+
+
         }
         return res;
     }
@@ -109,5 +120,57 @@ class FavoriteController : Controller
             new FavoriteItem("..", ""),
             new FavoriteItem("Favoriten hinzufügen", "")
         ];
+
+        //  var settings = ApplicationData.Current.LocalSettings.Values;
+        //  var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
+        //  items = [ 
+        //      new Item("..", "iconFromRes/GoUp", [ "" ]),
+        //      .. favs.Select(n => new Item(n.Name, "iconFromRes/Starred", [ n.Path ], IsSelectable: true)).OrderBy(n => n.Text),
+        //      new Item("Hinzuf�gen...", "iconFromRes/Plus", [ "" ])
+        //  ];
+        //  SetNewPath(Name, fromHistory);
+        //  return (items, 0, items.Length - 2, 0);        
     }
 }
+
+
+    // public override async Task<bool> DeleteItems(int[] itemsPos)
+    // {
+    //     var toDelete = items.Where((n, i) => itemsPos.Contains(i)).ToArray();
+    //     if (await Dialog.ShowAsync(MainWindow.Content,
+    //         "Favoriten l�schen",
+    //         textContent: $"M�chtest du {(toDelete.Length == 1 ? "den" : "die")} Favoriten l�schen?"))
+    //     {
+    //         var settings = ApplicationData.Current.LocalSettings.Values;
+    //         var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
+    //         settings["Favorites"] = JsonSerializer.Serialize<Favorite[]>([.. favs.Where(n => !toDelete.Any(m => m.Values[0] == n.Path))]);
+    //         MainWindow.Refresh();
+    //         return true;
+    //     }
+    //     else
+    //         return false;
+    // }
+
+    // public override async Task<bool> Rename(int pos, bool asCopy)
+    // {
+    //     var item = items[pos];
+    //     var newName = await Dialog.ShowAsync(MainWindow.Content, "Umbenennen",
+    //         d => (d.Content as RenameDialog)?.FileName ?? "",
+    //         new RenameDialog()
+    //         {
+    //             Description = "M�chtest du den Favoriten umbenennen?",
+    //             FileName = item.Text
+    //         });
+    //     if (newName != null)
+    //     {
+    //         var settings = ApplicationData.Current.LocalSettings.Values;
+    //         var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
+    //         settings["Favorites"] = JsonSerializer.Serialize<Favorite[]>(
+    //             [.. favs.Select(n => n.Path == item.Values[0] ? new Favorite(newName, item.Values[0]) : n)]
+    //         );
+    //         MainWindow.Refresh();
+    //         return true;
+    //     }
+    //     else
+    //         return false;
+    // }
