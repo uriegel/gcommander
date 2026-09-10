@@ -1,3 +1,4 @@
+using System.Text.Json;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
@@ -89,16 +90,14 @@ class FavoriteController : Controller
         {
             var path = MainWindow.GetInactiveView().Context.CurrentPath;
 
-            var result = await AdwAlertDialog.PresentFromTemplateAsync("new-favorite", "dialog", MainWindow.Instance, (builder, name) => new NewFavorite(builder, name, path));
-            if (result == "cancel")
+            var result = await NewFavorite.PresentAsync(path, MainWindow.Instance);
+            if (result == null)
                 return null;
 
-
-
-
-            //  var settings = ApplicationData.Current.LocalSettings.Values;
-            //  var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
-            //  settings["Favorites"] = JsonSerializer.Serialize<Favorite[]>([ ..favs, res ]);
+            var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0 
+                 ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? [] 
+                 : [];
+            Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([ ..favs, result ]));
             //  MainWindow.Refresh();
 
 

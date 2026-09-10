@@ -6,6 +6,7 @@ using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
 // TODO Favorites
+// TODO Entry on enter
 // TODO After Actions grabFocus to paned
 
 // TODO DirectoryWatcher with Directory changes
@@ -49,7 +50,7 @@ class RootController : Controller
 
     public override int GetDirectoryCount() => model.GetItems<RootItem>().Count();
 
-    public override async Task<string> GetChangePath(int pos)
+    public override async Task<string?> GetChangePath(int pos)
     {
         var item = model.GetItem<RootItem>(pos);
         if (item == null)

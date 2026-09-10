@@ -17,5 +17,9 @@
       <default>""</default>
       <summary>Right path</summary>
     </key>    
+    <key name="favorites" type="s">
+      <default>""</default>
+      <summary>Favorite items</summary>
+    </key>    
   </schema>
 </schemalist>
