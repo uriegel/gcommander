@@ -8,6 +8,7 @@
     <property name="body">Möchtest du den Favoriten hinzufügen?</property>
     <property name="close-response">cancel</property>
     <property name="default-response">ok</property>
+    <property name="focus-widget">name</property>
     <property name="heading">Neuer Favorit</property>
     <property name="prefer-wide-layout">True</property>
     <property name="presentation-mode">bottom-sheet</property>
@@ -40,6 +41,7 @@
         </child>
         <child>
           <object class="GtkEntry" id="name">
+            <property name="activates-default">True</property>
             <property name="hexpand">True</property>
             <layout>
               <property name="column">1</property>
@@ -51,6 +53,7 @@
         </child>
         <child>
           <object class="GtkEntry" id="path">
+            <property name="activates-default">True</property>
             <property name="hexpand">True</property>
             <layout>
               <property name="column">1</property>
