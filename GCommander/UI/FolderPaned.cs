@@ -67,6 +67,7 @@ class FolderPaned : Paned
     public void SelectAllBeneath() => lastActiveView?.SelectAllBeneath();
     public void ToggleSelection() => lastActiveView?.ToggleSelection();
     public void AdaptPath() => GetInactiveView().ChangePath(lastActiveView.Context.CurrentPath);
+    public void Delete() => lastActiveView?.Delete();
     public void ShowFavorites() => lastActiveView?.ShowFavorites();
 
     public FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;

@@ -63,6 +63,8 @@ class FolderView : Box
                     controller.FilterChanged(FilterChange.LessStrict);
                 }
             }
+            else if (chr == 127)
+                Delete();
             else
             {
                 if (chr != '\0')
@@ -101,6 +103,8 @@ class FolderView : Box
     public void Refresh() => ChangePath(Context.CurrentPath);
     public void ShowFavorites() => ChangePath(FavoriteController.Name);
 
+    public void Delete() => controller.Delete(ColumnView.GetFocusedItemPos());
+    
     public void SelectionChanged(int pos)
     {
         CurrentPos = pos;

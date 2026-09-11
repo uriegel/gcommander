@@ -5,9 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO After Actions grabFocus to paned
+// TODO Favorites delete, selected items or focused
 // TODO Favorites rename
-// TODO Favorites delete
+
+// TODO DirectoryItems delete
 
 // TODO DirectoryWatcher with Directory changes
 
@@ -16,6 +17,7 @@ using static CsTools.ProcessCmd;
 // TODO Percentage as progress?
 // TODO DriveType??
 
+// TODO After Actions grabFocus to paned
 class RootController : Controller
 {
     public const string Name = "root";

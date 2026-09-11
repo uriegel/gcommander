@@ -40,6 +40,7 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("sel-all-above", folderpaned.SelectAllAbove, "<Shift>Home"));
         AddActions(new SimpleAction("sel-all-beneath", folderpaned.SelectAllBeneath, "<Shift>End"));
         AddActions(new SimpleAction("toggleselection", folderpaned.ToggleSelection, "Insert"));
+        AddActions(new SimpleAction("delete", folderpaned.Delete, "Entf"));
         AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
         AddActions(new SimpleAction("favorites", folderpaned.ShowFavorites, "F1"));
@@ -64,6 +65,7 @@ class MainWindow : ApplicationWindow
     public static FolderView GetInactiveView() => Instance.folderpaned.GetInactiveView();
 
     public static void Refresh() => Instance.folderpaned.Refresh();
+    public static void FocusActiveView() => Instance.folderpaned.SetFocus();
     
     string GetBackgroundAction(object? value)
     {

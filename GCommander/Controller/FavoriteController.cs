@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using CsTools.Extensions;
 using Gtk4DotNet;
@@ -103,6 +104,7 @@ class FavoriteController : Controller
                  : [];
             Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([.. favs, result]));
             MainWindow.Refresh();
+            MainWindow.FocusActiveView();
             return null;
         }
         return res;
@@ -117,6 +119,17 @@ class FavoriteController : Controller
     
     public override int GetDirectoryCount() => model.GetItems<FavoriteItem>().Count(n => n.Type == FavoriteItemType.Item);
     public override int GetFileCount() => 0;
+
+    public override void Delete(int focusedPos)
+    {
+        if (focusedPos == 0 || focusedPos == items.Length + 1)
+            return;
+        var path = context.CurrentPath.AppendPath(model.GetItem<FavoriteItem>(focusedPos)?.Path);
+        if (path != null)
+        {
+            
+        }
+    }
 
     async Task<FavoriteItem[]> Get()
     {
