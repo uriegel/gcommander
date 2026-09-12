@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Favorites goto root
 // TODO Favorites delete, selected items or focused
 // TODO Favorites rename
 

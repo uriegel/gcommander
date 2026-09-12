@@ -39,14 +39,4 @@ class NewFavorite : AdwAlertDialog
 
     [Widget(Name = "path")]
     public readonly Entry pathEntry = null!;
-
-
-
-
-
-    [DllImport("libadwaita-1.so.0",
-    CallingConvention = CallingConvention.Cdecl)]
-    private static extern void adw_alert_dialog_response(
-    nint self,
-    [MarshalAs(UnmanagedType.LPUTF8Str)] string response);
 }

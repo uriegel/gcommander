@@ -114,7 +114,7 @@ class FavoriteController : Controller
             ? RootController.Name
             : pos == items.Length + 1
             ? ""
-            : context.CurrentPath.AppendPath(model.GetItem<Item>(pos) is FavoriteItem fi ? fi.Path : "");
+            : model.GetItem<Item>(pos) is FavoriteItem fi ? fi.Path : "";
     
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
     public override int GetFileCount() => 0;
