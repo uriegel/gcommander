@@ -52,7 +52,7 @@ abstract class Controller : IDisposable
         foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected))
             item.IsSelected = false;
     }
-    
+
     public void SelectAllBeneath()
     {
         foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
@@ -60,7 +60,20 @@ abstract class Controller : IDisposable
         foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected - 1))
             item.IsSelected = true;
     }
-    
+
+    public IEnumerable<Item> GetSelectedItems(int focusedPos = -1)
+    {
+        var selected = store
+            .GetItems<Item>()
+            .OfType<SelectableItem>()
+            .Where(n => n.IsSelected);
+        if (selected.Any())
+            return selected;
+        if (focusedPos == -1)
+            return [];
+        return model.GetItem<Item>(focusedPos) is SelectableItem item ? [ item ] : [];
+    }
+
     public virtual void Delete(int focusedPos) { }
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;

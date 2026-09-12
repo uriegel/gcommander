@@ -33,6 +33,9 @@ class FavoriteController : Controller
                 else
                     iconname?.SetFromIconName("starred");
                 var row = iconname?.GetParent()?.GetParent();
+                row?.DataContext = item;
+                if (item is SelectableItem si)
+                    row?.SetBindingToCss("selection", nameof(si.IsSelected));
             });
 
         var pathfactory = SignalListItemFactory
@@ -119,15 +122,27 @@ class FavoriteController : Controller
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
     public override int GetFileCount() => 0;
 
-    public override void Delete(int focusedPos)
+    public override async void Delete(int focusedPos)
     {
-        if (focusedPos == 0 || focusedPos == items.Length + 1)
+        var selected = GetSelectedItems(focusedPos).OfType<FavoriteItem>().ToArray();
+        if (selected.Length == 0)
             return;
-        var path = context.CurrentPath.AppendPath(model.GetItem<Item>(focusedPos) is FavoriteItem fi? fi.Path : null);
-        if (path != null)
-        {
-            
-        }
+        var dialog = AdwAlertDialog.New("Favoriten löschen", $"Möchtest du {(selected.Length > 1 ? "die" : "den")} Favoriten löschen?");
+        dialog.SetResponses([
+                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                new("cancel", "_Abbrechen", Cancel: true)
+            ]);
+        var res = await dialog.PresentAsync(MainWindow.Instance);
+        if (res == "cancel")
+            return;
+
+        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
+                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
+                : [];
+        var selectedNames = selected.Select(n => n.Name);
+        Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([.. favs.Where(n => !selectedNames.Contains(n.Name))]));
+        MainWindow.Refresh();
+        MainWindow.FocusActiveView();
     }
 
     async Task<Item[]> Get()
@@ -141,11 +156,6 @@ class FavoriteController : Controller
             new NewFavoriteItem()
         ];
     }
-
-
-
-    //        foreach (var item in store.GetItems<DirectoryItem>())
-
 
     int SortFixedFirst(Item? item1, Item? item2)
     {
@@ -167,23 +177,6 @@ class FavoriteController : Controller
     FavoriteItem[] items = [];
 }
 
-
-    // public override async Task<bool> DeleteItems(int[] itemsPos)
-    // {
-    //     var toDelete = items.Where((n, i) => itemsPos.Contains(i)).ToArray();
-    //     if (await Dialog.ShowAsync(MainWindow.Content,
-    //         "Favoriten l�schen",
-    //         textContent: $"M�chtest du {(toDelete.Length == 1 ? "den" : "die")} Favoriten l�schen?"))
-    //     {
-    //         var settings = ApplicationData.Current.LocalSettings.Values;
-    //         var favs = settings["Favorites"] is string favstr ? JsonSerializer.Deserialize<Favorite[]>(favstr) ?? [] : [];
-    //         settings["Favorites"] = JsonSerializer.Serialize<Favorite[]>([.. favs.Where(n => !toDelete.Any(m => m.Values[0] == n.Path))]);
-    //         MainWindow.Refresh();
-    //         return true;
-    //     }
-    //     else
-    //         return false;
-    // }
 
     // public override async Task<bool> Rename(int pos, bool asCopy)
     // {
