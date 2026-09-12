@@ -69,7 +69,8 @@ class FolderPaned : Paned
     public void AdaptPath() => GetInactiveView().ChangePath(lastActiveView.Context.CurrentPath);
     public void Delete() => lastActiveView?.Delete();
     public void ShowFavorites() => lastActiveView?.ShowFavorites();
-
+    public void Rename() => lastActiveView?.Rename();
+    
     public FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
 
     async void OnItemsSet(bool start) => onItemsSet = start;

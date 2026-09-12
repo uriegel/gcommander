@@ -75,6 +75,7 @@ abstract class Controller : IDisposable
     }
 
     public virtual void Delete(int focusedPos) { }
+    public virtual void Rename(int focusedPos) { }
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.0.3 -->
+<interface>
+  <!-- interface-name dialog.ui -->
+  <requires lib="gtk" version="4.18"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <object class="AdwAlertDialog" id="dialog">
+    <property name="body">Möchtest du den Eintrag umbenennen?</property>
+    <property name="close-response">cancel</property>
+    <property name="default-response">ok</property>
+    <property name="focus-widget">name</property>
+    <property name="heading">Umbenennen</property>
+    <property name="prefer-wide-layout">True</property>
+    <property name="presentation-mode">bottom-sheet</property>
+    <child>
+      <object class="GtkEntry" id="name">
+        <property name="activates-default">True</property>
+        <property name="hexpand">True</property>
+      </object>
+    </child>
+    <!-- Custom object fragments -->
+    <responses>
+      <response id="cancel" translatable="yes">_Abbrechen</response>
+      <response id="ok" translatable="yes" appearance="suggested">_OK</response>
+    </responses>
+  </object>
+</interface>

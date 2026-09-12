@@ -145,6 +145,16 @@ class FavoriteController : Controller
         MainWindow.FocusActiveView();
     }
 
+    public override async void Rename(int focusedPos)
+    {
+        var name = model.GetItem<Item>(focusedPos) is SelectableItem item ? item.Name : null;
+        if (name == null)
+            return;
+        var res = UI.Rename.PresentAsync(name, MainWindow.Instance);
+        if (res == null)
+            return;
+    }
+
     async Task<Item[]> Get()
     {
         items = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0

@@ -102,8 +102,8 @@ class FolderView : Box
     public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
     public void Refresh() => ChangePath(Context.CurrentPath);
     public void ShowFavorites() => ChangePath(FavoriteController.Name);
-
-    public void Delete() => controller.Delete(ColumnView.GetFocusedItemPos());
+    public void Rename() => controller.Rename(CurrentPos);
+    public void Delete() => controller.Delete(CurrentPos);
     
     public void SelectionChanged(int pos)
     {

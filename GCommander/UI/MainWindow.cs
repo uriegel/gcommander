@@ -44,6 +44,7 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
         AddActions(new SimpleAction("favorites", folderpaned.ShowFavorites, "F1"));
+        AddActions(new SimpleAction("rename", folderpaned.Rename, "F2"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
 

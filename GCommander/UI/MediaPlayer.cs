@@ -47,7 +47,7 @@ class MediaPlayer : Overlay
     {
 
     }
-    
+
     [Widget]
     readonly Picture video = null!;
 
