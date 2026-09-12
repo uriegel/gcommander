@@ -5,12 +5,16 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
+// TODO Favorites goto root
 // TODO Favorites delete, selected items or focused
 // TODO Favorites rename
 
-// TODO DirectoryItems delete
-
 // TODO DirectoryWatcher with Directory changes
+
+// TODO DirectoryItems delete
+// TODO DirectoryItems createDirectory
+// TODO DirectoryItems rename
+// TODO DirectoryItems copy
 
 // TODO public static void RemoveDrive(string mountPoint)
 
@@ -282,6 +286,17 @@ class RootController : Controller
             ? 1
             : 0;
         return reverseSortOrder ? -order : order;
+    }
+
+    static int SortSize(long? s1, long? s2)
+    {
+        var a = s1.HasValue ? s1.Value : 0;
+        var b = s2.HasValue ? s2.Value : 0;
+        return a - b > 0
+            ? 1
+            : a - b < 0
+            ? -1
+            : 0;
     }
 
     readonly SemaphoreSlim locker = new(1, 1);

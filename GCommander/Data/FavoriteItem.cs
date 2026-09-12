@@ -1,12 +1,6 @@
-record FavoriteItem(
-    string Name,
-    string Path,
-    FavoriteItemType Type
-);
-
-enum FavoriteItemType
+class FavoriteItem : SelectableItem
 {
-    Parent,
-    Item,
-    New
+    public string Path { get; }
+
+    public FavoriteItem(string name, string path) : base(name) => Path = path;
 }

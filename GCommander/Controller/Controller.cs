@@ -18,12 +18,49 @@ abstract class Controller : IDisposable
     public virtual ExifData? GetExifData(int pos) => null;
     public abstract Task<string?> GetChangePath(int pos);
     public abstract Task ChangePathAsync(string path, bool fromHistory = false);
-    public virtual void SelectAll() { }
-    public virtual void SelectNone() { }
-    public virtual void SelectAllAbove() { }
-    public virtual void SelectAllBeneath() { }
-    public virtual void ToggleSelection() { }
-    public virtual void ToggleSelection(int pos) { }
+    
+    public void SelectAll()
+    {
+        foreach (var item in store.GetItems<Item>().OfType<SelectableItem>())
+            item.IsSelected = true;
+    }
+
+    public void SelectNone()
+    {
+        foreach (var item in store.GetItems<Item>().OfType<SelectableItem>())
+            item.IsSelected = false;
+    }
+
+    public void ToggleSelection()
+    {
+        var pos = model.Selected;
+        if (model.GetItem<Item>(pos) is SelectableItem item)
+            item.IsSelected = item.IsSelected != true;
+        SetSelection(Math.Min(pos + 1, model.GetItemsCount() - 1));
+    }
+
+    public void ToggleSelection(int pos)
+    {
+        if (model.GetItem<Item>(pos) is SelectableItem item)
+            item?.IsSelected = item.IsSelected != true;
+    }
+
+    public void SelectAllAbove()
+    {
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
+            item.IsSelected = true;
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected))
+            item.IsSelected = false;
+    }
+    
+    public void SelectAllBeneath()
+    {
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
+            item.IsSelected = false;
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected - 1))
+            item.IsSelected = true;
+    }
+    
     public virtual void Delete(int focusedPos) { }
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;
@@ -60,17 +97,6 @@ abstract class Controller : IDisposable
     }
 
     protected virtual CustomFilter? CreateFilter() => null;
-
-    protected static int SortSize(long? s1, long? s2)
-    {
-        var a = s1.HasValue ? s1.Value : 0;
-        var b = s2.HasValue ? s2.Value : 0;
-        return a - b > 0
-            ? 1
-            : a - b < 0
-            ? -1
-            : 0;
-    }
 
     void OnSelectionChange(int _, int __) => view.SelectionChanged(model.Selected);
         

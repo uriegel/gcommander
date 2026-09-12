@@ -21,11 +21,11 @@ class DirectoryController : Controller
             watcher.EnableRaisingEvents = true;
         view.OnItemsChange(true);
         store.Splice(0, store.ItemsCount(), items);
-        StartExifResolving(items);
+        StartExifResolving(items.OfType<FileItem>());
         view.OnItemsChange(false);
         int pos = folderToSelect != null
             ? model
-                .GetItems<DirectoryItem>()
+                .GetItems<Item>()
                 .Select((n, i) => new DirItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == folderToSelect)?.Pos
                 ?? 0
@@ -39,69 +39,18 @@ class DirectoryController : Controller
     public override async Task<string?> GetChangePath(int pos) => (string?)GetItemPath(pos);
 
     public override string GetItemPath(int pos)
-        => context.CurrentPath.AppendPath(model.GetItem<DirectoryItem>(pos)?.Name ?? "");
+        => context.CurrentPath.AppendPath(model.GetItem<Item>(pos)?.Name ?? "");
 
     public override ExifData? GetExifData(int pos)
-        => model.GetItem<DirectoryItem>(pos)?.ExifData;
-
-    public override void SelectAll()
-    {
-        foreach (var item in store.GetItems<DirectoryItem>())
-        {
-            if (item.Type != DirectoryItemType.Parent)
-                item.IsSelected = true;
-        }
-    }
-
-    public override void SelectNone()
-    {
-        foreach (var item in store.GetItems<DirectoryItem>())
-        {
-            if (item.Type != DirectoryItemType.Parent)
-                item.IsSelected = false;
-        }
-    }
-
-    public override void ToggleSelection()
-    {
-        var pos = model.Selected;
-        var item = model.GetItem<DirectoryItem>(pos);
-        item?.IsSelected = item.IsSelected != true;
-        SetSelection(Math.Min(pos + 1, model.GetItemsCount() - 1));
-    }
-
-    public override void ToggleSelection(int pos)
-    {
-        if (pos > 0)
-        {
-            var item = model.GetItem<DirectoryItem>(pos);
-            item?.IsSelected = item.IsSelected != true;
-        }
-    }
-
-    public override void SelectAllAbove()
-    {
-        foreach (var item in model.GetItems<DirectoryItem>().Skip(1).Take(model.Selected + 1))
-            item.IsSelected = true;
-        foreach (var item in model.GetItems<DirectoryItem>().Skip(model.Selected + 1))
-            item.IsSelected = false;
-    }
-    
-    public override void SelectAllBeneath()
-    {
-        foreach (var item in model.GetItems<DirectoryItem>().Take(model.Selected))
-            item.IsSelected = false;
-        foreach (var item in model.GetItems<DirectoryItem>().Skip(model.Selected))
-            item.IsSelected = true;
-    }
+        => model.GetItem<Item>(pos) is FileItem fileItem ? fileItem.ExifData : null;
 
     public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
     {
-        watcher.Created += WatchCreated;
-        watcher.Deleted += WatchDeleted;
-        watcher.Changed += WatchChanged;
-        watcher.Renamed += WatchRenamed;
+        // watcher.Created += WatchCreated;
+        // watcher.Deleted += WatchDeleted;
+        // watcher.Changed += WatchChanged;
+        // watcher.Renamed += WatchRenamed;
         watcher.NotifyFilter = NotifyFilters.CreationTime
                     | NotifyFilters.DirectoryName
                     | NotifyFilters.FileName
@@ -119,14 +68,14 @@ class DirectoryController : Controller
             .Bind(listitem =>
             {
                 var iconname = listitem.GetManagedChild<IconNameItem>();
-                var item = listitem.GetItem<DirectoryItem>();
+                var item = listitem.GetItem<Item>();
                 iconname?.Name = item?.Name ?? "";
-                if (item?.Type == DirectoryItemType.Parent)
+                if (item is ParentItem)
                     iconname?.SetFromIconName("go-up");
-                else if (item?.Type == DirectoryItemType.Directory)
+                else if (item is DirectoryItem dirItem)
                     iconname?.SetFromIconName("folder-open");
-                else
-                    iconname?.SetIcon(item?.Name ?? "");
+                else if (item is FileItem fileItem)
+                    iconname?.SetIcon(fileItem.Name);
             });
 
         var datefactory = SignalListItemFactory
@@ -139,15 +88,19 @@ class DirectoryController : Controller
             })
             .Bind(listitem =>
             {
+                var item = listitem.GetItem<Item>();
                 var dateexif = listitem.GetManagedChild<DateExif>();
-                var item = listitem.GetItem<DirectoryItem>();
-                dateexif?.DataContext = item;
-                dateexif?.SetDateTimeBinding();
-                dateexif?.SetExifBinding();
                 var row = dateexif?.GetParent()?.GetParent();
                 row?.DataContext = item;
-                row?.AddCssClass("hiddenItem", item?.IsHidden == true);
-                row?.SetBindingToCss("selection", nameof(item.IsSelected));
+                row?.AddCssClass("hiddenItem", item is FileSystemItem fsi && fsi.IsHidden);
+                if (item is SelectableItem si)
+                    row?.SetBindingToCss("selection", nameof(si.IsSelected));
+                if (item is FileItem fileItem)
+                {
+                    dateexif?.DataContext = fileItem;
+                    dateexif?.SetDateTimeBinding();
+                    dateexif?.SetExifBinding();
+                }
             })
             .Unbind(listitem =>
             {
@@ -166,9 +119,11 @@ class DirectoryController : Controller
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
-                var item = listitem.GetItem<DirectoryItem>();
-                label.DataContext = item;
-                label.SetBinding("label", nameof(item.Size), BindingFlags.Default, s => ((long?)s).FormatSize());
+                if (listitem.GetItem<Item>() is FileItem fileItem)
+                {
+                    label.DataContext = fileItem;
+                    label.SetBinding("label", nameof(fileItem.Size), BindingFlags.Default, s => ((long?)s).FormatSize());
+                }
             })
             .Unbind(listitem =>
             {
@@ -183,8 +138,8 @@ class DirectoryController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<DirectoryItem>(NameOrExtensionOrder);
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(nameSorter);
+        using var nameSorter = CustomSorter.New<Item>(NameOrExtensionOrder);
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New(NAME, namefactory)
             .Expand()
@@ -192,16 +147,17 @@ class DirectoryController : Controller
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var dateSorter = CustomSorter.New<DirectoryItem>((item1, item2) => (item1?.DateTime ?? DateTime.MinValue).CompareTo(item2?.DateTime ?? DateTime.MinValue));
-        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(dateSorter);
+        using var dateSorter = CustomSorter.New<Item>((item1, item2) 
+            => (item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue).CompareTo(item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
+        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(dateSorter);
         var dateCol = ColumnViewColumn
             .New("Datum", datefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.ColumnView.AppendColumn(dateCol);
 
-        using var sizeSorter = CustomSorter.New<DirectoryItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
-        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<DirectoryItem>(SortDirectoriesFirst)).Append(sizeSorter);
+        using var sizeSorter = CustomSorter.New<Item>(SortSize);
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(sizeSorter);
         var sizeCol = ColumnViewColumn
             .New("Größe", sizefactory)
             .Expand()
@@ -219,38 +175,38 @@ class DirectoryController : Controller
             ? exif.DateTime.ToString("g")
             : altValue;
 
-    async Task<DirectoryItem[]> Get(string path, bool fromHistory)
+    async Task<Item[]> Get(string path, bool fromHistory)
     {
         var dirInfo = new DirectoryInfo(path);
         var dirs = dirInfo
                         .GetDirectories()
-                        .Select(DirectoryItem.CreateDirItem)
+                        .Select(DirectoryItem.New)
                         .OrderBy(n => n.Name)
                         .ToArray();
         var files = dirInfo
                         .GetFiles()
-                        .Select(DirectoryItem.CreateFileItem)
+                        .Select(FileItem.New)
                         .ToArray();
         SetNewPath(dirInfo.FullName, fromHistory);
         Application.Settings.SetString($"path-{Id}", dirInfo.FullName);
         return [
-            new DirectoryItem("..", DirectoryItemType.Parent, false),
+            new ParentItem(),
             .. dirs,
             .. files
         ];
     }
 
-    public override int GetDirectoryCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.Directory);
-    public override int GetFileCount() => model.GetItems<DirectoryItem>().Count(n => n.Type == DirectoryItemType.File);
+    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
+    public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
 
     public override bool CheckRestriction(string searchKey)
         => model
-            .GetItems<DirectoryItem>()
+            .GetItems<Item>()
             .Any(n => n.Name.StartsWith(searchKey, StringComparison.CurrentCultureIgnoreCase));
 
-    protected override CustomFilter? CreateFilter() => CustomFilter.New<DirectoryItem>(Filter);
+    protected override CustomFilter? CreateFilter() => CustomFilter.New<Item>(Filter);
 
-    void StartExifResolving(DirectoryItem[] items)
+    void StartExifResolving(IEnumerable<FileItem> items)
     {
         var taskId = BackgroundTasks.GetId();
         var token = BackgroundTasks.GetCancellationToken(cancellation.Token);
@@ -274,13 +230,13 @@ class DirectoryController : Controller
         }));
     }
 
-    bool Filter(DirectoryItem? item)
-        => (MainContext.Instance.ShowHiddenItems || item?.IsHidden != true)
+    bool Filter(Item? item)
+        => (MainContext.Instance.ShowHiddenItems || item is not FileSystemItem fsi || !fsi.IsHidden)
             && (view.Context.Restriction == null
                 || item?.Name.StartsWith(view.Context.Restriction, StringComparison.CurrentCultureIgnoreCase) == true);
 
 
-    int NameOrExtensionOrder(DirectoryItem? item1, DirectoryItem? item2)
+    int NameOrExtensionOrder(Item? item1, Item? item2)
         => extensionSearch
             ? (item1?.Name.GetFileExtension() ?? "").CompareTo(item2?.Name.GetFileExtension() ?? "")
             : (item1?.Name ?? "").CompareTo(item2?.Name ?? "");
@@ -304,15 +260,15 @@ class DirectoryController : Controller
         lastSearchTitle = col?.Title ?? "";
     }
 
-    int SortDirectoriesFirst(DirectoryItem? item1, DirectoryItem? item2)
+    int SortDirectoriesFirst(Item? item1, Item? item2)
     {
-        var order = item1?.Type == DirectoryItemType.Parent
+        var order = item1 is ParentItem
             ? -1
-            : item2?.Type == DirectoryItemType.Parent
+            : item2 is ParentItem
             ? 1
-            : item1?.Type == DirectoryItemType.Directory && item2?.Type == DirectoryItemType.File
+            : item1 is DirectoryItem && item2 is FileItem
             ? -1
-            : item2?.Type == DirectoryItemType.Directory && item1?.Type == DirectoryItemType.File
+            : item2 is DirectoryItem && item1 is FileItem
             ? 1
             : 0;
         return reverseOrder ? -order : order;
@@ -327,62 +283,73 @@ class DirectoryController : Controller
         }
     }
 
-    void WatchCreated(object _, FileSystemEventArgs e)
-    {
-        try
-        {
-            store.Splice(0, 0, [DirectoryItem.CreateFileItem(new FileInfo(e.FullPath))]);
-            view.CountsChanged(GetDirectoryCount(), GetFileCount());
-        }
-        catch { }
-    }
+    // void WatchCreated(object _, FileSystemEventArgs e)
+    // {
+    //     try
+    //     {
+    //         store.Splice(0, 0, [FileItem.New(new FileInfo(e.FullPath))]);
+    //         view.CountsChanged(GetDirectoryCount(), GetFileCount());
+    //     }
+    //     catch { }
+    // }
 
-    void WatchDeleted(object _, FileSystemEventArgs e)
-    {
-        var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.Name).Count();
-        store.Splice<DirectoryItem>(pos, 1, []);
-        view.CountsChanged(GetDirectoryCount(), GetFileCount());
-    }
+    // void WatchDeleted(object _, FileSystemEventArgs e)
+    // {
+    //     var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.Name).Count();
+    //     store.Splice<DirectoryItem>(pos, 1, []);
+    //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
+    // }
         
-    void WatchChanged(object _, FileSystemEventArgs e)
+    // void WatchChanged(object _, FileSystemEventArgs e)
+    // {
+    //     var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
+    //     var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
+    //     item?.DateTime = fileInfo.LastWriteTime;
+    //     item?.Size = fileInfo.Length;
+    // }
+
+    // void WatchRenamed(object _, RenamedEventArgs e)
+    // {
+    //     Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
+    //     int focused = model.Selected;
+    //     var pos = model.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+    //     bool focusNew = pos == focused;
+
+    //     var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
+    //     if (pos != store.GetItemsCount())
+    //         store.Remove(posToRemove);
+
+    //     var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+    //     if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
+    //         store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
+    //     else
+    //     {
+    //         var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
+    //         item?.DateTime = fileInfo.LastWriteTime;
+    //         item?.Size = fileInfo.Length;
+    //     }
+    //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
+
+    //     if (focusNew)
+    //     {
+    //         var newPos = model
+    //             .GetItems<DirectoryItem>()
+    //             .Select((n, i) => new DirItemPos(Item: n, Pos: i))
+    //             .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
+    //         if (newPos.HasValue)
+    //             SetSelection(newPos.Value);
+    //     }
+    // }
+
+    static int SortSize(Item? item1, Item? item2)
     {
-        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
-        var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
-        item?.DateTime = fileInfo.LastWriteTime;
-        item?.Size = fileInfo.Length;
-    }
-
-    void WatchRenamed(object _, RenamedEventArgs e)
-    {
-        Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
-        int focused = model.Selected;
-        var pos = model.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-        bool focusNew = pos == focused;
-
-        var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-        if (pos != store.GetItemsCount())
-            store.Remove(posToRemove);
-
-        var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
-        if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
-            store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
-        else
-        {
-            var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
-            item?.DateTime = fileInfo.LastWriteTime;
-            item?.Size = fileInfo.Length;
-        }
-        view.CountsChanged(GetDirectoryCount(), GetFileCount());
-
-        if (focusNew)
-        {
-            var newPos = model
-                .GetItems<DirectoryItem>()
-                .Select((n, i) => new DirItemPos(Item: n, Pos: i))
-                .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
-            if (newPos.HasValue)
-                SetSelection(newPos.Value);
-        }
+        var a = item1 is FileItem fi1 ? fi1.Size : 0;
+        var b = item2 is FileItem fi2 ? fi2.Size : 0;
+        return a - b > 0
+            ? 1
+            : a - b < 0
+            ? -1
+            : 0;
     }
         
     readonly FileSystemWatcher watcher = new();
@@ -419,4 +386,4 @@ class DirectoryController : Controller
     #endregion
 }
 
-record DirItemPos(DirectoryItem Item, int Pos);
+record DirItemPos(Item Item, int Pos);

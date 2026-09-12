@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using CsTools.Extensions;
 using Gtk4DotNet;
@@ -25,11 +24,11 @@ class FavoriteController : Controller
             .Bind(listitem =>
             {
                 var iconname = listitem.GetManagedChild<IconNameItem>();
-                var item = listitem.GetItem<FavoriteItem>();
+                var item = listitem.GetItem<Item>();
                 iconname?.Name = item?.Name ?? "";
-                if (item?.Type == FavoriteItemType.Parent)
+                if (item is ParentItem)
                     iconname?.SetFromIconName("go-up");
-                else if (item?.Type == FavoriteItemType.New)
+                else if (item is NewFavoriteItem)
                     iconname?.SetFromIconName("add");
                 else
                     iconname?.SetFromIconName("starred");
@@ -42,8 +41,8 @@ class FavoriteController : Controller
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
-                var item = listitem.GetItem<FavoriteItem>();
-                label.Text = item?.Path ?? "";
+                var item = listitem.GetItem<Item>();
+                label.Text = item is FavoriteItem fi ? fi.Path : "";
             });
 
         view.ColumnView.SetModel(null);
@@ -52,8 +51,8 @@ class FavoriteController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<FavoriteItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<FavoriteItem>(SortFixedFirst)).Append(nameSorter);
+        using var nameSorter = CustomSorter.New<Item>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
             .New("Name", namefactory)
             .Expand()
@@ -61,8 +60,8 @@ class FavoriteController : Controller
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var pathSorter = CustomSorter.New<FavoriteItem>((item1, item2) => (item1?.Path ?? "").CompareTo(item2?.Path ?? ""));
-        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.New<FavoriteItem>(SortFixedFirst)).Append(pathSorter);
+        using var pathSorter = CustomSorter.New<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
+        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(pathSorter);
         view.ColumnView.AppendColumn(ColumnViewColumn
             .New("Path", pathfactory)
             .Expand()
@@ -115,43 +114,48 @@ class FavoriteController : Controller
             ? RootController.Name
             : pos == items.Length + 1
             ? ""
-            : context.CurrentPath.AppendPath(model.GetItem<FavoriteItem>(pos)?.Path ?? "");
+            : context.CurrentPath.AppendPath(model.GetItem<Item>(pos) is FavoriteItem fi ? fi.Path : "");
     
-    public override int GetDirectoryCount() => model.GetItems<FavoriteItem>().Count(n => n.Type == FavoriteItemType.Item);
+    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
     public override int GetFileCount() => 0;
 
     public override void Delete(int focusedPos)
     {
         if (focusedPos == 0 || focusedPos == items.Length + 1)
             return;
-        var path = context.CurrentPath.AppendPath(model.GetItem<FavoriteItem>(focusedPos)?.Path);
+        var path = context.CurrentPath.AppendPath(model.GetItem<Item>(focusedPos) is FavoriteItem fi? fi.Path : null);
         if (path != null)
         {
             
         }
     }
 
-    async Task<FavoriteItem[]> Get()
+    async Task<Item[]> Get()
     {
         items = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
                 ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
                 : [];
         return [
-            new FavoriteItem("..", "", FavoriteItemType.Parent),
-            .. items.Select(n => new FavoriteItem(n.Name, n.Path, FavoriteItemType.Item)),
-            new FavoriteItem("Favoriten hinzufügen", "", FavoriteItemType.New)
+            new ParentItem(),
+            .. items.Select(n => new FavoriteItem(n.Name, n.Path)),
+            new NewFavoriteItem()
         ];
     }
 
-    int SortFixedFirst(FavoriteItem? item1, FavoriteItem? item2)
+
+
+    //        foreach (var item in store.GetItems<DirectoryItem>())
+
+
+    int SortFixedFirst(Item? item1, Item? item2)
     {
-        var order = item1?.Type == FavoriteItemType.Parent
+        var order = item1 is ParentItem
             ? -1
-            : item2?.Type == FavoriteItemType.Parent
+            : item2 is ParentItem
             ? 1
-            : item1?.Type == FavoriteItemType.Item && item2?.Type == FavoriteItemType.New
+            : item1 is FavoriteItem && item2 is NewFavoriteItem
             ? -1
-            : item2?.Type == FavoriteItemType.Item && item1?.Type == FavoriteItemType.New
+            : item2 is FavoriteItem && item1 is NewFavoriteItem
             ? 1
             : 0;
         return reverseOrder ? -order : order;
