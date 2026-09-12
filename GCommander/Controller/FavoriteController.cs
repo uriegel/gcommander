@@ -147,12 +147,21 @@ class FavoriteController : Controller
 
     public override async void Rename(int focusedPos)
     {
-        var name = model.GetItem<Item>(focusedPos) is SelectableItem item ? item.Name : null;
-        if (name == null)
+        var item = model.GetItem<Item>(focusedPos) is FavoriteItem fi ? fi : null;
+        if (item == null)
             return;
-        var res = UI.Rename.PresentAsync(name, MainWindow.Instance);
+        var res = await UI.Rename.PresentAsync(item.Name, MainWindow.Instance);
         if (res == null)
             return;
+        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
+                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
+                : [];
+        Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>(
+            [.. favs.Where(n => n.Name != item.Name),
+            new FavoriteItem(res, item.Path)
+        ]));
+        MainWindow.Refresh();
+        MainWindow.FocusActiveView();
     }
 
     async Task<Item[]> Get()
