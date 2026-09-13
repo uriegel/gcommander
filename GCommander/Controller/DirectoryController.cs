@@ -49,7 +49,7 @@ class DirectoryController : Controller
     {
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
-        // watcher.Changed += WatchChanged;
+        watcher.Changed += WatchChanged;
         // watcher.Renamed += WatchRenamed;
         watcher.NotifyFilter = NotifyFilters.CreationTime
                     | NotifyFilters.DirectoryName
@@ -354,13 +354,27 @@ class DirectoryController : Controller
         });
     }
         
-    // void WatchChanged(object _, FileSystemEventArgs e)
-    // {
-    //     var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name)); 
-    //     var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
-    //     item?.DateTime = fileInfo.LastWriteTime;
-    //     item?.Size = fileInfo.Length;
-    // }
+    void WatchChanged(object _, FileSystemEventArgs e)
+    {
+        Gtk.InvokeAsync(() =>
+        {
+            try
+            {
+                if (File.Exists(e.FullPath))
+                {
+                    // TODO  echo "Hallo Affe " >> test.txt    
+                    var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+                    var item = model.GetItems<Item>().OfType<FileItem>().FirstOrDefault(n => n.Name == e.Name);
+                    item?.DateTime = fileInfo.LastWriteTime;
+                    item?.Size = fileInfo.Length;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Watcher created: {e}");
+            }
+        });
+    }
 
     // void WatchRenamed(object _, RenamedEventArgs e)
     // {
