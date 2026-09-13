@@ -47,8 +47,8 @@ class DirectoryController : Controller
     public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
     {
-        // watcher.Created += WatchCreated;
-        // watcher.Deleted += WatchDeleted;
+        watcher.Created += WatchCreated;
+        watcher.Deleted += WatchDeleted;
         // watcher.Changed += WatchChanged;
         // watcher.Renamed += WatchRenamed;
         watcher.NotifyFilter = NotifyFilters.CreationTime
@@ -283,22 +283,35 @@ class DirectoryController : Controller
         }
     }
 
-    // void WatchCreated(object _, FileSystemEventArgs e)
-    // {
-    //     try
-    //     {
-    //         store.Splice(0, 0, [FileItem.New(new FileInfo(e.FullPath))]);
-    //         view.CountsChanged(GetDirectoryCount(), GetFileCount());
-    //     }
-    //     catch { }
-    // }
+    void WatchCreated(object _, FileSystemEventArgs e)
+    {
+        Gtk.InvokeAsync(() =>
+        {
+            try
+            {
+                var isFile = File.Exists(e.FullPath);
+                if (isFile)
+                    store.Splice(0, 0, [FileItem.New(new FileInfo(e.FullPath))]);
+                else
+                    store.Splice(0, 0, [DirectoryItem.New(new DirectoryInfo(e.FullPath))]);
+                view.CountsChanged(GetDirectoryCount(), GetFileCount());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Watcher created: {e}");
+            }
+        });
+    }
 
-    // void WatchDeleted(object _, FileSystemEventArgs e)
-    // {
-    //     var pos = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.Name).Count();
-    //     store.Splice<DirectoryItem>(pos, 1, []);
-    //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
-    // }
+    void WatchDeleted(object _, FileSystemEventArgs e)
+    {
+        Gtk.InvokeAsync(() =>
+        {
+            var pos = store.GetItems<Item>().TakeWhile(n => n.Name != e.Name).Count();
+            store.Splice<Item>(pos, 1, []);
+            view.CountsChanged(GetDirectoryCount(), GetFileCount());
+        });
+    }
         
     // void WatchChanged(object _, FileSystemEventArgs e)
     // {
