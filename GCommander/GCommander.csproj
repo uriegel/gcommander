@@ -48,6 +48,9 @@
     <EmbeddedResource Include="./Resources/UI/rename.ui">
       <LogicalName>rename</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/create-folder.ui">
+      <LogicalName>create-folder</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/date-exif.ui">
       <LogicalName>date-exif</LogicalName>
     </EmbeddedResource>

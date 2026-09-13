@@ -74,8 +74,9 @@ abstract class Controller : IDisposable
         return model.GetItem<Item>(focusedPos) is SelectableItem item ? [ item ] : [];
     }
 
-    public virtual void Delete(int focusedPos) { }
-    public virtual void Rename(int focusedPos) { }
+    public virtual Task Delete(int focusedPos) => Task.CompletedTask;
+    public virtual Task Rename(int focusedPos) => Task.CompletedTask;
+    public virtual Task CreateFolder(int focusedPos) => Task.CompletedTask;
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;
     public virtual int GetDirectoryCount() => 0;

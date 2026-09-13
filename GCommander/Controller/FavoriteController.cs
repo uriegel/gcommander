@@ -122,7 +122,7 @@ class FavoriteController : Controller
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
     public override int GetFileCount() => 0;
 
-    public override async void Delete(int focusedPos)
+    public override async Task Delete(int focusedPos)
     {
         var selected = GetSelectedItems(focusedPos).OfType<FavoriteItem>().ToArray();
         if (selected.Length == 0)
@@ -145,7 +145,7 @@ class FavoriteController : Controller
         MainWindow.FocusActiveView();
     }
 
-    public override async void Rename(int focusedPos)
+    public override async Task Rename(int focusedPos)
     {
         var item = model.GetItem<Item>(focusedPos) is FavoriteItem fi ? fi : null;
         if (item == null)

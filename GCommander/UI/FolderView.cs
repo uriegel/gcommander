@@ -103,7 +103,44 @@ class FolderView : Box
     public void Refresh() => ChangePath(Context.CurrentPath);
     public void ShowFavorites() => ChangePath(FavoriteController.Name);
     public void Rename() => controller.Rename(CurrentPos);
-    public void Delete() => controller.Delete(CurrentPos);
+    
+    public async void Delete() 
+    {
+        try
+        {
+            await controller.Delete(CurrentPos);
+        }
+        catch (GioException gio) when (gio.Code == Gtk4DotNet.ErrorHandling.ErrorCodes.IO.PermissionDenied)
+        {
+            Console.Error.WriteLine($"Zugriff verweigert: {gio}");
+            MainContext.Instance.ErrorText = "Zugriff verweigert";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Konnte nicht gelöscht werden: {e}");
+            MainContext.Instance.ErrorText = "Löschvorgang fehlgeschlagen";
+
+        }
+    }
+
+    public async void CreateFolder()
+    {
+        try
+        {
+            await controller.CreateFolder(CurrentPos);
+        }
+        catch (UnauthorizedAccessException uae)
+        {
+            Console.Error.WriteLine($"Zugriff verweigert: {uae}");
+            MainContext.Instance.ErrorText = "Zugriff verweigert";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Der Ordner konnte nicht angelegt werden: {e}");
+            MainContext.Instance.ErrorText = "Der Ordner konnte nicht angelegt werden";
+
+        }
+    }
     
     public void SelectionChanged(int pos)
     {

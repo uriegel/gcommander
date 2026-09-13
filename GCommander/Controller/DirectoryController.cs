@@ -199,7 +199,7 @@ class DirectoryController : Controller
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
     public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
 
-    public override async void Delete(int focusedPos)
+    public override async Task Delete(int focusedPos)
     {
         var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
         if (selected.Length == 0)
@@ -223,12 +223,21 @@ class DirectoryController : Controller
         var res = await dialog.PresentAsync(MainWindow.Instance);
         if (res == "cancel")
             return;
-        
+
         foreach (var item in selected)
         {
             using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
             await file.TrashAsync();
         }
+    }
+    
+    public override async Task CreateFolder(int focusedPos)
+    {
+        var item = model.GetItem<Item>(focusedPos) is SelectableItem si ? si : null;
+        var res = await UI.CreateFolder.PresentAsync(item?.Name, MainWindow.Instance);
+        if (res == null)
+            return;
+        Directory.CreateDirectory(context.CurrentPath.AppendPath(res));
     }
 
     public override bool CheckRestriction(string searchKey)
