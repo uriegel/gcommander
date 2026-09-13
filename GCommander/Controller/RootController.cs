@@ -5,8 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryWatcher rename
-// TODO test wit notepad and writer
+// TODO size changed: wrong sort. Instead of PropertyChanged/Binding size/date resort (change old item, insert new)?
+// TODO Rename
+
+// TODO test with renameDirectory, notepad and writer
 
 // TODO DirectoryWatcher change, created => get exif information
 

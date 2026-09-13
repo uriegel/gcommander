@@ -50,7 +50,7 @@ class DirectoryController : Controller
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
         watcher.Changed += WatchChanged;
-        // watcher.Renamed += WatchRenamed;
+        watcher.Renamed += WatchRenamed;
         watcher.NotifyFilter = NotifyFilters.CreationTime
                     | NotifyFilters.DirectoryName
                     | NotifyFilters.FileName
@@ -375,38 +375,63 @@ class DirectoryController : Controller
         });
     }
 
-    // void WatchRenamed(object _, RenamedEventArgs e)
-    // {
-    //     Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
-    //     int focused = model.Selected;
-    //     var pos = model.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-    //     bool focusNew = pos == focused;
+    void WatchRenamed(object _, RenamedEventArgs e)
+    {
+        Gtk.InvokeAsync(() =>
+        {
+            try
+            {
+                Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
+                int focused = model.Selected;
+                var pos = model.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
+                bool focusNew = pos == focused;
 
-    //     var posToRemove = store.GetItems<DirectoryItem>().TakeWhile(n => n.Name != e.OldName).Count();
-    //     if (pos != store.GetItemsCount())
-    //         store.Remove(posToRemove);
+                var posToRemove = store.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
 
-    //     var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
-    //     if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
-    //         store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
-    //     else
-    //     {
-    //         var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
-    //         item?.DateTime = fileInfo.LastWriteTime;
-    //         item?.Size = fileInfo.Length;
-    //     }
-    //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
+                // var isDir = Directory.Exists(e.FullPath);
+                // var isFile = File.Exists(e.FullPath);
 
-    //     if (focusNew)
-    //     {
-    //         var newPos = model
-    //             .GetItems<DirectoryItem>()
-    //             .Select((n, i) => new DirItemPos(Item: n, Pos: i))
-    //             .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
-    //         if (newPos.HasValue)
-    //             SetSelection(newPos.Value);
-    //     }
-    // }
+                var item = model.GetItems<Item>().FirstOrDefault(n => n.Name == e.OldName);
+                if (e.Name != null)
+                {
+                    if (pos != store.GetItemsCount())
+                        store.Remove(posToRemove);
+                    item?.Name = e.Name;
+                    var newItem = item is FileItem fi 
+                        ? new FileItem(fi) as Item
+                        : item is DirectoryItem di 
+                        ? new DirectoryItem(di) 
+                        : null;
+                    if (newItem != null)
+                        store.Splice(0, 0, [newItem]);
+                }
+                // var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+                // if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
+                //     store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
+                //     else
+                //     {
+                //         var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
+                //         item?.DateTime = fileInfo.LastWriteTime;
+                //         item?.Size = fileInfo.Length;
+                //     }
+                //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
+
+                if (focusNew)
+                {
+                    var newPos = model
+                        .GetItems<Item>()
+                        .Select((n, i) => new DirItemPos(Item: n, Pos: i))
+                        .FirstOrDefault(n => n.Item.Name == e.Name)?.Pos;
+                    if (newPos.HasValue)
+                        SetSelection(newPos.Value);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Watcher renamed: {e}");
+            }
+        });
+    }
 
     static int SortSize(Item? item1, Item? item2)
     {

@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 class Item : INotifyPropertyChanged
 {
-    public string Name { get; }
+    public string Name { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
