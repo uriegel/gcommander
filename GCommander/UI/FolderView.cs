@@ -189,6 +189,13 @@ class FolderView : Box
         }
     }
 
+    public void ResetSorting()
+    {
+        using var cols = ColumnView.GetColumns();
+        var colArray = cols.ToArray();
+        ColumnView.SortByColumn(colArray[0]);
+    }
+
     async void Activate(int position)
     {
         var changePath = await controller.GetChangePath(position);

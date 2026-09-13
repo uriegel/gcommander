@@ -360,39 +360,11 @@ class DirectoryController : Controller
         {
             try
             {
+                view.ResetSorting();
                 var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                 var item = model.GetItems<Item>().OfType<FileItem>().FirstOrDefault(n => n.Name == e.Name);
                 item?.DateTime = fileInfo.LastWriteTime;
                 item?.Size = fileInfo.Length;
-
-
-
-
-
-
-
-                // if (File.Exists(e.FullPath))
-                // {
-                //     int focused = model.Selected;
-                //     var pos = model.GetItems<Item>().TakeWhile(n => n.Name != e.Name).Count();
-                //     bool focusNew = pos == focused;
-                //     var posToRemove = store.GetItems<Item>().TakeWhile(n => n.Name != e.Name).Count();
-                    
-                //     var item = model.GetItems<Item>().OfType<Item>().FirstOrDefault(n => n.Name == e.Name);
-                //     if (e.Name != null)
-                //     {
-                //         if (item is FileItem fi)
-                //         {
-                //             if (pos != store.GetItemsCount())
-                //                 store.Remove(posToRemove);
-                //             var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
-                //             var newItem = new FileItem(fi);
-                //             newItem.DateTime = fileInfo.LastWriteTime;
-                //             newItem.Size = fileInfo.Length;
-                //             store.Splice(0, 0, [newItem]);
-                //         } 
-                //     }
-                // }
             }
             catch (Exception e)
             {

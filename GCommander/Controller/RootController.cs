@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO size changed: wrong sort. Instead of PropertyChanged/Binding size/date resort (change old item, insert new)?
 // TODO Rename
 
 // TODO test with renameDirectory, notepad and writer
