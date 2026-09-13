@@ -362,7 +362,6 @@ class DirectoryController : Controller
             {
                 if (File.Exists(e.FullPath))
                 {
-                    // TODO  echo "Hallo Affe " >> test.txt    
                     var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                     var item = model.GetItems<Item>().OfType<FileItem>().FirstOrDefault(n => n.Name == e.Name);
                     item?.DateTime = fileInfo.LastWriteTime;
