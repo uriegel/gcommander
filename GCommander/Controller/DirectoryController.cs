@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
@@ -35,16 +36,21 @@ class DirectoryController : Controller
         MainContext.Instance.PropertyChanged -= OnPropertyChanged;
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
 
-        Teste();
+        StartRefreshing();
+    }
 
-        async void Teste()
+    async void StartRefreshing()
+    {
+        try
         {
             while (true)
             {
-                await Task.Delay(1000);
+                await refreshes.Reader.ReadAsync(cancellation.Token);
                 Refresh();
+                await Task.Delay(500, cancellation.Token);
             }
         }
+        catch (OperationCanceledException) { }
     }
 
     public override async Task<string?> GetChangePath(int pos) => (string?)GetItemPath(pos);
@@ -383,7 +389,7 @@ class DirectoryController : Controller
                     item?.DateTime = fileInfo.LastWriteTime;
                     item?.Size = fileInfo.Length;
                 }
-                // Refresh();
+                refreshes.Writer.TryWrite(true);
             }
             catch (Exception e)
             {
@@ -470,6 +476,12 @@ class DirectoryController : Controller
     const string ERWEITERUNG = "Erweiterung";
 
     CancellationTokenSource cancellation = new();
+
+    readonly Channel<bool> refreshes = Channel.CreateBounded<bool>(new BoundedChannelOptions(1)
+    {
+        SingleReader = true,
+        SingleWriter = true
+    });
 
     #region IDisposable
 
