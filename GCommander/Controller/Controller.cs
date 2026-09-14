@@ -90,6 +90,12 @@ abstract class Controller : IDisposable
 
     public void FilterChanged(FilterChange filterChange) => filter?.Changed(filterChange);
 
+    public void Refresh()
+    {
+        var sorter = sortModel.GetSorter();
+        sorter?.Changed(SorterChange.Different);
+    }
+
     public virtual bool CheckRestriction(string searchKey) => false;
 
     protected Controller(string id, FolderView view, FolderContext context)
@@ -98,8 +104,8 @@ abstract class Controller : IDisposable
         this.view = view;
         this.filter = CreateFilter();
         this.context = context;
-        store = ListStore.New();
-        sortModel = SortListModel.New(FilterListModel.New(store, filter), null);
+        store = new(item => item.Name);
+        sortModel = SortListModel.New(new FilterListModel<Item>(store, filter), null);
         model = SingleSelection.New(sortModel);
         model.OnSelectionChanged += OnSelectionChange;
     }
@@ -118,7 +124,7 @@ abstract class Controller : IDisposable
  
     protected SingleSelection model;
     protected SortListModel sortModel;
-    protected ListStore store;
+    protected KeyedListStore<Item, string> store;
     protected CustomFilter? filter;
     readonly protected FolderView view;
  

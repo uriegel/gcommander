@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Extensions;
@@ -33,7 +34,7 @@ class RootController : Controller
         SetNewPath(Name, fromHistory);
         view.OnItemsGet(false);
         view.OnItemsChange(true);
-        store.Splice(0, store.ItemsCount(), items);
+        store.ReplaceAll(items);
         view.OnItemsChange(false);
         view.ColumnView.ScrollTo(0, ListScrollFlags.ScrollFocus);
         view.SelectionChanged(0);
@@ -228,13 +229,13 @@ class RootController : Controller
                 child.Fsuse?.Length > 0 ? int.Parse(child.Fsuse[..^1]) : null,
                 child.Rm) ];
 
-    async void Refresh()
+    async new void Refresh()
     {
         await locker.WaitAsync();
         try
         {
             var items = await Get();
-            store.Splice(0, model.ItemsCount(), items);
+            store.ReplaceAll(items);
             int pos = model.GetItems<RootItem>()
                 .Select((n, i) => new ItemPos(Item: n, Pos: i))
                 .FirstOrDefault(n => n.Item.Name == latestName)?.Pos

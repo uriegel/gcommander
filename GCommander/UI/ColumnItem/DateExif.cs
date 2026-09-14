@@ -19,12 +19,16 @@ class DateExif : Box
 
     public void UnsetDateTimeBinding()
     {
+        datetime.Visible = false;
+        datetime.Text = "";
         datetime.UnsetBinding("label");
         datetime.UnsetBinding("visible");
     }
 
     public void UnsetExifBinding()
     {
+        exif.AddCssClass("exif", false);
+        exif.Text = "";
         exif.UnsetBinding("label");
         exif?.UnsetBindingToCss("exif");
     }

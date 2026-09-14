@@ -20,7 +20,7 @@ class DirectoryController : Controller
         if (enableEvents)
             watcher.EnableRaisingEvents = true;
         view.OnItemsChange(true);
-        store.Splice(0, store.ItemsCount(), items);
+        store.ReplaceAll(items);
         StartExifResolving(items.OfType<FileItem>());
         view.OnItemsChange(false);
         int pos = folderToSelect != null
@@ -34,6 +34,17 @@ class DirectoryController : Controller
 
         MainContext.Instance.PropertyChanged -= OnPropertyChanged;
         MainContext.Instance.PropertyChanged += OnPropertyChanged;
+
+        Teste();
+
+        async void Teste()
+        {
+            while (true)
+            {
+                await Task.Delay(1000);
+                Refresh();
+            }
+        }
     }
 
     public override async Task<string?> GetChangePath(int pos) => (string?)GetItemPath(pos);
@@ -101,6 +112,11 @@ class DirectoryController : Controller
                     dateexif?.SetDateTimeBinding();
                     dateexif?.SetExifBinding();
                 }
+                else
+                {
+                    dateexif?.UnsetDateTimeBinding();
+                    dateexif?.UnsetExifBinding();
+                }
             })
             .Unbind(listitem =>
             {
@@ -129,6 +145,7 @@ class DirectoryController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 label.UnsetBinding("label");
+                label.Text = "";
                 label.DataContext = null;
             });
 
@@ -332,9 +349,9 @@ class DirectoryController : Controller
             {
                 var isFile = File.Exists(e.FullPath);
                 if (isFile)
-                    store.Splice(0, 0, [FileItem.New(new FileInfo(e.FullPath))]);
+                    store.Append(FileItem.New(new FileInfo(e.FullPath)));
                 else
-                    store.Splice(0, 0, [DirectoryItem.New(new DirectoryInfo(e.FullPath))]);
+                    store.Append(DirectoryItem.New(new DirectoryInfo(e.FullPath)));
                 view.CountsChanged(GetDirectoryCount(), GetFileCount());
             }
             catch (Exception e)
@@ -348,8 +365,7 @@ class DirectoryController : Controller
     {
         Gtk.InvokeAsync(() =>
         {
-            var pos = store.GetItems<Item>().TakeWhile(n => n.Name != e.Name).Count();
-            store.Splice<Item>(pos, 1, []);
+            store.Delete(e.Name ?? "");
             view.CountsChanged(GetDirectoryCount(), GetFileCount());
         });
     }
@@ -360,15 +376,18 @@ class DirectoryController : Controller
         {
             try
             {
-                view.ResetSorting();
                 var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
-                var item = model.GetItems<Item>().OfType<FileItem>().FirstOrDefault(n => n.Name == e.Name);
-                item?.DateTime = fileInfo.LastWriteTime;
-                item?.Size = fileInfo.Length;
+                var itemBase = store.GetValue(e.Name ?? "");
+                if (itemBase is FileItem item)
+                {
+                    item?.DateTime = fileInfo.LastWriteTime;
+                    item?.Size = fileInfo.Length;
+                }
+                // Refresh();
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Watcher created: {e}");
+                Console.Error.WriteLine($"Watcher changed: {e}");
             }
         });
     }
@@ -384,7 +403,7 @@ class DirectoryController : Controller
                 var pos = model.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
                 bool focusNew = pos == focused;
 
-                var posToRemove = store.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
+                //var posToRemove = store.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
 
                 // var isDir = Directory.Exists(e.FullPath);
                 // var isFile = File.Exists(e.FullPath);
@@ -392,8 +411,8 @@ class DirectoryController : Controller
                 var item = model.GetItems<Item>().FirstOrDefault(n => n.Name == e.OldName);
                 if (e.Name != null)
                 {
-                    if (pos != store.GetItemsCount())
-                        store.Remove(posToRemove);
+                    if (e.OldName != null)
+                        store.Delete(e.OldName);
                     item?.Name = e.Name;
                     var newItem = item is FileItem fi 
                         ? new FileItem(fi) as Item
@@ -401,7 +420,7 @@ class DirectoryController : Controller
                         ? new DirectoryItem(di) 
                         : null;
                     if (newItem != null)
-                        store.Splice(0, 0, [newItem]);
+                        store.Append(newItem);
                 }
                 // var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                 // if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
@@ -441,7 +460,7 @@ class DirectoryController : Controller
             ? -1
             : 0;
     }
-        
+    
     readonly FileSystemWatcher watcher = new();
     bool reverseOrder;
     bool extensionSearch;

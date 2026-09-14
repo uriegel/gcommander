@@ -84,7 +84,7 @@ class FavoriteController : Controller
         SetNewPath(Name, fromHistory);
         view.OnItemsGet(false);
         view.OnItemsChange(true);
-        store.Splice(0, store.ItemsCount(), items);
+        store.ReplaceAll(items);
         view.OnItemsChange(false);
         view.ColumnView.ScrollTo(0, ListScrollFlags.ScrollFocus);
         view.SelectionChanged(0);
