@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Extensions;
@@ -9,6 +8,8 @@ using static CsTools.ProcessCmd;
 // TODO Rename: Exception handling (Access denied...)
 // TODO Rename: select filename without extension
 // TODO test with renameDirectory, notepad and writer
+
+// TODO Rename as copy
 
 // TODO DirectoryWatcher change, created => get exif information
 
@@ -21,6 +22,8 @@ using static CsTools.ProcessCmd;
 
 // TODO Percentage as progress?
 // TODO DriveType??
+
+// TODO ExtendedRename 
 
 // TODO After Actions grabFocus to paned
 class RootController : Controller
