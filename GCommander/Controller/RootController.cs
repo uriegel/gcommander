@@ -6,8 +6,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Rename
-
+// TODO Rename: Exception handling (Access denied...)
+// TODO Rename: select filename without extension
 // TODO test with renameDirectory, notepad and writer
 
 // TODO DirectoryWatcher change, created => get exif information

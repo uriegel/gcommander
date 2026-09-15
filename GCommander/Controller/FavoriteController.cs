@@ -150,7 +150,7 @@ class FavoriteController : Controller
         var item = model.GetItem<Item>(focusedPos) is FavoriteItem fi ? fi : null;
         if (item == null)
             return;
-        var res = await UI.Rename.PresentAsync(item.Name, MainWindow.Instance);
+        var res = await UI.Rename.PresentAsync("den Favoriten", item.Name, MainWindow.Instance);
         if (res == null)
             return;
         var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0

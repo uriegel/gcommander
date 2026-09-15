@@ -4,10 +4,10 @@ namespace UI;
 
 class Rename : AdwAlertDialog
 {
-    public static async Task<string?> PresentAsync(string name, Widget parent)
+    public static async Task<string?> PresentAsync(string body, string name, Widget parent)
     {
         using var builder = Builder.FromDotNetResource("rename");
-        var dialog = new Rename(builder, "dialog", name);
+        var dialog = new Rename(builder, "dialog", body, name);
         var res = await dialog.PresentAsync(parent);
         if (res == "cancel")
             return null;
@@ -24,8 +24,10 @@ class Rename : AdwAlertDialog
         }
     }
 
-    public Rename(Builder builder, string name, string itemName) : base(builder, name)
+    public Rename(Builder builder, string name, string body, string itemName) : base(builder, name)
     {
+        Body = $"Möchtest du {body} umbenennen?";
+
         var editable = nameEntry.AsEditable();
         editable.Text = itemName;
     }

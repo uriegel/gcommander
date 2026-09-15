@@ -8,7 +8,7 @@
   <ui filename="GCommander/Resources/UI/folderview.ui" sha256="c459c968e767e164de7cb6371d4f759eda1aa110ab7a43f6ca887983f1dd7036"/>
   <ui filename="GCommander/Resources/UI/viewer.ui" sha256="e1d09542c3cb3fadfaee77bd961691c318d3e384e372582234fd0f7eaf884105"/>
   <ui filename="GCommander/Resources/UI/date-exif.ui" sha256="bd11f6ddb5a70cff3f8076caa81705b3a7ec88897ddf2ee26d2f2232e66e988b"/>
-  <ui filename="GCommander/Resources/UI/new-favorite.ui" sha256="e0bf98e4ac4236dab347d8ae2a0c80b31c0937788d16777700b82ed0595b6755"/>
-  <ui filename="GCommander/Resources/UI/rename.ui" sha256="fac37579ab37ba45cdd68013af637c206977ae4135d5e26073cd874fe5c06cc2"/>
-  <ui filename="GCommander/Resources/UI/create-folder.ui" sha256="bf0f2415b6946a5e9e3b5cf96a5dc18d6f9145b06f24cf9fdb149ce09248ee41"/>
+  <ui filename="GCommander/Resources/UI/new-favorite.ui" sha256="9e3ee57c35ba0afc8013d05b55929845911f3d32e4d048544d275601443cdb9e"/>
+  <ui filename="GCommander/Resources/UI/rename.ui" sha256="94e9f9203e8f1bc791de2007a3622017d0eea3aef4a92b293c98843e78018c71"/>
+  <ui filename="GCommander/Resources/UI/create-folder.ui" sha256="36269c96cbd0aced15fd23e42efeef76a78e03e0f2e652da1874f35a01406693"/>
 </cambalache-project>

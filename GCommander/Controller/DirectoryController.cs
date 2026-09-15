@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
+using Gtk4DotNet.ErrorHandling.ErrorCodes;
 
 class DirectoryController : Controller
 {
@@ -253,7 +254,7 @@ class DirectoryController : Controller
             await file.TrashAsync();
         }
     }
-    
+
     public override async Task CreateFolder(int focusedPos)
     {
         var item = model.GetItem<Item>(focusedPos) is SelectableItem si ? si : null;
@@ -262,6 +263,21 @@ class DirectoryController : Controller
             return;
         Directory.CreateDirectory(context.CurrentPath.AppendPath(res));
     }
+    
+    public override async Task Rename(int focusedPos)
+    {
+        var item = model.GetItem<Item>(focusedPos);
+        var body = item is FileItem ? "die Datei" : item is DirectoryItem ? "das Verzeichnis" : null;
+        if (item == null || body == null)
+            return;
+        
+        var res = await UI.Rename.PresentAsync(body, item.Name, MainWindow.Instance);
+        if (res == null)
+            return;
+        Directory.Move(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
+        MainWindow.FocusActiveView();
+    }
+
 
     public override bool CheckRestriction(string searchKey)
         => model
@@ -353,7 +369,7 @@ class DirectoryController : Controller
         {
             try
             {
-                var isFile = File.Exists(e.FullPath);
+                var isFile = System.IO.File.Exists(e.FullPath);
                 if (isFile)
                     store.Append(FileItem.New(new FileInfo(e.FullPath)));
                 else

@@ -5,13 +5,12 @@
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.6"/>
   <object class="AdwAlertDialog" id="dialog">
-    <property name="body">Möchtest du den Eintrag umbenennen?</property>
+    <property name="body"></property>
     <property name="close-response">cancel</property>
     <property name="default-response">ok</property>
     <property name="focus-widget">name</property>
     <property name="heading">Umbenennen</property>
     <property name="prefer-wide-layout">True</property>
-    <property name="presentation-mode">bottom-sheet</property>
     <child>
       <object class="GtkEntry" id="name">
         <property name="activates-default">True</property>

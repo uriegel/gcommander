@@ -11,7 +11,6 @@
     <property name="focus-widget">name</property>
     <property name="heading">Ordner anlegen</property>
     <property name="prefer-wide-layout">True</property>
-    <property name="presentation-mode">bottom-sheet</property>
     <child>
       <object class="GtkEntry" id="name">
         <property name="activates-default">True</property>
