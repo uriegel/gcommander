@@ -303,8 +303,13 @@ class DirectoryController : Controller
         foreach (var item in selected)
         {
             using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
-            await file.TrashAsync();
+            var target = MainWindow.GetInactiveView().Context.CurrentPath.AppendPath(item.Name);
+            if (move)
+                await file.MoveAsync(target, FileCopyFlags.Overwrite, true);
+            else
+                await file.CopyAsync(target, FileCopyFlags.Overwrite, true);
         }
+        MainWindow.GetInactiveView().Refresh();
     }
 
     public override async Task CreateFolder(int focusedPos)
@@ -452,8 +457,10 @@ class DirectoryController : Controller
             {
                 if (File.Exists(e.FullPath))
                 {
-                    store.Append(FileItem.New(new FileInfo(e.FullPath)));
-
+                    var fi = new FileInfo(e.FullPath);
+                    var item = FileItem.New(fi);
+                    store.Append(item);
+                    metaFileData?.QueueMetadata(item, fi.FullName);
                 }
                 else if (Directory.Exists(e.FullPath))
                     store.Append(DirectoryItem.New(new DirectoryInfo(e.FullPath)));
@@ -475,6 +482,7 @@ class DirectoryController : Controller
     {
         Gtk.InvokeAsync(() =>
         {
+            Console.WriteLine("Deleted");
             store.Delete(e.Name ?? "");
             view.CountsChanged(GetDirectoryCount(), GetFileCount());
         });
@@ -486,6 +494,7 @@ class DirectoryController : Controller
         {
             try
             {
+                Console.WriteLine("Changed");
                 var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                 var itemBase = store.GetValue(e.Name ?? "");
                 if (itemBase is FileItem item)
