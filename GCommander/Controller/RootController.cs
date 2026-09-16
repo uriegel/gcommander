@@ -5,8 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Rename as copy
-
 // TODO DirectoryWatcher change, created => get exif information
 
 // TODO DirectoryItems copy

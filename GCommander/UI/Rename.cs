@@ -4,10 +4,10 @@ namespace UI;
 
 class Rename : AdwAlertDialog
 {
-    public static async Task<string?> PresentAsync(string body, string name, Widget parent)
+    public static async Task<string?> PresentAsync(string body, string name, Widget parent, string? header = null)
     {
         using var builder = Builder.FromDotNetResource("rename");
-        var dialog = new Rename(builder, "dialog", body, name);
+        var dialog = new Rename(builder, "dialog", header, body, name);
         var res = await dialog.PresentAsync(parent);
         if (res == "cancel")
             return null;
@@ -24,11 +24,12 @@ class Rename : AdwAlertDialog
         }
     }
 
-    public Rename(Builder builder, string name, string body, string itemName) 
+    public Rename(Builder builder, string name, string? header, string body, string itemName) 
         : base(builder, name)
     {
-        Body = $"Möchtest du {body} umbenennen?";
-
+        if (header != null)
+            Heading = header;
+        Body = body;
         var editable = nameEntry.AsEditable();
         editable.Text = itemName;
         Gtk.BeginInvoke(300, async () =>

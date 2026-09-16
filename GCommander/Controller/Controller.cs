@@ -76,6 +76,7 @@ abstract class Controller : IDisposable
 
     public virtual Task Delete(int focusedPos) => Task.CompletedTask;
     public virtual Task Rename(int focusedPos) => Task.CompletedTask;
+    public virtual Task RenameAsCopy(int focusedPos) => Task.CompletedTask;
     public virtual Task CreateFolder(int focusedPos) => Task.CompletedTask;
     public virtual void OnWidth(int w) { }
     public virtual int GetFileCount() => 0;

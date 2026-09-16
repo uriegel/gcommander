@@ -118,6 +118,23 @@ class FolderView : Box
             MainContext.Instance.ErrorText = "Umbenennen nicht möglich";
         }
     }
+
+    public async Task RenameAsCopy()
+    {
+        try
+        {
+            await controller.RenameAsCopy(CurrentPos);
+        }
+        catch (IOException ioe) when (ioe.HResult == 13)
+        {
+            MainContext.Instance.ErrorText = "Zugriff verweigert";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Umbenennen nicht möglich: {e}");
+            MainContext.Instance.ErrorText = "Umbenennen nicht möglich";
+        }
+    }
     
     public async void Delete() 
     {

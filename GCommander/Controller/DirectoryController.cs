@@ -265,18 +265,37 @@ class DirectoryController : Controller
     
     public override async Task Rename(int focusedPos)
     {
+        if (GetSelectedItems().OfType<SelectableItem>().Any())
+            return;
         var item = model.GetItem<Item>(focusedPos);
+
         var body = item is FileItem ? "die Datei" : item is DirectoryItem ? "das Verzeichnis" : null;
         if (item == null || body == null)
             return;
         
-        var res = await UI.Rename.PresentAsync(body, item.Name, MainWindow.Instance);
+        var res = await UI.Rename.PresentAsync($"Möchtest du {body} umbenennen?", item.Name, MainWindow.Instance);
         if (res == null)
             return;
         Directory.Move(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
         MainWindow.FocusActiveView();
     }
 
+    public override async Task RenameAsCopy(int focusedPos)
+    {
+        if (GetSelectedItems().OfType<SelectableItem>().Any())
+            return;
+        var item = model.GetItem<Item>(focusedPos);
+        var body = item is FileItem ? "der Datei" : item is DirectoryItem ? "des Verzeichnisses" : null;
+        if (item == null || body == null)
+            return;
+        
+        var res = await UI.Rename.PresentAsync($"Möchtest eine Kopie {body} erstellen?", item.Name, MainWindow.Instance, "Kopie erstellen");
+        if (res == null)
+            return;
+        if (File.Exists(context.CurrentPath.AppendPath(item.Name)))
+            File.Copy(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
+        MainWindow.FocusActiveView();
+    }
 
     public override bool CheckRestriction(string searchKey)
         => model
@@ -433,10 +452,10 @@ class DirectoryController : Controller
                 var pos = model.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
                 bool focusNew = pos == focused;
 
+                var item = model.GetItems<Item>().FirstOrDefault(n => n.Name == e.OldName);
                 if (e.OldName != null)
                     store.Delete(e.OldName);
 
-                var item = model.GetItems<Item>().FirstOrDefault(n => n.Name == e.OldName);
                 if (item != null && e.Name != null)
                 {
                     item?.Name = e.Name;

@@ -5,7 +5,6 @@
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.6"/>
   <object class="AdwAlertDialog" id="dialog">
-    <property name="body"></property>
     <property name="close-response">cancel</property>
     <property name="default-response">ok</property>
     <property name="focus-widget">name</property>

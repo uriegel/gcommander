@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="9.0.64-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.65-beta" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
   </ItemGroup>
 
