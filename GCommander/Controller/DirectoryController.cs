@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
@@ -55,7 +56,25 @@ class DirectoryController : Controller
         catch (OperationCanceledException) { }
     }
 
-    public override async Task<string?> GetChangePath(int pos) => (string?)GetItemPath(pos);
+    public override async Task<string?> GetActivationPath(int pos)
+    {
+        var item = model.GetItem<Item>(pos);
+        if (item is FileItem fi)
+        {
+            using var proc = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "xdg-open",
+                    Arguments = $"\"{context.CurrentPath.AppendPath(fi.Name)}\"",
+                },
+            };
+            proc.Start();
+            return null;
+        }
+        else
+            return (string?)GetItemPath(pos);  
+    } 
 
     public override string GetItemPath(int pos)
         => context.CurrentPath.AppendPath(model.GetItem<Item>(pos)?.Name ?? "");

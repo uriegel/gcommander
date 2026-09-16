@@ -229,7 +229,7 @@ class FolderView : Box
 
     async void Activate(int position)
     {
-        var changePath = await controller.GetChangePath(position);
+        var changePath = await controller.GetActivationPath(position);
         if (changePath == null)
             return;
         ChangePath(changePath);

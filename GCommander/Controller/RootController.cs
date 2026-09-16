@@ -5,7 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Execute files
 // TODO Execute files with
 
 // TODO DirectoryItems copy
@@ -55,7 +54,7 @@ class RootController : Controller
 
     public override int GetDirectoryCount() => model.GetItems<RootItem>().Count();
 
-    public override async Task<string?> GetChangePath(int pos)
+    public override async Task<string?> GetActivationPath(int pos)
     {
         var item = model.GetItem<RootItem>(pos);
         if (item == null)

@@ -90,7 +90,7 @@ class FavoriteController : Controller
         view.SelectionChanged(0);
     }
 
-    public override async Task<string?> GetChangePath(int pos)
+    public override async Task<string?> GetActivationPath(int pos)
     {
         var res = GetItemPath(pos);
         if (res == "")
