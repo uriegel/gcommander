@@ -163,8 +163,14 @@ class FolderView : Box
 
     public async void Copy(bool move = false) 
     {
+        if (ProgressContext.Instance.IsRunning)
+        {
+            MainContext.Instance.ErrorText = "Es ist bereits eine Dateioperation im Gange";
+            return;
+        }
         try
         {
+            ProgressContext.Instance.IsRunning = true;
             await controller.Copy(CurrentPos, move);
         }
         catch (GioException gio) when (gio.Code == Gtk4DotNet.ErrorHandling.ErrorCodes.IO.PermissionDenied)
@@ -176,6 +182,10 @@ class FolderView : Box
         {
             Console.Error.WriteLine($"Konnte nicht {(move ? "verschoben" : "kopiert")} werden: {e}");
             MainContext.Instance.ErrorText = move ? "Verschieben fehlgeschlagen" : "Kopieren fehlgeschlagen";
+        }
+        finally
+        {
+            ProgressContext.Instance.IsRunning = false;
         }
     }
 

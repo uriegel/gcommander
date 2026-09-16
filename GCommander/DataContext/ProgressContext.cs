@@ -5,9 +5,27 @@ class ProgressContext : INotifyPropertyChanged
 {
     public static ProgressContext Instance = new();
 
+    public bool IsRunning
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                Gtk.BeginInvoke(200, async () =>
+                {
+                    await Task.Delay(6000);
+                    if (!IsRunning)
+                        CopyProgress = null;
+                });
+            }
+        }
+    }
+
     public CopyProgress? CopyProgress
     {
-        get => field;
+        get;
         set
         {
             if (field != value)
