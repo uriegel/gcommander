@@ -20,7 +20,7 @@ public class ProgressControl : Revealer
         progressbarTotal.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetTotalFraction);
         progressbarCurrent.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
         // TODO cancelBtn.OnClicked += BackgroundJobs.Cancel;
-        // TODO  _ = progressSpinner;
+        _ = progressSpinner;
     }
 
     public void ShowPopover()
@@ -62,7 +62,7 @@ public class ProgressControl : Revealer
     [Widget]
     MenuButton progressControl = null!;
 
-    // [Widget]
-    // TODO ProgressSpinner progressSpinner = null!;
+    [Widget]
+    ProgressSpinner progressSpinner = null!;
 }
 
