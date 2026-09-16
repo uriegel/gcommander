@@ -20,6 +20,8 @@ class DirectoryController : Controller
         watcher.Path = context.CurrentPath;
         if (enableEvents)
             watcher.EnableRaisingEvents = true;
+        metaFileData?.Dispose();
+        metaFileData = new();
         view.OnItemsChange(true);
         store.ReplaceAll(items);
         StartExifResolving(items.OfType<FileItem>());
@@ -387,21 +389,23 @@ class DirectoryController : Controller
         {
             try
             {
-                Console.WriteLine($"-----------------------------------------------Created: {e.FullPath}");
-                if (System.IO.File.Exists(e.FullPath))
+                if (File.Exists(e.FullPath))
+                {
                     store.Append(FileItem.New(new FileInfo(e.FullPath)));
+
+                }
                 else if (Directory.Exists(e.FullPath))
                     store.Append(DirectoryItem.New(new DirectoryInfo(e.FullPath)));
                 else
                 {
-                    Console.WriteLine($"-----------------------------------------------Not created: {e.FullPath}");
+                    Console.WriteLine($"Not created: {e.FullPath}");
                     return;
                 }
                 view.CountsChanged(GetDirectoryCount(), GetFileCount());
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"-----------------------------------------------Watcher created: {e}");
+                Console.Error.WriteLine($"Exception in Watcher created: {e}");
             }
         });
     }
@@ -410,7 +414,6 @@ class DirectoryController : Controller
     {
         Gtk.InvokeAsync(() =>
         {
-            Console.WriteLine($"-----------------------------------------------Deleted: {e.FullPath}");
             store.Delete(e.Name ?? "");
             view.CountsChanged(GetDirectoryCount(), GetFileCount());
         });
@@ -422,19 +425,19 @@ class DirectoryController : Controller
         {
             try
             {
-                Console.WriteLine($"-----------------------------------------------Changed: {e.FullPath}");
                 var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                 var itemBase = store.GetValue(e.Name ?? "");
                 if (itemBase is FileItem item)
                 {
                     item?.DateTime = fileInfo.LastWriteTime;
                     item?.Size = fileInfo.Length;
+                    if (item != null)
+                        metaFileData?.QueueMetadata(item, fileInfo.FullName);
                 }
                 refreshes.Writer.TryWrite(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Console.Error.WriteLine($"-----------------------------------------------Watcher changed: {ex}");
                 int focused = model.Selected;
                 SetSelection(focused);
             }   
@@ -516,6 +519,7 @@ class DirectoryController : Controller
     const string NAME = "Name";
     const string ERWEITERUNG = "Erweiterung";
 
+    MetaFileData? metaFileData = null;
     CancellationTokenSource cancellation = new();
 
     readonly Channel<bool> refreshes = Channel.CreateBounded<bool>(new BoundedChannelOptions(1)
@@ -533,6 +537,7 @@ class DirectoryController : Controller
             if (disposing)
             {
                 cancellation.Cancel();
+                metaFileData?.Dispose();
                 watcher.Dispose();
                 MainContext.Instance.PropertyChanged -= OnPropertyChanged;
             }

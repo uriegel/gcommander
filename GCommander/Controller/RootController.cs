@@ -5,12 +5,11 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryWatcher change, created => get exif information
+// TODO Execute files
+// TODO Execute files with
 
 // TODO DirectoryItems copy
 // TODO DirectoryItems delete Progress
-
-// TODO Execute files
 
 // TODO public static void RemoveDrive(string mountPoint)
 
