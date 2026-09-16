@@ -13,12 +13,14 @@ class ProgressContext : INotifyPropertyChanged
             if (field != value)
             {
                 field = value;
-                Gtk.BeginInvoke(200, async () =>
-                {
-                    await Task.Delay(6000);
-                    if (!IsRunning)
-                        CopyProgress = null;
-                });
+                if (value == false)
+                    Gtk.BeginInvoke(200, async () =>
+                    {
+                        if (CopyProgress?.Cancellation.IsCancellationRequested == false)
+                            await Task.Delay(6000);
+                        if (!IsRunning)
+                            CopyProgress = null;
+                    });
             }
         }
     }
@@ -63,6 +65,8 @@ class ProgressContext : INotifyPropertyChanged
             : TimeSpan.FromMilliseconds(0);
     }
 
+    public static void Cancel() => Instance.CopyProgress?.Cancellation.Cancel();
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
@@ -80,5 +84,6 @@ record CopyProgress(
     long CurrentMaxBytes,
     long CurrentBytes,
     bool IsRunning,
-    TimeSpan Duration
+    TimeSpan Duration,
+    CancellationTokenSource Cancellation
 );

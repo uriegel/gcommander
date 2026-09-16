@@ -66,6 +66,8 @@ class MainWindow : ApplicationWindow
             Application.Settings.SetInt("width", Width);
             Application.Settings.SetInt("height", Height);
         });
+
+        _ = progressRevealer;
     }
 
     public static FolderView GetInactiveView() => Instance.folderpaned.GetInactiveView();

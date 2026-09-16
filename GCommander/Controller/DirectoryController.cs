@@ -305,11 +305,14 @@ class DirectoryController : Controller
         var totalMaxBytes = selected.Sum(n => n is FileItem fi ? fi.Size : 0);
         var totalCurrentBytes = 0L;
         var start = DateTime.UtcNow;
+        var cts = new CancellationTokenSource();
         foreach (var item in selected)
         {
+            if (cts.Token.IsCancellationRequested)
+                break;
             void OnProgress(long curr, long max)
                 => ProgressContext.Instance.CopyProgress = new(title, item.Name, selected.Length, currentCount,
-                        totalMaxBytes, totalCurrentBytes, item is FileItem fi ? fi.Size : 0, curr, true, DateTime.UtcNow - start);
+                        totalMaxBytes, totalCurrentBytes, item is FileItem fi ? fi.Size : 0, curr, true, DateTime.UtcNow - start, cts);
 
             using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
             var target = MainWindow.GetInactiveView().Context.CurrentPath.AppendPath(item.Name);
@@ -320,8 +323,6 @@ class DirectoryController : Controller
             totalCurrentBytes += item is FileItem fi ? fi.Size : 0;
             currentCount++;
         }
-
-        // TODO remove dialog after 5s
 
         MainWindow.GetInactiveView().Refresh();
     }
