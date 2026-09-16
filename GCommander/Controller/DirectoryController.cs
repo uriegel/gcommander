@@ -2,7 +2,6 @@ using System.ComponentModel;
 using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
-using Gtk4DotNet.ErrorHandling.ErrorCodes;
 
 class DirectoryController : Controller
 {
@@ -369,16 +368,21 @@ class DirectoryController : Controller
         {
             try
             {
-                var isFile = System.IO.File.Exists(e.FullPath);
-                if (isFile)
+                Console.WriteLine($"-----------------------------------------------Created: {e.FullPath}");
+                if (System.IO.File.Exists(e.FullPath))
                     store.Append(FileItem.New(new FileInfo(e.FullPath)));
-                else
+                else if (Directory.Exists(e.FullPath))
                     store.Append(DirectoryItem.New(new DirectoryInfo(e.FullPath)));
+                else
+                {
+                    Console.WriteLine($"-----------------------------------------------Not created: {e.FullPath}");
+                    return;
+                }
                 view.CountsChanged(GetDirectoryCount(), GetFileCount());
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Watcher created: {e}");
+                Console.Error.WriteLine($"-----------------------------------------------Watcher created: {e}");
             }
         });
     }
@@ -387,6 +391,7 @@ class DirectoryController : Controller
     {
         Gtk.InvokeAsync(() =>
         {
+            Console.WriteLine($"-----------------------------------------------Deleted: {e.FullPath}");
             store.Delete(e.Name ?? "");
             view.CountsChanged(GetDirectoryCount(), GetFileCount());
         });
@@ -394,10 +399,11 @@ class DirectoryController : Controller
         
     void WatchChanged(object _, FileSystemEventArgs e)
     {
-        Gtk.InvokeAsync(() =>
+        Gtk.InvokeAsync(async () =>
         {
             try
             {
+                Console.WriteLine($"-----------------------------------------------Changed: {e.FullPath}");
                 var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
                 var itemBase = store.GetValue(e.Name ?? "");
                 if (itemBase is FileItem item)
@@ -407,10 +413,12 @@ class DirectoryController : Controller
                 }
                 refreshes.Writer.TryWrite(true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine($"Watcher changed: {e}");
-            }
+                // Console.Error.WriteLine($"-----------------------------------------------Watcher changed: {ex}");
+                int focused = model.Selected;
+                SetSelection(focused);
+            }   
         });
     }
 
@@ -420,40 +428,38 @@ class DirectoryController : Controller
         {
             try
             {
-                Console.WriteLine($"Renamed: {e.OldName} {e.Name}");
+                Console.WriteLine($"-----------------------------------------------Renamed: {e.OldName} {e.Name}");
                 int focused = model.Selected;
                 var pos = model.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
                 bool focusNew = pos == focused;
 
-                //var posToRemove = store.GetItems<Item>().TakeWhile(n => n.Name != e.OldName).Count();
-
-                // var isDir = Directory.Exists(e.FullPath);
-                // var isFile = File.Exists(e.FullPath);
+                if (e.OldName != null)
+                    store.Delete(e.OldName);
 
                 var item = model.GetItems<Item>().FirstOrDefault(n => n.Name == e.OldName);
-                if (e.Name != null)
+                if (item != null && e.Name != null)
                 {
-                    if (e.OldName != null)
-                        store.Delete(e.OldName);
                     item?.Name = e.Name;
-                    var newItem = item is FileItem fi 
+                    var newItem = item is FileItem fi
                         ? new FileItem(fi) as Item
-                        : item is DirectoryItem di 
-                        ? new DirectoryItem(di) 
+                        : item is DirectoryItem di
+                        ? new DirectoryItem(di)
                         : null;
                     if (newItem != null)
                         store.Append(newItem);
                 }
-                // var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
-                // if (!File.Exists(context.CurrentPath.AppendPath(e.Name)))
-                //     store.Splice(0, 0, [DirectoryItem.CreateFileItem(fileInfo)]);
-                //     else
-                //     {
-                //         var item = model.GetItems<DirectoryItem>().FirstOrDefault(n => n.Name == e.Name);
-                //         item?.DateTime = fileInfo.LastWriteTime;
-                //         item?.Size = fileInfo.Length;
-                //     }
-                //     view.CountsChanged(GetDirectoryCount(), GetFileCount());
+                else
+                {
+                    var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+                    var itemBase = store.GetValue(e.Name ?? "");
+                    if (itemBase is FileItem fi)
+                    {
+                        fi?.DateTime = fileInfo.LastWriteTime;
+                        fi?.Size = fileInfo.Length;
+                    }
+                    refreshes.Writer.TryWrite(true);
+                }
+                view.CountsChanged(GetDirectoryCount(), GetFileCount());
 
                 if (focusNew)
                 {
@@ -467,7 +473,7 @@ class DirectoryController : Controller
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Watcher renamed: {e}");
+                Console.Error.WriteLine($"-----------------------------------------------Watcher renamed: {e}");
             }
         });
     }

@@ -102,7 +102,22 @@ class FolderView : Box
     public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
     public void Refresh() => ChangePath(Context.CurrentPath);
     public void ShowFavorites() => ChangePath(FavoriteController.Name);
-    public void Rename() => controller.Rename(CurrentPos);
+    public async Task Rename()
+    {
+        try
+        {
+            await controller.Rename(CurrentPos);      
+        }
+        catch (IOException ioe) when (ioe.HResult == 13)
+        {
+            MainContext.Instance.ErrorText = "Zugriff verweigert";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Umbenennen nicht möglich: {e}");
+            MainContext.Instance.ErrorText = "Umbenennen nicht möglich";
+        }
+    }
     
     public async void Delete() 
     {
@@ -119,7 +134,6 @@ class FolderView : Box
         {
             Console.Error.WriteLine($"Konnte nicht gelöscht werden: {e}");
             MainContext.Instance.ErrorText = "Löschvorgang fehlgeschlagen";
-
         }
     }
 
