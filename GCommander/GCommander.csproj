@@ -57,6 +57,15 @@
     <EmbeddedResource Include="./Resources/UI/viewer.ui">
       <LogicalName>viewer</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/appchooser.ui">
+      <LogicalName>appchooser</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/appitem.ui">
+      <LogicalName>appitem</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/appitemheader.ui">
+      <LogicalName>appitemheader</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>
     </EmbeddedResource>

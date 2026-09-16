@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.0.3 -->
+<interface>
+  <!-- interface-name appchooser.ui -->
+  <requires lib="gtk" version="4.18"/>
+  <requires lib="libadwaita" version="1.5"/>
+  <object class="AdwDialog" id="dialog">
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <property name="show-end-title-buttons">False</property>
+            <child>
+              <object class="GtkButton">
+                <property name="action-name">appchooser.cancel</property>
+                <property name="label">_Abbrechen</property>
+                <property name="use-underline">True</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="openBtn">
+                <property name="action-name">appchooser.openfile</property>
+                <property name="css-classes">suggested-action</property>
+                <property name="label">_Öffnen</property>
+                <property name="use-underline">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-bottom">20</property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-top">20</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">20</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkLabel" id="description">
+                <property name="label">Wähle eine App, um &lt;b&gt;diese Datei.txt&lt;/b&gt; zu öffnen</property>
+                <property name="use-markup">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="has-frame">True</property>
+                <property name="vexpand">True</property>
+                <child>
+                  <object class="GtkListBox" id="listbox">
+                    <property name="focusable">False</property>
+                    <property name="tab-behavior">item</property>
+                    <property name="vexpand">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="content-height">600</property>
+    <property name="content-width">500</property>
+    <property name="title">Öffnen mit...</property>
+  </object>
+</interface>

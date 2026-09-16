@@ -323,6 +323,16 @@ class DirectoryController : Controller
             .GetItems<Item>()
             .Any(n => n.Name.StartsWith(searchKey, StringComparison.CurrentCultureIgnoreCase));
 
+    public override void OpenWith(int pos)
+    {
+        var item = model.GetItem<Item>(pos);
+        if (item is FileItem fi)
+        {
+            AdwDialog.PresentFromTemplate("appchooser", "dialog", MainWindow.Instance, (builder, name)
+                        => new AppChooser(builder, name, context.CurrentPath, fi.Name));
+        }
+    }
+
     protected override CustomFilter? CreateFilter() => CustomFilter.New<Item>(Filter);
 
     void StartExifResolving(IEnumerable<FileItem> items)

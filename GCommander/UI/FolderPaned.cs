@@ -72,6 +72,7 @@ class FolderPaned : Paned
     public void Rename() => lastActiveView?.Rename();
     public void RenameAsCopy() => lastActiveView?.RenameAsCopy();
     public void CreateFolder() => lastActiveView?.CreateFolder();
+    public void OpenWith() => lastActiveView?.OpenWith();
         
     public FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
 

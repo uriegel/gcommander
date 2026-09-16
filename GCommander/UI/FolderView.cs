@@ -102,6 +102,13 @@ class FolderView : Box
     public void ToggleSelection(int pos) => controller.ToggleSelection(pos);
     public void Refresh() => ChangePath(Context.CurrentPath);
     public void ShowFavorites() => ChangePath(FavoriteController.Name);
+    
+    public void OpenWith()
+    {
+        int pos = ColumnView.GetFocusedItemPos();
+        controller.OpenWith(pos);
+    }
+
     public async Task Rename()
     {
         try
@@ -172,7 +179,7 @@ class FolderView : Box
 
         }
     }
-    
+
     public void SelectionChanged(int pos)
     {
         CurrentPos = pos;

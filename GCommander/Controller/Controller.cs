@@ -45,6 +45,8 @@ abstract class Controller : IDisposable
             item?.IsSelected = item.IsSelected != true;
     }
 
+    public virtual void OpenWith(int pos) {}
+
     public void SelectAllAbove()
     {
         foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))

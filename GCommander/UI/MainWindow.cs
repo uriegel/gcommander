@@ -47,6 +47,7 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("renameascopy", folderpaned.RenameAsCopy, "<Shift>F2"));
         AddActions(new SimpleAction("rename", folderpaned.Rename, "F2"));
         AddActions(new SimpleAction("createfolder", folderpaned.CreateFolder, "F7"));
+        AddActions(new SimpleAction("openwith", folderpaned.OpenWith, "<Ctrl>Return"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
 

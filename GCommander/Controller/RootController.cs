@@ -5,8 +5,6 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Execute files with
-
 // TODO DirectoryItems copy
 // TODO DirectoryItems copy refresh
 // TODO DirectoryItems copy with progress
