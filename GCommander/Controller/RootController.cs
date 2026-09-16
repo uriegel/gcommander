@@ -5,8 +5,10 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems copy with progress
+// TODO DirectoryItems copy with progress spinner
+// TODO DirectoryItems copy Directories
 // TODO DirectoryItems copy prevent stopping when copy is in progress
+// TODO DirectoryItems copy Cancle copy
 // TODO DirectoryItems delete Progress
 // TODO DirectoryItems Conflicts
 

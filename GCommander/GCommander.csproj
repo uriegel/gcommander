@@ -66,6 +66,9 @@
     <EmbeddedResource Include="./Resources/UI/appitemheader.ui">
       <LogicalName>appitemheader</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/progresscontrol.ui">
+      <LogicalName>progresscontrol</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>
     </EmbeddedResource>

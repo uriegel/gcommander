@@ -122,6 +122,9 @@
                 <property name="visible" bind-source="preview_button" bind-property="active" bind-flags="sync-create"/>
               </object>
             </child>
+            <child type="end">
+              <object class="GtkBox" id="progressRevealer"/>
+            </child>
           </object>
         </child>
       </object>

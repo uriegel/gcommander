@@ -112,6 +112,9 @@ class MainWindow : ApplicationWindow
 
     [Widget(Template = "viewer")]
     readonly Viewer viewer = null!;
+
+    [Widget(Template = "progresscontrol")]
+    ProgressControl progressRevealer = null!;
 }
 
 static class WindowExtensions

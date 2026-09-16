@@ -280,6 +280,7 @@ class DirectoryController : Controller
         var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
         if (selected.Length == 0)
             return;
+        var title = move ? "Verschieben" : "Kopieren";
         var dirs = selected.Count(n => n is DirectoryItem);
         var files = selected.Count(n => n is FileItem);
         var text = dirs == 0 && files == 1
@@ -291,7 +292,7 @@ class DirectoryController : Controller
             : dirs > 1 && files == 0
             ? "die Verzeichnisse"
             : "die Einträge";
-        var dialog = AdwAlertDialog.New(move ? "Verschieben" : "Kopieren", $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+        var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)
@@ -300,15 +301,28 @@ class DirectoryController : Controller
         if (res == "cancel")
             return;
 
+        var currentCount = 1;
+        var totalMaxBytes = selected.Sum(n => n is FileItem fi ? fi.Size : 0);
+        var totalCurrentBytes = 0L;
+        var start = DateTime.UtcNow;
         foreach (var item in selected)
         {
+            void OnProgress(long curr, long max)
+                => ProgressContext.Instance.CopyProgress = new(title, item.Name, selected.Length, currentCount,
+                        totalMaxBytes, totalCurrentBytes, item is FileItem fi ? fi.Size : 0, curr, true, DateTime.UtcNow - start);
+
             using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
             var target = MainWindow.GetInactiveView().Context.CurrentPath.AppendPath(item.Name);
             if (move)
-                await file.MoveAsync(target, FileCopyFlags.Overwrite, true);
+                await file.MoveAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
             else
-                await file.CopyAsync(target, FileCopyFlags.Overwrite, true);
+                await file.CopyAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
+            totalCurrentBytes += item is FileItem fi ? fi.Size : 0;
+            currentCount++;
         }
+
+        // TODO remove dialog after 5s
+
         MainWindow.GetInactiveView().Refresh();
     }
 
