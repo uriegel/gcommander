@@ -57,8 +57,16 @@ class MainWindow : ApplicationWindow
 
         OnClose(async _ =>
         {
-            await BackgroundTasks.CancelAllAsync();
-            return false;
+            if (ProgressContext.Instance.IsRunning)
+            {
+                progressRevealer.ShowPopover();    
+                return true;
+            }
+            else
+            {
+                await BackgroundTasks.CancelAllAsync();
+                return false;
+            }
         });
 
         OnFinalize(() =>
