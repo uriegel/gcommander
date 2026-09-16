@@ -161,6 +161,24 @@ class FolderView : Box
         }
     }
 
+    public async void Copy(bool move = false) 
+    {
+        try
+        {
+            await controller.Copy(CurrentPos, move);
+        }
+        catch (GioException gio) when (gio.Code == Gtk4DotNet.ErrorHandling.ErrorCodes.IO.PermissionDenied)
+        {
+            Console.Error.WriteLine($"Zugriff verweigert: {gio}");
+            MainContext.Instance.ErrorText = "Zugriff verweigert";
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Konnte nicht {(move ? "verschoben" : "kopiert")} werden: {e}");
+            MainContext.Instance.ErrorText = move ? "Verschieben fehlgeschlagen" : "Kopieren fehlgeschlagen";
+        }
+    }
+
     public async void CreateFolder()
     {
         try

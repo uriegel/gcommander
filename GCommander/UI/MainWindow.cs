@@ -41,12 +41,14 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("sel-all-beneath", folderpaned.SelectAllBeneath, "<Shift>End"));
         AddActions(new SimpleAction("toggleselection", folderpaned.ToggleSelection, "Insert"));
         AddActions(new SimpleAction("delete", folderpaned.Delete, "Entf"));
-        AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
         AddActions(new SimpleAction("favorites", folderpaned.ShowFavorites, "F1"));
         AddActions(new SimpleAction("renameascopy", folderpaned.RenameAsCopy, "<Shift>F2"));
         AddActions(new SimpleAction("rename", folderpaned.Rename, "F2"));
+        AddActions(new SimpleAction("copy", folderpaned.Copy, "F5"));
+        AddActions(new SimpleAction("move", folderpaned.Move, "F6"));
         AddActions(new SimpleAction("createfolder", folderpaned.CreateFolder, "F7"));
+        AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("openwith", folderpaned.OpenWith, "<Ctrl>Return"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));

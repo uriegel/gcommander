@@ -8,7 +8,9 @@ using static CsTools.ProcessCmd;
 // TODO DirectoryItems copy
 // TODO DirectoryItems copy refresh
 // TODO DirectoryItems copy with progress
+// TODO DirectoryItems copy prevent stopping when copy is in progress
 // TODO DirectoryItems delete Progress
+// TODO DirectoryItems Conflicts
 
 // TODO public static void RemoveDrive(string mountPoint)
 

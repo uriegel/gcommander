@@ -275,6 +275,38 @@ class DirectoryController : Controller
         }
     }
 
+    public override async Task Copy(int focusedPos, bool move)
+    {
+        var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
+        if (selected.Length == 0)
+            return;
+        var dirs = selected.Count(n => n is DirectoryItem);
+        var files = selected.Count(n => n is FileItem);
+        var text = dirs == 0 && files == 1
+            ? "die Datei"
+            : dirs == 1 && files == 0
+            ? "das Verzeichnis"
+            : dirs == 0 && files > 1
+            ? "die Dateien"
+            : dirs > 1 && files == 0
+            ? "die Verzeichnisse"
+            : "die Einträge";
+        var dialog = AdwAlertDialog.New(move ? "Verschieben" : "Kopieren", $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+        dialog.SetResponses([
+                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                new("cancel", "_Abbrechen", Cancel: true)
+            ]);
+        var res = await dialog.PresentAsync(MainWindow.Instance);
+        if (res == "cancel")
+            return;
+
+        foreach (var item in selected)
+        {
+            using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
+            await file.TrashAsync();
+        }
+    }
+
     public override async Task CreateFolder(int focusedPos)
     {
         var item = model.GetItem<Item>(focusedPos) is SelectableItem si ? si : null;
