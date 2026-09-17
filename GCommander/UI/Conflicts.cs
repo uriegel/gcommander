@@ -15,7 +15,7 @@ class Conflicts : AdwAlertDialog
     public Conflicts(Builder builder, string name)
         : base(builder, name)
     {
-        conflictBox.SetSizeRequest(MainWindow.Instance.Width - 80, MainWindow.Instance.Height - 40);
+        conflictBox.SetSizeRequest(MainWindow.Instance.Width - 80, MainWindow.Instance.Height - 300);
         showDirection.RightToLeft = !MainWindow.IsLeftActive();
     }
 

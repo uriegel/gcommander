@@ -15,5 +15,5 @@
   <ui filename="GCommander/Resources/UI/appitem.ui" sha256="fe044b7ec76284ab370e983a2270ae23116a5eeea508bab8e444f2bb163fa774"/>
   <ui filename="GCommander/Resources/UI/appitemheader.ui" sha256="c469c181ddddc27c446ed24fa3e692e35c1b6f2817979861d461e1217ff70a24"/>
   <ui filename="GCommander/Resources/UI/progresscontrol.ui" sha256="efda6f9c787dec6029bdbdfced8c7d11ec62386f38d2d6f3e174ec38e25c59f7"/>
-  <ui filename="GCommander/Resources/UI/conflicts.ui" sha256="02b096ca08ef145d89aad7adcf6b5fc7715ebb5c797caa8019357b972410af24"/>
+  <ui filename="GCommander/Resources/UI/conflicts.ui" sha256="2b78303ff905b38e654107e0878cb4755f923a0ae0d937d121185f534f4d8857"/>
 </cambalache-project>

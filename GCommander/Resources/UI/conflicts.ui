@@ -7,18 +7,24 @@
   <object class="AdwAlertDialog" id="dialog">
     <property name="body">Dateien kopieren</property>
     <property name="close-response">cancel</property>
-    <property name="content-height">600</property>
-    <property name="content-width">800</property>
+    <property name="content-height">0</property>
+    <property name="content-width">0</property>
     <property name="default-response">ok</property>
     <property name="prefer-wide-layout">True</property>
     <child>
       <object class="GtkBox" id="conflictBox">
-        <property name="valign">start</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkDrawingArea" id="showDirection">
             <property name="height-request">0</property>
             <property name="hexpand">True</property>
+            <property name="margin-bottom">8</property>
             <property name="valign">center</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="vexpand">True</property>
           </object>
         </child>
       </object>
