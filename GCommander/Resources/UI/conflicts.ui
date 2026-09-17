@@ -23,9 +23,17 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="vexpand">True</property>
-          </object>
+          <object class="GtkScrolledWindow">
+            <property name="hexpand">True</property>
+            <property name="hscrollbar-policy">never</property>
+            <child>
+              <object class="GtkColumnView" id="columnView">
+                <property name="hexpand">True</property>
+                <property name="tab-behavior">item</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+          </object>          
         </child>
       </object>
     </child>

@@ -21,8 +21,11 @@ class Conflicts : AdwAlertDialog
 
     [Widget]
     readonly Box conflictBox = null!;
-    
+
     [Widget]
     readonly ShowDirection showDirection = null!;
+    
+    [Widget]
+    readonly ColumnView columnView = null!;
 }
 
