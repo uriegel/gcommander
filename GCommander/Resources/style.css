@@ -38,7 +38,7 @@ listview row .exif {
 }
 
 listview row.hiddenItem {
-    opacity: 0.45;
+    opacity: 0.6;
 }
 
 .warning {
@@ -81,3 +81,7 @@ searchbar entry  {
     font-size: smaller;
     font-family: "Noto Sans";
 }
+
+progressbar.finished progress {
+    background-color: gray;
+} 

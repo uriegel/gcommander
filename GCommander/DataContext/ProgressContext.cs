@@ -13,6 +13,7 @@ class ProgressContext : INotifyPropertyChanged
             if (field != value)
             {
                 field = value;
+                OnChanged(nameof(IsRunning));
                 if (value == false)
                     Gtk.BeginInvoke(200, async () =>
                     {
@@ -83,7 +84,6 @@ record CopyProgress(
     long TotalBytes,
     long CurrentMaxBytes,
     long CurrentBytes,
-    bool IsRunning,
     TimeSpan Duration,
     CancellationTokenSource Cancellation
 );

@@ -319,7 +319,7 @@ class DirectoryController : Controller
                 break;
             void OnProgress(long curr, long max)
                 => ProgressContext.Instance.CopyProgress = new(title, item.Name, copyItems.Length, currentCount,
-                        totalMaxBytes, totalCurrentBytes, item.Size, curr, true, DateTime.UtcNow - start, cts);
+                        totalMaxBytes, totalCurrentBytes, item.Size, curr, DateTime.UtcNow - start, cts);
 
             using var file = GFile.New(sourcePath.AppendPath(item.SubPath).AppendPath(item.Name));
             var target = targetPath.AppendPath(item.SubPath).AppendPath(item.Name);

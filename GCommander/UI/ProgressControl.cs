@@ -19,6 +19,8 @@ public class ProgressControl : Revealer
         estimatedDurationLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
         progressbarTotal.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetTotalFraction);
         progressbarCurrent.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
+        progressbarTotal.SetBindingToCss("finished", nameof(ProgressContext.IsRunning), n => ((bool?)n)== false);
+        progressbarCurrent.SetBindingToCss("finished", nameof(ProgressContext.IsRunning), n => ((bool?)n)== false);
         cancelBtn.OnClicked += ProgressContext.Cancel;
         _ = progressSpinner;
     }
