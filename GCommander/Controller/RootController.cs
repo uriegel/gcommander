@@ -5,15 +5,17 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems delete Progress
 // TODO DirectoryItems Conflicts
+
+// TODO ExtendedRename 
+
+// TODO remote items
+// TODO DirectoryItems delete Progress
 
 // TODO public static void RemoveDrive(string mountPoint)
 
-// TODO Percentage as progress?
+// TODO Percentage as progress in drive items?
 // TODO DriveType??
-
-// TODO ExtendedRename 
 
 // TODO After Actions grabFocus to paned
 class RootController : Controller
