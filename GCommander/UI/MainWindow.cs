@@ -82,6 +82,7 @@ class MainWindow : ApplicationWindow
 
     public static void Refresh() => Instance.folderpaned.Refresh();
     public static void FocusActiveView() => Instance.folderpaned.SetFocus();
+    public static bool IsLeftActive() => Instance.folderpaned.IsLeftActive();
     
     string GetBackgroundAction(object? value)
     {

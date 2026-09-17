@@ -296,6 +296,7 @@ class DirectoryController : Controller
 
         var sourcePath = context.CurrentPath;
         var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
+        var fromLeft = MainWindow.IsLeftActive();
 
         var copyItems = GetCopyItems(selected).ToArray();
         var conflicts = GetConflictItems(copyItems, targetPath).ToArray();
@@ -306,6 +307,7 @@ class DirectoryController : Controller
                     new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                     new("cancel", "_Abbrechen", Cancel: true)
                 ]);
+            dialog.SetExtraChild(new ShowDirection().SideEffect(d => d.RightToLeft = !fromLeft));
             var res = await dialog.PresentAsync(MainWindow.Instance);
             if (res == "cancel")
                 return;

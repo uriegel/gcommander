@@ -50,16 +50,8 @@ class FolderPaned : Paned
         SetFocus();
     }
 
+    public bool IsLeftActive() => lastActiveView == folderViewLeft;
     public void SetFocus() => activeView?.ColumnView.GrabFocus();
-
-    void OnPosition()
-    {
-        if (folderViewLeft.ColumnView.Width == 0 && folderViewRight.ColumnView.Width == 0)
-            return;
-        folderViewLeft.OnWidth();
-        folderViewRight.OnWidth();
-    }
-
     public void Refresh() => lastActiveView?.Refresh();
     public void SelectAll() => lastActiveView?.SelectAll();
     public void SelectNone() => lastActiveView?.SelectNone();
@@ -77,6 +69,14 @@ class FolderPaned : Paned
     public void OpenWith() => lastActiveView?.OpenWith();
         
     public FolderView GetInactiveView() => folderViewLeft == lastActiveView ? folderViewRight : folderViewLeft;
+
+    void OnPosition()
+    {
+        if (folderViewLeft.ColumnView.Width == 0 && folderViewRight.ColumnView.Width == 0)
+            return;
+        folderViewLeft.OnWidth();
+        folderViewRight.OnWidth();
+    }
 
     async void OnItemsSet(bool start) => onItemsSet = start;
 

@@ -2,8 +2,15 @@ using Gtk4DotNet;
 
 public class ShowDirection : DrawingArea
 {
-    public ShowDirection(Builder builder, string name) : base(builder, name)
+    public bool RightToLeft { get; set; }
+    public ShowDirection() : base() => Initialize();
+
+    public ShowDirection(Builder builder, string name) : base(builder, name) => Initialize();
+
+    void Initialize()
     {
+        SetSizeRequest(-1, 3);
+        AddCssClass("custom-accent");
         SetDrawFunction(Draw);
         OnUnrealize += async () => cancellation.Cancel();
         OnRealize += async () =>
@@ -27,10 +34,13 @@ public class ShowDirection : DrawingArea
 
     void Draw(DrawingArea area, Cairo cairo, int w, int h)
     {
-        cairo
-            .SourceRgba(255, 0, 0, 1)
-            .Rectangle(pos, 0, indicatorLength, 3)
-            .Fill();
+        var color = GetStyleContext().GetColor().ToSrgb();
+        cairo.SourceRgba(color.Red, color.Green, color.Blue, 1);
+        if (!RightToLeft)
+            cairo.Rectangle(pos, 0, indicatorLength, h);
+        else
+            cairo.Rectangle(w - indicatorLength - pos, 0, indicatorLength, h);
+        cairo.Fill();
     }
 
     readonly CancellationTokenSource cancellation = new();

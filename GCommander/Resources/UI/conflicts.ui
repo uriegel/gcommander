@@ -5,6 +5,7 @@
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.6"/>
   <object class="AdwAlertDialog" id="dialog">
+    <property name="body">Dateien kopieren</property>
     <property name="close-response">cancel</property>
     <property name="content-height">600</property>
     <property name="content-width">800</property>
@@ -12,10 +13,12 @@
     <property name="prefer-wide-layout">True</property>
     <child>
       <object class="GtkBox" id="conflictBox">
+        <property name="valign">start</property>
         <child>
           <object class="GtkDrawingArea" id="showDirection">
-            <property name="content-height">5</property>
+            <property name="height-request">0</property>
             <property name="hexpand">True</property>
+            <property name="valign">center</property>
           </object>
         </child>
       </object>

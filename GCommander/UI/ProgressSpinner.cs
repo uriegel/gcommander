@@ -21,8 +21,6 @@ public class ProgressSpinner : DrawingArea
 
     void Draw(DrawingArea area, Cairo cairo, int w, int h)
     {
-        if (!ProgressContext.Instance.IsRunning)
-            Console.WriteLine("Rennt nicht mehr");
         var color = ProgressContext.Instance.IsRunning
             ? GetStyleContext().GetColor().ToSrgb()
             : new GtkRgba() { Red = 0, Green = 0, Blue = 0, Alpha = 0 };
