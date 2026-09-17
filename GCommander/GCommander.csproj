@@ -69,6 +69,9 @@
     <EmbeddedResource Include="./Resources/UI/progresscontrol.ui">
       <LogicalName>progresscontrol</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/conflicts.ui">
+      <LogicalName>conflicts</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>
     </EmbeddedResource>

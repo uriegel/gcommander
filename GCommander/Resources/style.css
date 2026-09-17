@@ -85,3 +85,8 @@ searchbar entry  {
 progressbar.finished progress {
     background-color: gray;
 } 
+
+.conflicts {
+    min-width: 600px;
+    min-height: 800px;
+}

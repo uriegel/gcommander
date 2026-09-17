@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
+using UI;
 
 class DirectoryController : Controller
 {
@@ -293,25 +294,32 @@ class DirectoryController : Controller
             ? "die Verzeichnisse"
             : "die Einträge";
 
+        var sourcePath = context.CurrentPath;
+        var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
+
         var copyItems = GetCopyItems(selected).ToArray();
-
-        var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
-        dialog.SetResponses([
-                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
-                new("cancel", "_Abbrechen", Cancel: true)
-            ]); 
-        var res = await dialog.PresentAsync(MainWindow.Instance);
-        if (res == "cancel")
+        var conflicts = GetConflictItems(copyItems, targetPath).ToArray();
+        if (conflicts.Length == 0)
+        {
+            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+            dialog.SetResponses([
+                    new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                    new("cancel", "_Abbrechen", Cancel: true)
+                ]);
+            var res = await dialog.PresentAsync(MainWindow.Instance);
+            if (res == "cancel")
+                return;
+        }
+        else
+        {
+            var res = await Conflicts.PresentAsync();
             return;
-
+        }
         var currentCount = 1;
         var totalMaxBytes = copyItems.Sum(n => n.Size);
         var totalCurrentBytes = 0L;
         var start = DateTime.UtcNow;
         var cts = new CancellationTokenSource();
-
-        var sourcePath = context.CurrentPath;
-        var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
 
         foreach (var item in copyItems)
         {
@@ -449,15 +457,15 @@ class DirectoryController : Controller
         }
     }
 
-    IEnumerable<ConflictItem> GetConflictItems(FileItem[] selected, string targetPath)
+    IEnumerable<ConflictItem> GetConflictItems(CopyItem[] items, string targetPath)
     {
-        foreach (var item in selected)
+        foreach (var item in items)
         {
-            var target = targetPath.AppendPath(item.Name);
+            var target = targetPath.AppendPath(item.SubPath).AppendPath(item.Name);
             if (File.Exists(target))
             {
                 var targetInfo = new FileInfo(target);
-                yield return new(item.Name, "", item.Size, targetInfo.Length, item.DateTime, targetInfo.LastWriteTime);
+                yield return new(item.Name, item.SubPath, item.Size, targetInfo.Length, item.DateTime, targetInfo.LastWriteTime);
             }
         }
     }

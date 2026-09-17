@@ -10,12 +10,19 @@
     <property name="content-width">800</property>
     <property name="default-response">ok</property>
     <property name="focus-widget">name</property>
-    <property name="heading">Umbenennen</property>
     <property name="prefer-wide-layout">True</property>
     <child>
-      <object class="GtkEntry" id="name">
-        <property name="activates-default">True</property>
-        <property name="hexpand">True</property>
+      <object class="GtkBox" id="conflictBox">
+        <child>
+          <object class="GtkEntry" id="name">
+            <property name="activates-default">True</property>
+            <property name="halign">center</property>
+            <property name="height-request">0</property>
+            <property name="hexpand">True</property>
+            <property name="valign">center</property>
+            <property name="width-request">0</property>
+          </object>
+        </child>
       </object>
     </child>
     <!-- Custom object fragments -->
