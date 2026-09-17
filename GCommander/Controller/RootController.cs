@@ -5,7 +5,8 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO Copy dialogs: progress indefinite left-right or right->left
+// TODO Copy dialog: ShowDirection
+// TODO Copy ConflictDialog: ShowDirection
 // TODO DirectoryItems Conflicts
 
 // TODO ExtendedRename 
