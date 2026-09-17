@@ -292,35 +292,42 @@ class DirectoryController : Controller
             : dirs > 1 && files == 0
             ? "die Verzeichnisse"
             : "die Einträge";
+
+        var copyItems = GetCopyItems(selected).ToArray();
+
         var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)
-            ]);
+            ]); 
         var res = await dialog.PresentAsync(MainWindow.Instance);
         if (res == "cancel")
             return;
 
         var currentCount = 1;
-        var totalMaxBytes = selected.Sum(n => n is FileItem fi ? fi.Size : 0);
+        var totalMaxBytes = copyItems.Sum(n => n.Size);
         var totalCurrentBytes = 0L;
         var start = DateTime.UtcNow;
         var cts = new CancellationTokenSource();
-        foreach (var item in selected)
+
+        var sourcePath = context.CurrentPath;
+        var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
+
+        foreach (var item in copyItems)
         {
             if (cts.Token.IsCancellationRequested)
                 break;
             void OnProgress(long curr, long max)
-                => ProgressContext.Instance.CopyProgress = new(title, item.Name, selected.Length, currentCount,
-                        totalMaxBytes, totalCurrentBytes, item is FileItem fi ? fi.Size : 0, curr, true, DateTime.UtcNow - start, cts);
+                => ProgressContext.Instance.CopyProgress = new(title, item.Name, copyItems.Length, currentCount,
+                        totalMaxBytes, totalCurrentBytes, item.Size, curr, true, DateTime.UtcNow - start, cts);
 
-            using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
-            var target = MainWindow.GetInactiveView().Context.CurrentPath.AppendPath(item.Name);
+            using var file = GFile.New(sourcePath.AppendPath(item.SubPath).AppendPath(item.Name));
+            var target = targetPath.AppendPath(item.SubPath).AppendPath(item.Name);
             if (move)
                 await file.MoveAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
             else
                 await file.CopyAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
-            totalCurrentBytes += item is FileItem fi ? fi.Size : 0;
+            totalCurrentBytes += item.Size;
             currentCount++;
         }
 
@@ -409,6 +416,50 @@ class DirectoryController : Controller
                 context.BackgroundAction = BackgroundAction.None;
             }
         }));
+    }
+
+    IEnumerable<CopyItem> GetCopyItems(SelectableItem[] selected)
+    {
+        var items = selected
+            .SelectFilterNull(n => n is FileItem fi ? new CopyItem(fi.Name, "", fi.Size, fi.DateTime) : null)
+            .OrderBy(n => n.Name);
+        foreach (var item in items)
+            yield return item;
+
+        var dirItems = selected
+            .SelectFilterNull(n => n is DirectoryItem di ? di.Name : null)
+            .OrderBy(n => n);
+
+        foreach (var item in dirItems)
+        {
+            foreach (var dirItem in GetCopyItems(item, ""))
+                yield return new(dirItem.Name, dirItem.SubPath, dirItem.Size, dirItem.DateTime);
+        }
+
+        IEnumerable<CopyItem> GetCopyItems(string directory, string subPath)
+        {
+            var dirInfo = new DirectoryInfo(context.CurrentPath.AppendPath(subPath).AppendPath(directory));
+            foreach (var fileInfo in dirInfo.EnumerateFiles().OrderBy(n => n.Name))
+                yield return new(fileInfo.Name, subPath.AppendPath(directory), fileInfo.Length, fileInfo.LastWriteTime);
+            foreach (var info in dirInfo.EnumerateDirectories().OrderBy(n => n.Name))
+            {
+                foreach (var dirItem in GetCopyItems(info.Name, subPath.AppendPath(directory)))
+                    yield return new(dirItem.Name, dirItem.SubPath, dirItem.Size, dirItem.DateTime);
+            }
+        }
+    }
+
+    IEnumerable<ConflictItem> GetConflictItems(FileItem[] selected, string targetPath)
+    {
+        foreach (var item in selected)
+        {
+            var target = targetPath.AppendPath(item.Name);
+            if (File.Exists(target))
+            {
+                var targetInfo = new FileInfo(target);
+                yield return new(item.Name, "", item.Size, targetInfo.Length, item.DateTime, targetInfo.LastWriteTime);
+            }
+        }
     }
 
     bool Filter(Item? item)
@@ -639,3 +690,6 @@ class DirectoryController : Controller
 }
 
 record DirItemPos(Item Item, int Pos);
+
+record CopyItem(string Name, string SubPath, long Size, DateTime DateTime);
+record ConflictItem(string Name, string SubPath, long Size, long TargetSize, DateTime DateTime, DateTime TargetDateTime);

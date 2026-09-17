@@ -5,9 +5,9 @@ using Gtk4DotNet;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems copy Directories
-// TODO DirectoryItems delete Progress
+// TODO DirectoryItems progress: spinner and progress popup remove color when copying finished
 // TODO DirectoryItems Conflicts
+// TODO DirectoryItems delete Progress
 
 // TODO public static void RemoveDrive(string mountPoint)
 
