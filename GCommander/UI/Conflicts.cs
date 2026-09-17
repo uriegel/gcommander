@@ -16,9 +16,13 @@ class Conflicts : AdwAlertDialog
         : base(builder, name)
     {
         conflictBox.SetSizeRequest(MainWindow.Instance.Width - 80, MainWindow.Instance.Height - 40);
+        _ = showDirection;
     }
 
     [Widget]
-    Box conflictBox = null!;
+    readonly Box conflictBox = null!;
+    
+    [Widget]
+    readonly ShowDirection showDirection = null!;
 }
 

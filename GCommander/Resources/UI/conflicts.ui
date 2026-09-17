@@ -9,18 +9,13 @@
     <property name="content-height">600</property>
     <property name="content-width">800</property>
     <property name="default-response">ok</property>
-    <property name="focus-widget">name</property>
     <property name="prefer-wide-layout">True</property>
     <child>
       <object class="GtkBox" id="conflictBox">
         <child>
-          <object class="GtkEntry" id="name">
-            <property name="activates-default">True</property>
-            <property name="halign">center</property>
-            <property name="height-request">0</property>
+          <object class="GtkDrawingArea" id="showDirection">
+            <property name="content-height">5</property>
             <property name="hexpand">True</property>
-            <property name="valign">center</property>
-            <property name="width-request">0</property>
           </object>
         </child>
       </object>
