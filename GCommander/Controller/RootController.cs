@@ -6,7 +6,6 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems Conflicts: size right aligned
 // TODO DirectoryItems Conflicts: compare size
 // TODO DirectoryItems Conflicts: compare dateTime
 // TODO DirectoryItems Conflicts: focus columnView

@@ -57,7 +57,10 @@ class Conflicts : AdwAlertDialog, IDisposable
         sizeFactory.Setup(n =>
         {
             using var builder = Builder.FromDotNetResource("conflictitem");
-            var item = new ConflictColumnItem(builder);
+            var item = new ConflictColumnItem(builder)
+            {
+                RightAligned = true
+            };
             n.SetManagedChild(item);
         });
         sizeFactory.Bind(listitem =>

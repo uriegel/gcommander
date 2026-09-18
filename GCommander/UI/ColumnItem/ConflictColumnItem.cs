@@ -14,6 +14,17 @@ class ConflictColumnItem : Box
         set => text2.Text = value;
     }
 
+    public bool RightAligned
+    {
+        get => field;
+        set
+        {
+            field = value;
+            text.HAlign = value ? Align.End : Align.Start;
+            text2.HAlign = value ? Align.End : Align.Start;
+        } 
+    }
+
     public ConflictColumnItem() : base() { }
     public ConflictColumnItem(Builder builder) : base(builder, "listitem") { }
 
