@@ -43,7 +43,10 @@ class Conflicts : AdwAlertDialog, IDisposable
         dateTimeFactory.Setup(n =>
         {
             using var builder = Builder.FromDotNetResource("conflictitem");
-            var item = new ConflictColumnItem(builder);
+            var item = new ConflictColumnItem(builder)
+            { 
+                ConflictType = ConflictType.Default 
+            };
             n.SetManagedChild(item);
         });
         dateTimeFactory.Bind(listitem =>
@@ -52,6 +55,10 @@ class Conflicts : AdwAlertDialog, IDisposable
             var item = listitem.GetItem<ConflictItem>();
             iconname?.Name = item?.DateTime.ToString("g") ?? "";
             iconname?.Name2 = item?.TargetDateTime.ToString("g") ?? "";
+            if (item?.DateTime > item?.TargetDateTime)
+                iconname?.ConflictType = ConflictType.Yes;
+            else if (item?.DateTime < item?.TargetDateTime)
+                iconname?.ConflictType = ConflictType.No;
         });
         var sizeFactory = SignalListItemFactory.New();
         sizeFactory.Setup(n =>
@@ -59,7 +66,8 @@ class Conflicts : AdwAlertDialog, IDisposable
             using var builder = Builder.FromDotNetResource("conflictitem");
             var item = new ConflictColumnItem(builder)
             {
-                RightAligned = true
+                RightAligned = true,
+                ConflictType = ConflictType.Default
             };
             n.SetManagedChild(item);
         });

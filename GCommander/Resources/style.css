@@ -90,3 +90,12 @@ progressbar.finished progress {
     min-width: 600px;
     min-height: 800px;
 }
+
+.conflict-no {
+    background-color: @error_color;
+    color: @theme_bg_color;
+}
+
+.conflict-yes {
+    background-color: color-mix(in srgb, @success_color 18%, transparent);
+}

@@ -14,9 +14,31 @@ class ConflictColumnItem : Box
         set => text2.Text = value;
     }
 
+    public ConflictType ConflictType
+    {
+        get;
+        set
+        {
+            field = value;
+            switch (value)
+            {
+                case ConflictType.Yes:
+                    AddCssClass("conflict-yes");
+                    break;
+                case ConflictType.No:
+                    AddCssClass("conflict-no");
+                    break;
+                case ConflictType.Default:
+                    AddCssClass("conflict-no", false);
+                    AddCssClass("conflict-yes", false);
+                    break;
+            }
+        }        
+    }
+
     public bool RightAligned
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -27,10 +49,17 @@ class ConflictColumnItem : Box
 
     public ConflictColumnItem() : base() { }
     public ConflictColumnItem(Builder builder) : base(builder, "listitem") { }
-
+ 
     [Widget]
     readonly Label text = null!;
     [Widget]
     readonly Label text2 = null!;
 }
 
+enum ConflictType
+{
+    Default,
+    Yes,
+    No,
+    Indifferent
+}
