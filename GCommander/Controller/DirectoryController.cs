@@ -316,7 +316,13 @@ class DirectoryController : Controller
         else
         {
             var res = await Conflicts.PresentAsync(conflicts);
-            return;
+            if (!res.HasValue)
+                return;
+            if (res == false)
+            {
+                var excludes = conflicts.Select(n => new CopyItem(n.Name, n.SubPath, n.Size, n.DateTime));
+                copyItems = [.. copyItems.Except(excludes)];
+            }
         }
         var currentCount = 1;
         var totalMaxBytes = copyItems.Sum(n => n.Size);

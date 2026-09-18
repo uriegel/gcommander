@@ -6,8 +6,6 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO Copy: perhaps exclude conflicts
-
 // TODO ExtendedRename 
 
 // TODO remote items

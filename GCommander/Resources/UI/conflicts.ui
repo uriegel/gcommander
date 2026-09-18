@@ -5,11 +5,11 @@
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.6"/>
   <object class="AdwAlertDialog" id="dialog">
-    <property name="body">Dateien kopieren</property>
     <property name="close-response">cancel</property>
     <property name="content-height">0</property>
     <property name="content-width">0</property>
     <property name="default-response">ok</property>
+    <property name="heading">Einträge überschreiben?</property>
     <property name="prefer-wide-layout">True</property>
     <child>
       <object class="GtkBox" id="conflictBox">
