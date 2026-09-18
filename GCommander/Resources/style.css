@@ -92,10 +92,14 @@ progressbar.finished progress {
 }
 
 .conflict-no {
-    background-color: @error_color;
+    background-color: color-mix(in srgb, @error_color 90%, transparent);
     color: @theme_bg_color;
 }
 
 .conflict-yes {
     background-color: color-mix(in srgb, @success_color 18%, transparent);
+}
+
+.conflict-indifferent {
+    opacity: 0.3;
 }

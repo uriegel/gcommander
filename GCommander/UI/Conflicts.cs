@@ -51,14 +51,14 @@ class Conflicts : AdwAlertDialog, IDisposable
         });
         dateTimeFactory.Bind(listitem =>
         {
-            var iconname = listitem.GetManagedChild<ConflictColumnItem>();
+            var conflict = listitem.GetManagedChild<ConflictColumnItem>();
             var item = listitem.GetItem<ConflictItem>();
-            iconname?.Name = item?.DateTime.ToString("g") ?? "";
-            iconname?.Name2 = item?.TargetDateTime.ToString("g") ?? "";
+            conflict?.Name = item?.DateTime.ToString("g") ?? "";
+            conflict?.Name2 = item?.TargetDateTime.ToString("g") ?? "";
             if (item?.DateTime > item?.TargetDateTime)
-                iconname?.ConflictType = ConflictType.Yes;
+                conflict?.ConflictType = ConflictType.Yes;
             else if (item?.DateTime < item?.TargetDateTime)
-                iconname?.ConflictType = ConflictType.No;
+                conflict?.ConflictType = ConflictType.No;
         });
         var sizeFactory = SignalListItemFactory.New();
         sizeFactory.Setup(n =>
@@ -73,10 +73,12 @@ class Conflicts : AdwAlertDialog, IDisposable
         });
         sizeFactory.Bind(listitem =>
         {
-            var iconname = listitem.GetManagedChild<ConflictColumnItem>();
+            var conflict = listitem.GetManagedChild<ConflictColumnItem>();
             var item = listitem.GetItem<ConflictItem>();
-            iconname?.Name = item?.Size.FormatSize() ?? "";
-            iconname?.Name2 = item?.TargetSize.FormatSize() ?? "";
+            conflict?.Name = item?.Size.FormatSize() ?? "";
+            conflict?.Name2 = item?.TargetSize.FormatSize() ?? "";
+            if (item?.Size == item?.TargetSize)
+                conflict?.ConflictType = ConflictType.Indifferent;
         });
         columnView.AppendColumn(ColumnViewColumn.New("Name", namefactory).Expand());
         columnView.AppendColumn(ColumnViewColumn.New("Datum", dateTimeFactory).Expand());

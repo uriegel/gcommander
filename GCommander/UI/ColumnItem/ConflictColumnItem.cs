@@ -22,15 +22,18 @@ class ConflictColumnItem : Box
             field = value;
             switch (value)
             {
+                case ConflictType.Default:
+                    AddCssClass("conflict-no", false);
+                    AddCssClass("conflict-yes", false);
+                    break;
                 case ConflictType.Yes:
                     AddCssClass("conflict-yes");
                     break;
                 case ConflictType.No:
                     AddCssClass("conflict-no");
                     break;
-                case ConflictType.Default:
-                    AddCssClass("conflict-no", false);
-                    AddCssClass("conflict-yes", false);
+                case ConflictType.Indifferent:
+                    AddCssClass("conflict-indifferent");
                     break;
             }
         }        
