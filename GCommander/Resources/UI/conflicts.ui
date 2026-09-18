@@ -28,7 +28,9 @@
             <property name="hscrollbar-policy">never</property>
             <child>
               <object class="GtkColumnView" id="columnView">
+                <property name="focusable">True</property>
                 <property name="hexpand">True</property>
+                <property name="receives-default">True</property>
                 <property name="tab-behavior">item</property>
                 <property name="vexpand">True</property>
               </object>

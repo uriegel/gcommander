@@ -83,6 +83,14 @@ class Conflicts : AdwAlertDialog, IDisposable
         columnView.AppendColumn(ColumnViewColumn.New("Name", namefactory).Expand());
         columnView.AppendColumn(ColumnViewColumn.New("Datum", dateTimeFactory).Expand());
         columnView.AppendColumn(ColumnViewColumn.New("Größe", sizeFactory).Expand());
+
+        Focus();
+        
+        async void Focus()
+        {
+            await Task.Delay(200);
+            columnView.GrabFocus();
+        } 
     }
 
     [Widget]

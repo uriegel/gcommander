@@ -6,7 +6,6 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems Conflicts: focus columnView
 // TODO DirectoryItems Conflicts: yes no buttons, cancel with escape
 
 // TODO ExtendedRename 
