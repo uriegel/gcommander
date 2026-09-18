@@ -5,12 +5,14 @@ namespace UI;
 
 class Conflicts : AdwAlertDialog, IDisposable
 {
-    public static async Task<string?> PresentAsync(ConflictItem[] items)
+    public static async Task<bool?> PresentAsync(ConflictItem[] items)
     {
         using var builder = Builder.FromDotNetResource("conflicts");
         using var dialog = new Conflicts(builder, "dialog", items);
         var res = await dialog.PresentAsync(MainWindow.Instance);
-        return null;
+        return res == "cancel"
+            ? dialog.yes
+            : res == "yes";
     }
 
     public Conflicts(Builder builder, string name, ConflictItem[] items)
@@ -84,6 +86,19 @@ class Conflicts : AdwAlertDialog, IDisposable
         columnView.AppendColumn(ColumnViewColumn.New("Datum", dateTimeFactory).Expand());
         columnView.AppendColumn(ColumnViewColumn.New("Größe", sizeFactory).Expand());
 
+        noDefault = items.Any(n => n.DateTime < n.TargetDateTime);
+
+        columnView.OnActivate += _ =>
+        {
+            yes = !noDefault; 
+            CloseDialog();
+        };
+
+        SetResponses([
+                new("yes", "_Ja", Default: true, Appearance: noDefault ? AdwResponseAppearance.Destructive : AdwResponseAppearance.Suggested),
+                new("no", "_Nein", Appearance: noDefault ? AdwResponseAppearance.Suggested : AdwResponseAppearance.Destructive)
+            ]);
+
         Focus();
         
         async void Focus()
@@ -103,6 +118,9 @@ class Conflicts : AdwAlertDialog, IDisposable
     readonly ColumnView columnView = null!;
 
     readonly SelectionModel model = null!;
+
+    bool noDefault;
+    bool? yes;
 
     #region IDisposable
 

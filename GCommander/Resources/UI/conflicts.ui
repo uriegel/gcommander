@@ -39,10 +39,5 @@
         </child>
       </object>
     </child>
-    <!-- Custom object fragments -->
-    <responses>
-      <response id="cancel" translatable="yes">_Abbrechen</response>
-      <response id="ok" translatable="yes" appearance="suggested">_OK</response>
-    </responses>
   </object>
 </interface>
