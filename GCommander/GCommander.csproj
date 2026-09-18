@@ -72,6 +72,12 @@
     <EmbeddedResource Include="./Resources/UI/conflicts.ui">
       <LogicalName>conflicts</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/conflictnameitem.ui">
+      <LogicalName>conflictnameitem</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/conflictitem.ui">
+      <LogicalName>conflictitem</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/style.css">
       <LogicalName>style</LogicalName>
     </EmbeddedResource>

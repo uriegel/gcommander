@@ -33,7 +33,7 @@
                 <property name="vexpand">True</property>
               </object>
             </child>
-          </object>          
+          </object>
         </child>
       </object>
     </child>

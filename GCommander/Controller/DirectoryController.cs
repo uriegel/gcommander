@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using CsTools.Extensions;
 using Gtk4DotNet;
 using UI;
+using Extensions;
 
 class DirectoryController : Controller
 {
@@ -314,7 +315,7 @@ class DirectoryController : Controller
         }
         else
         {
-            var res = await Conflicts.PresentAsync();
+            var res = await Conflicts.PresentAsync(conflicts);
             return;
         }
         var currentCount = 1;
@@ -702,4 +703,3 @@ class DirectoryController : Controller
 record DirItemPos(Item Item, int Pos);
 
 record CopyItem(string Name, string SubPath, long Size, DateTime DateTime);
-record ConflictItem(string Name, string SubPath, long Size, long TargetSize, DateTime DateTime, DateTime TargetDateTime);

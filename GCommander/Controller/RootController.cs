@@ -2,10 +2,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Extensions;
 using Gtk4DotNet;
+using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO DirectoryItems Conflicts
+// TODO DirectoryItems Conflicts: size right aligned
+// TODO DirectoryItems Conflicts: compare size
+// TODO DirectoryItems Conflicts: compare dateTime
+// TODO DirectoryItems Conflicts: focus columnView
+// TODO DirectoryItems Conflicts: yes no buttons, cancel with escape
 
 // TODO ExtendedRename 
 
