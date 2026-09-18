@@ -7,6 +7,7 @@ using Extensions;
 using static CsTools.ProcessCmd;
 
 // TODO DirectoryItems Conflicts: yes no buttons, cancel with escape
+// TODO Copy: perhaps exclude conflicts
 
 // TODO ExtendedRename 
 
