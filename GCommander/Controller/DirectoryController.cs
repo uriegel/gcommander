@@ -397,7 +397,7 @@ class DirectoryController : Controller
     public override async void ExtendedRename()
     {
         var res = await UI.ExtendedRename.PresentAsync();
-        if (!res)
+        if (res == null)
             return;
     }
 

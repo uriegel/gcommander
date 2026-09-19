@@ -12,7 +12,7 @@ public class ShowDirection : DrawingArea
         SetSizeRequest(-1, 3);
         AddCssClass("custom-accent");
         SetDrawFunction(Draw);
-        OnUnrealize += async () => cancellation.Cancel();
+        OnUnrealize += () => cancellation.Cancel();
         OnRealize += async () =>
         {
             var step = (Width + indicatorLength) / (duration / delay);
