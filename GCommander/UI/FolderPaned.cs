@@ -63,6 +63,7 @@ class FolderPaned : Paned
     public void ShowFavorites() => lastActiveView?.ShowFavorites();
     public void Rename() => lastActiveView?.Rename();
     public void RenameAsCopy() => lastActiveView?.RenameAsCopy();
+    public void ExtendedRename() => lastActiveView?.ExtendedRename();
     public void Copy() => lastActiveView?.Copy();
     public void Move() => lastActiveView?.Copy(true);
     public void CreateFolder() => lastActiveView?.CreateFolder();

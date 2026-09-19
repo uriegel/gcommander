@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.0.3 -->
+<interface>
+  <!-- interface-name dialog.ui -->
+  <requires lib="gtk" version="4.18"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <object class="AdwAlertDialog" id="dialog">
+    <property name="close-response">cancel</property>
+    <property name="default-response">ok</property>
+    <property name="focus-widget">prefix</property>
+    <property name="heading">Erweitertes Umbenennen</property>
+    <property name="prefer-wide-layout">True</property>
+    <child>
+      <object class="GtkGrid">
+        <property name="column-spacing">5</property>
+        <property name="row-spacing">5</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Präfix</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Stellen</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Start</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="prefix">
+            <property name="activates-default">True</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="digits">
+            <property name="activates-default">True</property>
+            <property name="adjustment">
+              <object class="GtkAdjustment">
+                <property name="lower">1</property>
+                <property name="page-increment">1</property>
+                <property name="step-increment">1</property>
+                <property name="upper">5</property>
+                <property name="value">1</property>
+              </object>
+            </property>
+            <property name="climb-rate">1</property>
+            <property name="editable">True</property>
+            <property name="numeric">True</property>
+            <property name="wrap">False</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="column-span">1</property>
+              <property name="row">1</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="start">
+            <property name="activates-default">True</property>
+            <property name="adjustment">
+              <object class="GtkAdjustment">
+                <property name="lower">0</property>
+                <property name="page-increment">1</property>
+                <property name="step-increment">1</property>
+                <property name="upper">100000</property>
+                <property name="value">1</property>
+              </object>
+            </property>
+            <property name="climb-rate">1</property>
+            <property name="css-classes">no-buttons</property>
+            <property name="editable">True</property>
+            <property name="numeric">True</property>
+            <property name="snap-to-ticks">True</property>
+            <property name="wrap">False</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="column-span">1</property>
+              <property name="row">2</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!-- Custom object fragments -->
+    <responses>
+      <response id="cancel" translatable="yes">_Abbrechen</response>
+      <response id="ok" translatable="yes" appearance="suggested">_OK</response>
+    </responses>
+  </object>
+</interface>

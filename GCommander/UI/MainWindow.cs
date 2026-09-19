@@ -50,6 +50,7 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("createfolder", folderpaned.CreateFolder, "F7"));
         AddActions(new SimpleAction("adaptpath", folderpaned.AdaptPath, "F9"));
         AddActions(new SimpleAction("openwith", folderpaned.OpenWith, "<Ctrl>Return"));
+        AddActions(new SimpleAction("extendedrename", folderpaned.ExtendedRename, "F12"));
         AddActions(new BoolAction("showhidden", false, sh => MainContext.Instance.ShowHiddenItems = sh, "<Ctrl>H"));
         AddActions(new BoolAction("fileview", false, sh => MainContext.Instance.ViewerVisible = sh, "F3"));
 

@@ -6,7 +6,9 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO ExtendedRename 
+// TODO ExtendedRename: get/set values
+// TODO ExtendedRename: onEnter one time
+// TODO ExtendedRename: focus last changed value
 
 // TODO remote items
 // TODO DirectoryItems delete Progress

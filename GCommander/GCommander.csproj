@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="9.0.67-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.68-beta" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
   </ItemGroup>
 
@@ -47,6 +47,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/rename.ui">
       <LogicalName>rename</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/extendedrename.ui">
+      <LogicalName>extendedrename</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/create-folder.ui">
       <LogicalName>create-folder</LogicalName>

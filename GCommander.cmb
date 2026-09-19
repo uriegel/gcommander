@@ -18,4 +18,5 @@
   <ui filename="GCommander/Resources/UI/conflicts.ui" sha256="dcfd05605eb917bdb46f6e557faa6d27017c69b5f165bf733aced55fcc905ebe"/>
   <ui filename="GCommander/Resources/UI/conflictnameitem.ui" sha256="87ce458985d2aef8f3ff7df667a0c59920db12f0072736a0152dbd2bdd2105b5"/>
   <ui filename="GCommander/Resources/UI/conflictitem.ui" sha256="00f59d56350997f2db39318b87cb2de6476e05030b19c49e679f337cc6ff4c16"/>
+  <ui filename="GCommander/Resources/UI/extendedrename.ui" sha256="3a8eef7c6b0b3c7a3200bb3010d2942c9630b7483cdebe7a962a9b1498f1e9f0"/>
 </cambalache-project>

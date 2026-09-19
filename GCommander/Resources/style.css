@@ -103,3 +103,7 @@ progressbar.finished progress {
 .conflict-indifferent {
     opacity: 0.3;
 }
+
+spinbutton.no-buttons button {
+    opacity: 0;
+}

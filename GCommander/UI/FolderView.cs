@@ -20,7 +20,7 @@ class FolderView : Box
             if (!Context.IsEditing)
             {
                 ColumnView.GrabFocus();
-                ChangePath(editablePath.Text);
+                ChangePath(editablePath.AsEditable().Text);
             }
         };
         editablePath.Binding("text", nameof(FolderContext.CurrentPath));
@@ -142,6 +142,8 @@ class FolderView : Box
             MainContext.Instance.ErrorText = "Umbenennen nicht möglich";
         }
     }
+
+    public void ExtendedRename() => controller.ExtendedRename();
     
     public async void Delete() 
     {

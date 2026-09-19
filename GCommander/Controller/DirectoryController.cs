@@ -385,13 +385,20 @@ class DirectoryController : Controller
         var body = item is FileItem ? "der Datei" : item is DirectoryItem ? "des Verzeichnisses" : null;
         if (item == null || body == null)
             return;
-        
+
         var res = await UI.Rename.PresentAsync($"Möchtest eine Kopie {body} erstellen?", item.Name, MainWindow.Instance, "Kopie erstellen");
         if (res == null)
             return;
         if (File.Exists(context.CurrentPath.AppendPath(item.Name)))
             File.Copy(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
         MainWindow.FocusActiveView();
+    }
+    
+    public override async void ExtendedRename()
+    {
+        var res = await UI.ExtendedRename.PresentAsync();
+        if (!res)
+            return;
     }
 
     public override bool CheckRestriction(string searchKey)

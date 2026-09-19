@@ -45,6 +45,8 @@ abstract class Controller : IDisposable
             item?.IsSelected = item.IsSelected != true;
     }
 
+    public virtual void ExtendedRename() { }
+
     public virtual void OpenWith(int pos) {}
 
     public void SelectAllAbove()
