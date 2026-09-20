@@ -12,9 +12,20 @@ class ExtendedRename : IDisposable
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
-                var item = listitem.GetItem<Item>();
-                label.Text = itemIndexes.TryGetValue(item?.Name ?? "", out var newName) ? $"{newName}" : "";
+                if (listitem.GetItem<Item>() is FileItem fileItem)
+                {
+                    label.DataContext = fileItem;
+                    label.SetBinding("label", nameof(fileItem.NewName));
+                }
+            })
+            .Unbind(listitem =>
+            {
+                var label = listitem.GetChild<Label>();
+                label.UnsetBinding("label");
+                label.Text = "";
+                label.DataContext = null;
             });
+
 
         var col = ColumnViewColumn
             .New("Neuer Name", factory)
@@ -25,16 +36,15 @@ class ExtendedRename : IDisposable
 
     public void SelectionChanged()
     {
-        var idx = 0;
-        itemIndexes = controller
-            .GetItems()
-            .Select(n => (n.Name, n is FileItem fi && fi.IsSelected ? idx++ : -1))
-            .ToDictionary(n => n.Name, n => n.Item2);
+        int idx = 0;
+        var fileItems = controller.GetItems().OfType<FileItem>().ToArray();
+        foreach (var fileItem in fileItems.Where(n => n.IsSelected))
+            fileItem.NewName = $"Bildchen{idx++}";
+        foreach (var fileItem in fileItems.Where(n => !n.IsSelected))
+            fileItem.NewName = "";
     }
 
     readonly DirectoryController controller;
-
-    Dictionary<string, int> itemIndexes = [];
 
     #region IDisposable
 

@@ -20,6 +20,16 @@ class FileItem : FileSystemItem
         }
     }
 
+    public string? NewName
+    {
+        get;
+        set
+        {
+            field = value;
+            OnChanged(nameof(NewName));
+        }
+    }
+
     public static FileItem New(FileInfo info) => new(info);
     public FileItem(FileItem a) : base(a.Name,a.IsHidden)
     {
