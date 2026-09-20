@@ -120,8 +120,6 @@ class FavoriteController : Controller
             : model.GetItem<Item>(pos) is FavoriteItem fi ? fi.Path : "";
     
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
-    public override int GetFileCount() => 0;
-
     public override async Task Delete(int focusedPos)
     {
         var selected = GetSelectedItems(focusedPos).OfType<FavoriteItem>().ToArray();

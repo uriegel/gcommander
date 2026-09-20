@@ -119,7 +119,9 @@ class RemotesController : Controller
             ? ""
             : model.GetItem<Item>(pos) is RemoteItem ri ? ri.IP : "";
 
-     async Task<Item[]> Get()
+    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<RemoteItem>().Count();
+    
+    async Task<Item[]> Get()
     {
         items = Application.Settings.GetString("remotes") is string remotes && remotes.Length > 0
                 ? JsonSerializer.Deserialize<RemoteItem[]>(remotes) ?? []
@@ -129,6 +131,29 @@ class RemotesController : Controller
             .. items.Select(n => new RemoteItem(n.Name, n.IP, n.IsAndroid)),
             new NewRemoteItem()
         ];
+    }
+
+    public override async Task Delete(int focusedPos)
+    {
+        var selected = GetSelectedItems(focusedPos).OfType<RemoteItem>().ToArray();
+        if (selected.Length == 0)
+            return;
+        var dialog = AdwAlertDialog.New("Gerät löschen", $"Möchtest du {(selected.Length > 1 ? "die Geräte" : "das Gerät")} löschen?");
+        dialog.SetResponses([
+                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                new("cancel", "_Abbrechen", Cancel: true)
+            ]);
+        var res = await dialog.PresentAsync(MainWindow.Instance);
+        if (res == "cancel")
+            return;
+
+        var favs = Application.Settings.GetString("remotes") is string favstr && favstr.Length > 0
+                ? JsonSerializer.Deserialize<RemoteItem[]>(favstr) ?? []
+                : [];
+        var selectedNames = selected.Select(n => n.Name);
+        Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteItem[]>([.. favs.Where(n => !selectedNames.Contains(n.Name))]));
+        MainWindow.Refresh();
+        MainWindow.FocusActiveView();
     }
 
     int SortFixedFirst(Item? item1, Item? item2)
