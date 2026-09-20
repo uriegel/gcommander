@@ -598,8 +598,8 @@ class DirectoryController : Controller
                 {
                     var fi = new FileInfo(e.FullPath);
                     var item = FileItem.New(fi);
-                    store.Append(item);
-                    metaFileData?.QueueMetadata(item, fi.FullName);
+                    if (store.Append(item))
+                        metaFileData?.QueueMetadata(item, fi.FullName);
                 }
                 else if (Directory.Exists(e.FullPath))
                     store.Append(DirectoryItem.New(new DirectoryInfo(e.FullPath)));
