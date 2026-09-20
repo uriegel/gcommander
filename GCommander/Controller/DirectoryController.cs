@@ -402,6 +402,7 @@ class DirectoryController : Controller
         {
             if (extendedRename == null)
                 extendedRename = new(this);
+            extendedRename?.SelectionChanged();
         }
         else
         {

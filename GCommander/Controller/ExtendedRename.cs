@@ -36,10 +36,10 @@ class ExtendedRename : IDisposable
 
     public void SelectionChanged()
     {
-        int idx = 0;
+        int idx = UI.ExtendedRename.Value.Start;
         var fileItems = controller.GetItems().OfType<FileItem>().ToArray();
         foreach (var fileItem in fileItems.Where(n => n.IsSelected))
-            fileItem.NewName = $"Bildchen{idx++}";
+            fileItem.NewName = $"{UI.ExtendedRename.Value.Prefix}{idx++.ToString().PadLeft(UI.ExtendedRename.Value.Digits, '0')}";
         foreach (var fileItem in fileItems.Where(n => !n.IsSelected))
             fileItem.NewName = "";
     }

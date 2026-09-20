@@ -13,7 +13,7 @@ class ExtendedRename : AdwAlertDialog
         var res = await dialog.PresentAsync(MainWindow.Instance);
         if (res == "cancel")
             return null;
-        Value = new(dialog.prefix.AsEditable().Text, dialog.digits.ValueAsInt, int.Parse(dialog.start.AsEditable().Text));
+        Value = new(dialog.prefix.AsEditable().Text, dialog.digits.ValueAsInt, int.TryParse(dialog.start.AsEditable().Text, out var n) ? n : 0);
         return Value;
     }
 
