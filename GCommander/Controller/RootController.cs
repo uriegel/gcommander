@@ -7,6 +7,7 @@ using Extensions;
 using static CsTools.ProcessCmd;
 
 // TODO ExtendedRename
+// TODO copy flies: double items (after refresh)!
 
 // TODO remote items
 // TODO DirectoryItems delete Progress

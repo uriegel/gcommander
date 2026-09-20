@@ -70,6 +70,42 @@ class DirectoryController : Controller
     public override ExifData? GetExifData(int pos)
         => model.GetItem<Item>(pos) is FileItem fileItem ? fileItem.ExifData : null;
 
+    public override void SelectAll()
+    {
+        base.SelectAll();
+        extendedRename?.SelectionChanged();
+    }
+
+    public override void SelectNone()
+    {
+        base.SelectNone();
+        extendedRename?.SelectionChanged();
+    }
+
+    public override void SelectAllAbove()
+    {
+        base.SelectAllAbove();
+        extendedRename?.SelectionChanged();
+    }
+
+    public override void SelectAllBeneath()
+    {
+        base.SelectAllBeneath();
+        extendedRename?.SelectionChanged();
+    }
+
+    public override void ToggleSelection()
+    {
+        base.ToggleSelection();
+        extendedRename?.SelectionChanged();
+    }
+
+    public override void ToggleSelection(int pos)
+    {
+        base.ToggleSelection(pos);        
+        extendedRename?.SelectionChanged();
+    }
+
     public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
     {
@@ -391,6 +427,8 @@ class DirectoryController : Controller
 
     public void InsertColumn(int pos, ColumnViewColumn col) => view.ColumnView.InsertColumn(pos, col);
     public void RemoveColumn(int pos) => view.ColumnView.RemoveColumn(pos);
+
+    public IEnumerable<Item> GetItems() => model.GetItems<Item>();
 
     protected override CustomFilter? CreateFilter() => CustomFilter.New<Item>(Filter);
 

@@ -19,19 +19,35 @@ abstract class Controller : IDisposable
     public abstract Task<string?> GetActivationPath(int pos);
     public abstract Task ChangePathAsync(string path, bool fromHistory = false);
     
-    public void SelectAll()
+    public virtual void SelectAll()
     {
         foreach (var item in store.GetItems<Item>().OfType<SelectableItem>())
             item.IsSelected = true;
     }
 
-    public void SelectNone()
+    public virtual void SelectNone()
     {
         foreach (var item in store.GetItems<Item>().OfType<SelectableItem>())
             item.IsSelected = false;
     }
 
-    public void ToggleSelection()
+    public virtual void SelectAllAbove()
+    {
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
+            item.IsSelected = true;
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected))
+            item.IsSelected = false;
+    }
+
+    public virtual void SelectAllBeneath()
+    {
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
+            item.IsSelected = false;
+        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected - 1))
+            item.IsSelected = true;
+    }
+
+    public virtual void ToggleSelection()
     {
         var pos = model.Selected;
         if (model.GetItem<Item>(pos) is SelectableItem item)
@@ -39,7 +55,7 @@ abstract class Controller : IDisposable
         SetSelection(Math.Min(pos + 1, model.GetItemsCount() - 1));
     }
 
-    public void ToggleSelection(int pos)
+    public virtual void ToggleSelection(int pos)
     {
         if (model.GetItem<Item>(pos) is SelectableItem item)
             item?.IsSelected = item.IsSelected != true;
@@ -48,22 +64,6 @@ abstract class Controller : IDisposable
     public virtual void ExtendedRename() { }
 
     public virtual void OpenWith(int pos) {}
-
-    public void SelectAllAbove()
-    {
-        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
-            item.IsSelected = true;
-        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected))
-            item.IsSelected = false;
-    }
-
-    public void SelectAllBeneath()
-    {
-        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Take(model.Selected))
-            item.IsSelected = false;
-        foreach (var item in model.GetItems<Item>().OfType<SelectableItem>().Skip(model.Selected - 1))
-            item.IsSelected = true;
-    }
 
     public IEnumerable<Item> GetSelectedItems(int focusedPos = -1)
     {
