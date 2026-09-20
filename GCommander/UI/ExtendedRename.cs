@@ -1,11 +1,10 @@
-using CsTools.Extensions;
 using Gtk4DotNet;
 
 namespace UI;
 
 class ExtendedRename : AdwAlertDialog
 {
-    public static ExtendedRenameValues Value { get; private set; } = new("Bild", 3, 0);
+    public static ExtendedRenameValues Value { get; private set; } = new("Bild", 3, 1);
     public static async Task<ExtendedRenameValues?> PresentAsync()
     {
         using var builder = Builder.FromDotNetResource("extendedrename");

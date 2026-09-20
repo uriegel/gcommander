@@ -6,8 +6,6 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO ExtendedRename: rename items on disk
-
 // TODO remote items
 // TODO DirectoryItems delete Progress
 

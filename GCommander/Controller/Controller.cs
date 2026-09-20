@@ -12,6 +12,8 @@ abstract class Controller : IDisposable
             return DirectoryController.Get(id, current, view, context);
     }
 
+    public FolderContext Context { get; }
+    
     public string Id { get; }
 
     public abstract string GetItemPath(int pos);
@@ -108,8 +110,8 @@ abstract class Controller : IDisposable
     {
         Id = id;
         this.view = view;
-        this.filter = CreateFilter();
-        this.context = context;
+        filter = CreateFilter();
+        this.Context = context;
         store = new(item => item.Name);
         sortModel = SortListModel.New(new FilterListModel<Item>(store, filter), null);
         model = SingleSelection.New(sortModel);
@@ -119,8 +121,8 @@ abstract class Controller : IDisposable
     protected void SetNewPath(string path, bool fromHistory = false)
     {
         if (!fromHistory)
-            context.AddHistory(path);
-        context.CurrentPath = path;
+            Context.AddHistory(path);
+        Context.CurrentPath = path;
     }
 
     protected virtual CustomFilter? CreateFilter() => null;
@@ -167,7 +169,6 @@ abstract class Controller : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    readonly protected FolderContext context;
     bool disposedValue;
 
     #endregion

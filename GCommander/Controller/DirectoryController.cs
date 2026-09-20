@@ -15,12 +15,12 @@ class DirectoryController : Controller
 
     public override async Task ChangePathAsync(string path, bool fromHistory)
     {
-        var folderToSelect = path.EndsWith("..") ? context.CurrentPath.SubstringAfterLast('/') : null;
+        var folderToSelect = path.EndsWith("..") ? Context.CurrentPath.SubstringAfterLast('/') : null;
         cancellation.Cancel();
         cancellation = new();
         var items = await Get(path, fromHistory);
         var enableEvents = watcher.Path == "";
-        watcher.Path = context.CurrentPath;
+        watcher.Path = Context.CurrentPath;
         if (enableEvents)
             watcher.EnableRaisingEvents = true;
         metaFileData?.Dispose();
@@ -46,6 +46,8 @@ class DirectoryController : Controller
 
     public override async Task<string?> GetActivationPath(int pos)
     {
+        if (extendedRename != null && await extendedRename.Rename() == true)
+            return null;
         var item = model.GetItem<Item>(pos);
         if (item is FileItem fi)
         {
@@ -54,7 +56,7 @@ class DirectoryController : Controller
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = "xdg-open",
-                    Arguments = $"\"{context.CurrentPath.AppendPath(fi.Name)}\"",
+                    Arguments = $"\"{Context.CurrentPath.AppendPath(fi.Name)}\"",
                 },
             };
             proc.Start();
@@ -65,7 +67,7 @@ class DirectoryController : Controller
     } 
 
     public override string GetItemPath(int pos)
-        => context.CurrentPath.AppendPath(model.GetItem<Item>(pos)?.Name ?? "");
+        => Context.CurrentPath.AppendPath(model.GetItem<Item>(pos)?.Name ?? "");
 
     public override ExifData? GetExifData(int pos)
         => model.GetItem<Item>(pos) is FileItem fileItem ? fileItem.ExifData : null;
@@ -274,7 +276,7 @@ class DirectoryController : Controller
 
         foreach (var item in selected)
         {
-            using var file = GFile.New(context.CurrentPath.AppendPath(item.Name));
+            using var file = GFile.New(Context.CurrentPath.AppendPath(item.Name));
             await file.TrashAsync();
         }
     }
@@ -297,7 +299,7 @@ class DirectoryController : Controller
             ? "die Verzeichnisse"
             : "die Einträge";
 
-        var sourcePath = context.CurrentPath;
+        var sourcePath = Context.CurrentPath;
         var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
         var fromLeft = MainWindow.IsLeftActive();
 
@@ -359,7 +361,7 @@ class DirectoryController : Controller
         var res = await UI.CreateFolder.PresentAsync(item?.Name, MainWindow.Instance);
         if (res == null)
             return;
-        Directory.CreateDirectory(context.CurrentPath.AppendPath(res));
+        Directory.CreateDirectory(Context.CurrentPath.AppendPath(res));
     }
     
     public override async Task Rename(int focusedPos)
@@ -375,7 +377,7 @@ class DirectoryController : Controller
         var res = await UI.Rename.PresentAsync($"Möchtest du {body} umbenennen?", item.Name, MainWindow.Instance);
         if (res == null)
             return;
-        Directory.Move(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
+        Directory.Move(Context.CurrentPath.AppendPath(item.Name), Context.CurrentPath.AppendPath(res));
         MainWindow.FocusActiveView();
     }
 
@@ -391,8 +393,8 @@ class DirectoryController : Controller
         var res = await UI.Rename.PresentAsync($"Möchtest eine Kopie {body} erstellen?", item.Name, MainWindow.Instance, "Kopie erstellen");
         if (res == null)
             return;
-        if (File.Exists(context.CurrentPath.AppendPath(item.Name)))
-            File.Copy(context.CurrentPath.AppendPath(item.Name), context.CurrentPath.AppendPath(res));
+        if (File.Exists(Context.CurrentPath.AppendPath(item.Name)))
+            File.Copy(Context.CurrentPath.AppendPath(item.Name), Context.CurrentPath.AppendPath(res));
         MainWindow.FocusActiveView();
     }
     
@@ -423,7 +425,7 @@ class DirectoryController : Controller
         if (item is FileItem fi)
         {
             AdwDialog.PresentFromTemplate("appchooser", "dialog", MainWindow.Instance, (builder, name)
-                        => new AppChooser(builder, name, context.CurrentPath, fi.Name));
+                        => new AppChooser(builder, name, Context.CurrentPath, fi.Name));
         }
     }
 
@@ -454,7 +456,7 @@ class DirectoryController : Controller
         var token = BackgroundTasks.GetCancellationToken(cancellation.Token);
         BackgroundTasks.Add(taskId, Task.Run(() =>
         {
-            context.BackgroundAction = BackgroundAction.ExifDatas;
+            Context.BackgroundAction = BackgroundAction.ExifDatas;
             try
             {
                 foreach (var item in items
@@ -462,13 +464,13 @@ class DirectoryController : Controller
                             (item.Name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
                                 || item.Name.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase)
                                 || item.Name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))))
-                    item.ExifData = ExifReader.GetExifData(context.CurrentPath.AppendPath(item.Name));
+                    item.ExifData = ExifReader.GetExifData(Context.CurrentPath.AppendPath(item.Name));
                 refreshes.Writer.TryWrite(true);
             }
             finally
             {
                 BackgroundTasks.Remove(taskId);
-                context.BackgroundAction = BackgroundAction.None;
+                Context.BackgroundAction = BackgroundAction.None;
             }
         }));
     }
@@ -514,7 +516,7 @@ class DirectoryController : Controller
 
         IEnumerable<CopyItem> GetCopyItems(string directory, string subPath)
         {
-            var dirInfo = new DirectoryInfo(context.CurrentPath.AppendPath(subPath).AppendPath(directory));
+            var dirInfo = new DirectoryInfo(Context.CurrentPath.AppendPath(subPath).AppendPath(directory));
             foreach (var fileInfo in dirInfo.EnumerateFiles().OrderBy(n => n.Name))
                 yield return new(fileInfo.Name, subPath.AppendPath(directory), fileInfo.Length, fileInfo.LastWriteTime);
             foreach (var info in dirInfo.EnumerateDirectories().OrderBy(n => n.Name))
@@ -644,7 +646,7 @@ class DirectoryController : Controller
             try
             {
                 Console.WriteLine("Changed");
-                var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+                var fileInfo = new FileInfo(Context.CurrentPath.AppendPath(e.Name));
                 var itemBase = store.GetValue(e.Name ?? "");
                 if (itemBase is FileItem item)
                 {
@@ -691,7 +693,7 @@ class DirectoryController : Controller
                 }
                 else
                 {
-                    var fileInfo = new FileInfo(context.CurrentPath.AppendPath(e.Name));
+                    var fileInfo = new FileInfo(Context.CurrentPath.AppendPath(e.Name));
                     var itemBase = store.GetValue(e.Name ?? "");
                     if (itemBase is FileItem fi)
                     {
