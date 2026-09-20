@@ -8,6 +8,8 @@ abstract class Controller : IDisposable
             return RootController.Get(id, current, view, context);
         else if (path == FavoriteController.Name)
             return FavoriteController.Get(id, current, view, context);
+        else if (path == RemotesController.Name)
+            return RemotesController.Get(id, current, view, context);
         else
             return DirectoryController.Get(id, current, view, context);
     }

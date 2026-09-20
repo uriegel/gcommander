@@ -2,16 +2,16 @@ using System.Text.Json;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
-class FavoriteController : Controller
+class RemotesController : Controller
 {
-    public const string Name = "fav";
+    public const string Name = "remotes";
 
-    public static FavoriteController Get(string id, Controller? current, FolderView view, FolderContext context)
-        => current is FavoriteController favoriteController
-            ? favoriteController
-            : new FavoriteController(id, current, view, context);
+    public static RemotesController Get(string id, Controller? current, FolderView view, FolderContext context)
+        => current is RemotesController remotesController
+            ? remotesController
+            : new RemotesController(id, current, view, context);
 
-    public FavoriteController(string id, Controller? previous, FolderView view, FolderContext context) : base(id, view, context)
+    public RemotesController(string id, Controller? previous, FolderView view, FolderContext context) : base(id, view, context)
     {
         var namefactory = SignalListItemFactory
             .New()
@@ -28,7 +28,7 @@ class FavoriteController : Controller
                 iconname?.Name = item?.Name ?? "";
                 if (item is ParentItem)
                     iconname?.SetFromIconName("go-up");
-                else if (item is NewFavoriteItem)
+                else if (item is NewRemoteItem)
                     iconname?.SetFromIconName("add");
                 else
                     iconname?.SetFromIconName("starred");
@@ -38,14 +38,14 @@ class FavoriteController : Controller
                     row?.SetBindingToCss("selection", nameof(si.IsSelected));
             });
 
-        var pathfactory = SignalListItemFactory
+        var ipfactory = SignalListItemFactory
             .New()
             .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<Item>();
-                label.Text = item is FavoriteItem fi ? fi.Path : "";
+                label.Text = item is RemoteItem ri ? ri.IP : "";
             });
 
         view.ColumnView.SetModel(null);
@@ -63,12 +63,12 @@ class FavoriteController : Controller
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var pathSorter = CustomSorter.New<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
-        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(pathSorter);
+        using var ipSorter = CustomSorter.New<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
+        using var ipMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(ipSorter);
         view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("Path", pathfactory)
+            .New("IP-Adresse", ipfactory)
             .Expand()
-            .SideEffect(cvc => cvc.SetSorter(pathMultiSorter))
+            .SideEffect(cvc => cvc.SetSorter(ipMultiSorter))
         );
 
         using var viewsorter = view.ColumnView.GetSorter();
@@ -117,62 +117,17 @@ class FavoriteController : Controller
             ? RootController.Name
             : pos == items.Length + 1
             ? ""
-            : model.GetItem<Item>(pos) is FavoriteItem fi ? fi.Path : "";
-    
-    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<FavoriteItem>().Count();
-    public override int GetFileCount() => 0;
+            : model.GetItem<Item>(pos) is RemoteItem ri ? ri.IP : "";
 
-    public override async Task Delete(int focusedPos)
+     async Task<Item[]> Get()
     {
-        var selected = GetSelectedItems(focusedPos).OfType<FavoriteItem>().ToArray();
-        if (selected.Length == 0)
-            return;
-        var dialog = AdwAlertDialog.New("Favoriten löschen", $"Möchtest du {(selected.Length > 1 ? "die" : "den")} Favoriten löschen?");
-        dialog.SetResponses([
-                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
-                new("cancel", "_Abbrechen", Cancel: true)
-            ]);
-        var res = await dialog.PresentAsync(MainWindow.Instance);
-        if (res == "cancel")
-            return;
-
-        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
-                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
-                : [];
-        var selectedNames = selected.Select(n => n.Name);
-        Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([.. favs.Where(n => !selectedNames.Contains(n.Name))]));
-        MainWindow.Refresh();
-        MainWindow.FocusActiveView();
-    }
-
-    public override async Task Rename(int focusedPos)
-    {
-        var item = model.GetItem<Item>(focusedPos) is FavoriteItem fi ? fi : null;
-        if (item == null)
-            return;
-        var res = await UI.Rename.PresentAsync("den Favoriten", item.Name, MainWindow.Instance);
-        if (res == null)
-            return;
-        var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
-                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
-                : [];
-        Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>(
-            [.. favs.Where(n => n.Name != item.Name),
-            new FavoriteItem(res, item.Path)
-        ]));
-        MainWindow.Refresh();
-        MainWindow.FocusActiveView();
-    }
-
-    async Task<Item[]> Get()
-    {
-        items = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0
-                ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? []
+        items = Application.Settings.GetString("remotes") is string remotes && remotes.Length > 0
+                ? JsonSerializer.Deserialize<RemoteItem[]>(remotes) ?? []
                 : [];
         return [
             new ParentItem(),
-            .. items.Select(n => new FavoriteItem(n.Name, n.Path)),
-            new NewFavoriteItem()
+            .. items.Select(n => new RemoteItem(n.Name, n.IP)),
+            new NewRemoteItem()
         ];
     }
 
@@ -193,6 +148,6 @@ class FavoriteController : Controller
     void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc) => reverseOrder = reverse;
 
     bool reverseOrder;
-    FavoriteItem[] items = [];
-}
 
+    RemoteItem[] items = [];
+}

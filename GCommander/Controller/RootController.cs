@@ -202,7 +202,7 @@ class RootController : Controller
     static async Task<RootItem[]> Get()
         => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME),
             new RootItem("zzzfav", "Favoriten", null, FavoriteController.Name, true, "starred", null, DriveType.HOME),
-            new RootItem("zzzremotes", "Zugriff auf entfernte Geräte", null, "remotes", true, "network-server", null, DriveType.HOME),
+            new RootItem("zzzremotes", "Zugriff auf entfernte Geräte", null, RemotesController.Name, true, "network-server", null, DriveType.HOME),
             .. from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices

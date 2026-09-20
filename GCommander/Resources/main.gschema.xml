@@ -21,5 +21,9 @@
       <default>""</default>
       <summary>Favorite items</summary>
     </key>    
+    <key name="remotes" type="s">
+      <default>""</default>
+      <summary>Remote items</summary>
+    </key>    
   </schema>
 </schemalist>
