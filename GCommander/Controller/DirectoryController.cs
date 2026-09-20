@@ -44,20 +44,6 @@ class DirectoryController : Controller
         StartRefreshing();
     }
 
-    async void StartRefreshing()
-    {
-        try
-        {
-            while (true)
-            {
-                await refreshes.Reader.ReadAsync(cancellation.Token);
-                Refresh();
-                await Task.Delay(500, cancellation.Token);
-            }
-        }
-        catch (OperationCanceledException) { }
-    }
-
     public override async Task<string?> GetActivationPath(int pos)
     {
         var item = model.GetItem<Item>(pos);
@@ -221,27 +207,6 @@ class DirectoryController : Controller
             ? exif.DateTime.ToString("g")
             : altValue;
 
-    async Task<Item[]> Get(string path, bool fromHistory)
-    {
-        var dirInfo = new DirectoryInfo(path);
-        var dirs = dirInfo
-                        .GetDirectories()
-                        .Select(DirectoryItem.New)
-                        .OrderBy(n => n.Name)
-                        .ToArray();
-        var files = dirInfo
-                        .GetFiles()
-                        .Select(FileItem.New)
-                        .ToArray();
-        SetNewPath(dirInfo.FullName, fromHistory);
-        Application.Settings.SetString($"path-{Id}", dirInfo.FullName);
-        return [
-            new ParentItem(),
-            .. dirs,
-            .. files
-        ];
-    }
-
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
     public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
 
@@ -397,8 +362,16 @@ class DirectoryController : Controller
     public override async void ExtendedRename()
     {
         var res = await UI.ExtendedRename.PresentAsync();
-        if (res == null)
-            return;
+        if (res != null)
+        {
+            if (extendedRename == null)
+                extendedRename = new(this);
+        }
+        else
+        {
+            extendedRename?.Dispose();
+            extendedRename = null;
+        }
     }
 
     public override bool CheckRestriction(string searchKey)
@@ -416,7 +389,24 @@ class DirectoryController : Controller
         }
     }
 
+    public void InsertColumn(int pos, ColumnViewColumn col) => view.ColumnView.InsertColumn(pos, col);
+    public void RemoveColumn(int pos) => view.ColumnView.RemoveColumn(pos);
+
     protected override CustomFilter? CreateFilter() => CustomFilter.New<Item>(Filter);
+
+    async void StartRefreshing()
+    {
+        try
+        {
+            while (true)
+            {
+                await refreshes.Reader.ReadAsync(cancellation.Token);
+                Refresh();
+                await Task.Delay(500, cancellation.Token);
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
 
     void StartExifResolving(IEnumerable<FileItem> items)
     {
@@ -440,6 +430,27 @@ class DirectoryController : Controller
                 context.BackgroundAction = BackgroundAction.None;
             }
         }));
+    }
+
+    async Task<Item[]> Get(string path, bool fromHistory)
+    {
+        var dirInfo = new DirectoryInfo(path);
+        var dirs = dirInfo
+                        .GetDirectories()
+                        .Select(DirectoryItem.New)
+                        .OrderBy(n => n.Name)
+                        .ToArray();
+        var files = dirInfo
+                        .GetFiles()
+                        .Select(FileItem.New)
+                        .ToArray();
+        SetNewPath(dirInfo.FullName, fromHistory);
+        Application.Settings.SetString($"path-{Id}", dirInfo.FullName);
+        return [
+            new ParentItem(),
+            .. dirs,
+            .. files
+        ];
     }
 
     IEnumerable<CopyItem> GetCopyItems(SelectableItem[] selected)
@@ -679,7 +690,9 @@ class DirectoryController : Controller
     const string NAME = "Name";
     const string ERWEITERUNG = "Erweiterung";
 
-    MetaFileData? metaFileData = null;
+    MetaFileData? metaFileData;
+
+    ExtendedRename? extendedRename;
     CancellationTokenSource cancellation = new();
 
     readonly Channel<bool> refreshes = Channel.CreateBounded<bool>(new BoundedChannelOptions(1)
