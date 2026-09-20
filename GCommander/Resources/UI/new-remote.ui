@@ -5,11 +5,11 @@
   <requires lib="gtk" version="4.18"/>
   <requires lib="libadwaita" version="1.6"/>
   <object class="AdwAlertDialog" id="dialog">
-    <property name="body">Möchtest du den Favoriten hinzufügen?</property>
+    <property name="body">Möchtest du das externe Gerät hinzufügen?</property>
     <property name="close-response">cancel</property>
     <property name="default-response">ok</property>
     <property name="focus-widget">name</property>
-    <property name="heading">Neuer Favorit</property>
+    <property name="heading">Externes Gerät</property>
     <property name="prefer-wide-layout">True</property>
     <child>
       <object class="GtkGrid">
@@ -30,7 +30,7 @@
         <child>
           <object class="GtkLabel">
             <property name="halign">start</property>
-            <property name="label">Pfad</property>
+            <property name="label">IP-Adresse</property>
             <layout>
               <property name="column">0</property>
               <property name="column-span">1</property>
@@ -52,7 +52,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkEntry" id="path">
+          <object class="GtkEntry" id="ip">
             <property name="activates-default">True</property>
             <property name="hexpand">True</property>
             <layout>
@@ -60,6 +60,16 @@
               <property name="column-span">1</property>
               <property name="row">1</property>
               <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="android">
+            <property name="label">Android-Gerät</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="column-span">2</property>
+              <property name="row">2</property>
             </layout>
           </object>
         </child>

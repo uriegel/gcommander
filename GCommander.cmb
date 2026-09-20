@@ -3,12 +3,12 @@
 <!-- Created with Cambalache 1.0.3 -->
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
   <ui filename="GCommander/Resources/UI/mainwindow.ui" sha256="6913de93291dd82d420c76e14d1beef1e02949bc84b7f177f877f8e4c66d7a2e"/>
-  <ui filename="GCommander/Resources/UI/icon-name-item.ui" sha256="0bf48e345c4a98cc78339508b83dca6dc6c9877822c3312326a1e19e5b1907a6"/>
+  <ui filename="GCommander/Resources/UI/icon-name-item.ui" sha256="24da6d9e5e4b2293909bd243f25410c3faa55a48c55eed72a68dd2f069664ab9"/>
   <ui filename="GCommander/Resources/UI/folderpaned.ui" sha256="55698a32b0255f340ad836b0e32f0dbc845630dbf7733176db8d6b5f4940cdff"/>
   <ui filename="GCommander/Resources/UI/folderview.ui" sha256="c459c968e767e164de7cb6371d4f759eda1aa110ab7a43f6ca887983f1dd7036"/>
   <ui filename="GCommander/Resources/UI/viewer.ui" sha256="e1d09542c3cb3fadfaee77bd961691c318d3e384e372582234fd0f7eaf884105"/>
   <ui filename="GCommander/Resources/UI/date-exif.ui" sha256="bd11f6ddb5a70cff3f8076caa81705b3a7ec88897ddf2ee26d2f2232e66e988b"/>
-  <ui filename="GCommander/Resources/UI/new-favorite.ui" sha256="9e3ee57c35ba0afc8013d05b55929845911f3d32e4d048544d275601443cdb9e"/>
+  <ui filename="GCommander/Resources/UI/new-favorite.ui" sha256="da7d9bad9264ddc8348332636d5d3bb805f20ede9c05dfba682a83f808159d2b"/>
   <ui filename="GCommander/Resources/UI/rename.ui" sha256="d84f76266ecb22ef526dadd5ce9e692b3b7ae037639ee1d9a856fa01e79100ab"/>
   <ui filename="GCommander/Resources/UI/create-folder.ui" sha256="36269c96cbd0aced15fd23e42efeef76a78e03e0f2e652da1874f35a01406693"/>
   <ui filename="GCommander/Resources/UI/appchooser.ui" sha256="7d93c2cd05ba4529df0bc6763856f5e766840ad64da60bc17a42a51e892adc1a"/>
@@ -18,5 +18,6 @@
   <ui filename="GCommander/Resources/UI/conflicts.ui" sha256="dcfd05605eb917bdb46f6e557faa6d27017c69b5f165bf733aced55fcc905ebe"/>
   <ui filename="GCommander/Resources/UI/conflictnameitem.ui" sha256="87ce458985d2aef8f3ff7df667a0c59920db12f0072736a0152dbd2bdd2105b5"/>
   <ui filename="GCommander/Resources/UI/conflictitem.ui" sha256="00f59d56350997f2db39318b87cb2de6476e05030b19c49e679f337cc6ff4c16"/>
-  <ui filename="GCommander/Resources/UI/extendedrename.ui" sha256="3a8eef7c6b0b3c7a3200bb3010d2942c9630b7483cdebe7a962a9b1498f1e9f0"/>
+  <ui filename="GCommander/Resources/UI/extendedrename.ui" sha256="278d734dd39960060d1e4a5d1fa04456ace62f5efa6106b3ef7605499d955bd8"/>
+  <ui filename="GCommander/Resources/UI/new-remote.ui" sha256="0c1bc1cec0217be0421a12bcc13342a03a3167e44a1c10b5dfe8f3d5e1469039"/>
 </cambalache-project>

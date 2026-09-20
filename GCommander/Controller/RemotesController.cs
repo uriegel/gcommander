@@ -4,7 +4,7 @@ using Gtk4DotNet;
 
 class RemotesController : Controller
 {
-    public const string Name = "remotes";
+    public const string Name = "ext";
 
     public static RemotesController Get(string id, Controller? current, FolderView view, FolderContext context)
         => current is RemotesController remotesController
@@ -30,8 +30,10 @@ class RemotesController : Controller
                     iconname?.SetFromIconName("go-up");
                 else if (item is NewRemoteItem)
                     iconname?.SetFromIconName("add");
-                else
-                    iconname?.SetFromIconName("starred");
+                else if (item is RemoteItem ri && ri.IsAndroid)
+                    iconname?.SetFromIconName("phone");
+                else 
+                    iconname?.SetFromIconName("network-server");
                 var row = iconname?.GetParent()?.GetParent();
                 row?.DataContext = item;
                 if (item is SelectableItem si)
@@ -63,7 +65,7 @@ class RemotesController : Controller
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var ipSorter = CustomSorter.New<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
+        using var ipSorter = CustomSorter.New<Item>((item1, item2) => (item1 is RemoteItem ri ? ri.IP : "").CompareTo(item2 is RemoteItem ri2 ? ri2.IP : ""));
         using var ipMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(ipSorter);
         view.ColumnView.AppendColumn(ColumnViewColumn
             .New("IP-Adresse", ipfactory)
@@ -95,16 +97,14 @@ class RemotesController : Controller
         var res = GetItemPath(pos);
         if (res == "")
         {
-            var path = MainWindow.GetInactiveView().Context.CurrentPath;
-
-            var result = await NewFavorite.PresentAsync(path, MainWindow.Instance);
+            var result = await NewRemote.PresentAsync();
             if (result == null)
                 return null;
 
-            var favs = Application.Settings.GetString("favorites") is string favstr && favstr.Length > 0 
-                 ? JsonSerializer.Deserialize<FavoriteItem[]>(favstr) ?? [] 
+            var remotes = Application.Settings.GetString("remotes") is string remote && remote.Length > 0 
+                 ? JsonSerializer.Deserialize<RemoteItem[]>(remote) ?? [] 
                  : [];
-            Application.Settings.SetString("favorites", JsonSerializer.Serialize<FavoriteItem[]>([.. favs, result]));
+            Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteItem[]>([.. remotes, result]));
             MainWindow.Refresh();
             MainWindow.FocusActiveView();
             return null;
@@ -126,7 +126,7 @@ class RemotesController : Controller
                 : [];
         return [
             new ParentItem(),
-            .. items.Select(n => new RemoteItem(n.Name, n.IP)),
+            .. items.Select(n => new RemoteItem(n.Name, n.IP, n.IsAndroid)),
             new NewRemoteItem()
         ];
     }
@@ -137,9 +137,9 @@ class RemotesController : Controller
             ? -1
             : item2 is ParentItem
             ? 1
-            : item1 is FavoriteItem && item2 is NewFavoriteItem
+            : item1 is RemoteItem && item2 is NewRemoteItem
             ? -1
-            : item2 is FavoriteItem && item1 is NewFavoriteItem
+            : item2 is RemoteItem && item1 is NewRemoteItem
             ? 1
             : 0;
         return reverseOrder ? -order : order;

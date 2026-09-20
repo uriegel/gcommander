@@ -4,7 +4,9 @@
   <!-- interface-name template.ui -->
   <requires lib="gtk" version="4.20"/>
   <object class="GtkBox" id="listitem">
-    <property name="spacing">10</property>
+    <property name="margin-end">4</property>
+    <property name="margin-start">2</property>
+    <property name="spacing">5</property>
     <child>
       <object class="GtkImage" id="image">
         <property name="pixel-size">16</property>

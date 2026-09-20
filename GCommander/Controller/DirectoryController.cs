@@ -184,7 +184,7 @@ class DirectoryController : Controller
 
         var sizefactory = SignalListItemFactory
             .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();

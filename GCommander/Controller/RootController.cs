@@ -105,7 +105,7 @@ class RootController : Controller
 
         var descriptionfactory = SignalListItemFactory
             .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).MarginEnd(4).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
@@ -137,7 +137,7 @@ class RootController : Controller
 
         var sizefactory = SignalListItemFactory
             .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).MarginStart(5).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
                 var label = listitem.GetChild<Label>();
@@ -202,7 +202,7 @@ class RootController : Controller
     static async Task<RootItem[]> Get()
         => [new RootItem("~", "home", null, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME),
             new RootItem("zzzfav", "Favoriten", null, FavoriteController.Name, true, "starred", null, DriveType.HOME),
-            new RootItem("zzzremotes", "Zugriff auf entfernte Geräte", null, RemotesController.Name, true, "network-server", null, DriveType.HOME),
+            new RootItem("zzzext", "Zugriff auf externe Geräte", null, RemotesController.Name, true, "phone", null, DriveType.HOME),
             .. from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices

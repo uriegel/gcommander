@@ -45,6 +45,9 @@
     <EmbeddedResource Include="./Resources/UI/new-favorite.ui">
       <LogicalName>new-favorite</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/new-remote.ui">
+      <LogicalName>new-remote</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/rename.ui">
       <LogicalName>rename</LogicalName>
     </EmbeddedResource>
