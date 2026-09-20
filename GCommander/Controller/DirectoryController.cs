@@ -216,7 +216,8 @@ class DirectoryController : Controller
         view.ColumnView.SortByColumn(firstCol);
 
         using var dateSorter = CustomSorter.New<Item>((item1, item2) 
-            => (item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue).CompareTo(item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
+            => (item1 is FileItem fi ? fi.ExifData?.DateTime ?? fi.DateTime : item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue)
+                .CompareTo(item2 is FileItem fi2 ? fi2.ExifData?.DateTime ?? fi2.DateTime : item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
         using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(dateSorter);
         var dateCol = ColumnViewColumn
             .New("Datum", datefactory)
@@ -462,6 +463,7 @@ class DirectoryController : Controller
                                 || item.Name.EndsWith(".jpeg", StringComparison.InvariantCultureIgnoreCase)
                                 || item.Name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))))
                     item.ExifData = ExifReader.GetExifData(context.CurrentPath.AppendPath(item.Name));
+                refreshes.Writer.TryWrite(true);
             }
             finally
             {
