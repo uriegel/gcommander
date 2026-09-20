@@ -6,7 +6,6 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO ExtendedRename: listening to sort order changes
 // TODO ExtendedRename: rename items on disk
 
 // TODO remote items

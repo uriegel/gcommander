@@ -549,7 +549,6 @@ class DirectoryController : Controller
   
     void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc)
     {
-
         if ((lastSearchTitle == NAME || lastSearchTitle == ERWEITERUNG) && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
         {
             extensionSearch = lastSearchTitle == NAME;
@@ -564,6 +563,14 @@ class DirectoryController : Controller
         }
         reverseOrder = reverse;
         lastSearchTitle = col?.Title ?? "";
+
+        OnChanged();
+
+        async void OnChanged()
+        {
+            await Task.Delay(300);
+            extendedRename?.SelectionChanged();
+        }
     }
 
     int SortDirectoriesFirst(Item? item1, Item? item2)
