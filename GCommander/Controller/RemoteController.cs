@@ -1,9 +1,13 @@
 using System.ComponentModel;
+using CsTools;
 using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
 using Extensions;
 using Gtk4DotNet;
+using UI;
+
+using static CsTools.HttpRequest.Core;
 
 class RemoteController : Controller
 {
@@ -17,12 +21,12 @@ class RemoteController : Controller
     public override string GetItemPath(int pos)
     {
         var path = model.GetItem<Item>(pos)?.Name ?? "";
-        return path != ".." 
+        return path != ".."
             ? Context.CurrentPath.AppendPath(path.StartsWith('/') ? path[1..] : path)
             : Context.CurrentPath.UpOne();
     }
-        
-    public override async Task<string?> GetActivationPath(int pos) => (string?)GetItemPath(pos);  
+
+    public override async Task<string?> GetActivationPath(int pos) => (string?)GetItemPath(pos);
     public override async Task ChangePathAsync(string path, bool fromHistory = false)
     {
         var folderToSelect = path.Length < Context.CurrentPath.Length ? Context.CurrentPath.SubstringAfterLast('/') : null;
@@ -47,6 +51,67 @@ class RemoteController : Controller
 
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
     public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
+
+    public override async Task Copy(int focusedPos, bool move)
+    {
+        var selected = GetSelectedItems(focusedPos).OfType<FileItem>().ToArray();
+        if (selected.Length == 0 || move)
+            return;
+        var title = "Kopieren";
+        var text = selected.Length == 1
+            ? "die Datei"
+            : "die Dateien";
+
+        var sourcePath = Context.CurrentPath;
+        var targetPath = MainWindow.GetInactiveView().Context.CurrentPath;
+        var fromLeft = MainWindow.IsLeftActive();
+
+        var copyItems = CopyItems.Get(Context, selected).ToArray();
+        var conflicts = CopyItems.GetConflictItems(copyItems, targetPath).ToArray();
+        if (conflicts.Length == 0)
+        {
+            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+            dialog.SetResponses([
+                    new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                    new("cancel", "_Abbrechen", Cancel: true)
+                ]);
+            dialog.SetExtraChild(new ShowDirection().SideEffect(d => d.RightToLeft = !fromLeft));
+            var res = await dialog.PresentAsync(MainWindow.Instance);
+            if (res == "cancel")
+                return;
+        }
+        else
+        {
+            var res = await Conflicts.PresentAsync(conflicts);
+            if (!res.HasValue)
+                return;
+            if (res == false)
+            {
+                var excludes = conflicts.Select(n => new CopyItem(n.Name, n.SubPath, n.Size, n.DateTime));
+                copyItems = [.. copyItems.Except(excludes)];
+            }
+        }
+        var currentCount = 1;
+        var totalMaxBytes = copyItems.Sum(n => n.Size);
+        var totalCurrentBytes = 0L;
+        var start = DateTime.UtcNow;
+        var cts = new CancellationTokenSource();
+
+        foreach (var item in copyItems)
+        {
+            if (cts.Token.IsCancellationRequested)
+                break;
+            void OnProgress(long max, long curr)
+                => ProgressContext.Instance.CopyProgress = new(title, item.Name, copyItems.Length, currentCount,
+                        totalMaxBytes, totalCurrentBytes, item.Size, curr, DateTime.UtcNow - start, cts);
+
+            await CopyItem(targetPath, item, OnProgress, cancellation.Token);
+            totalCurrentBytes += item.Size;
+            currentCount++;
+        }
+
+        MainWindow.GetInactiveView().Refresh();
+    }
 
     public RemoteController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
@@ -175,8 +240,46 @@ class RemoteController : Controller
         }
     }
 
+    async Task CopyItem(string targetPath, CopyItem item, Action<long, long> onProgress, CancellationToken cancellation)
+    {
+        var newFileName = targetPath.AppendPath(item.Name);
+        var tmpNewFileName = targetPath.AppendPath(item.Name + TMP_POSTFIX);
+        long? lastWrite = null;
+        await Task.Run(async () =>
+        {
+            var msg = await Request.RunAsync(Context.CurrentPath.GetIpAndPath().GetFile(item.Name), true);
+            var len = msg.Content.Headers.ContentLength;
+            try
+            {
+                using var target =
+                    File
+                        .Create(tmpNewFileName.EnsureFileDirectoryExists())
+                        .WithProgress((t, c) => onProgress(len ?? t, c));
+                await msg.Content.ReadAsStream().CopyToAsync(target, cancellation);   
+                lastWrite = msg.GetHeaderLongValue("x-file-date");
+            }
+            catch
+            {
+                try
+                {
+                    File.Delete(tmpNewFileName);
+                }
+                catch { }
+                throw;
+            }
+        }, CancellationToken.None);
+        if (lastWrite.HasValue)
+            File.SetLastWriteTime(tmpNewFileName, lastWrite.Value.FromUnixTime());
+        using var gsf = GFile.New(Context.CurrentPath.AppendPath(item.Name));
+        using var gtf = GFile.New(tmpNewFileName);
+        gsf.CopyAttributes(gtf, FileCopyFlags.Overwrite);
+        File.Move(tmpNewFileName, newFileName, true);
+    }
+
     CancellationTokenSource cancellation = new();
     readonly DirectorySorter directorySorter = new();
+
+    const string TMP_POSTFIX = "-tmp-commander";
 
     #region IDisposable
 
@@ -211,6 +314,14 @@ static partial class RemoteControllerExtensions
 
     public static JsonRequest GetRequest(this IpAndPath ipAndPath)
         => new($"http://{ipAndPath.Ip}:8080");
+
+    public static Settings GetFile(this IpAndPath ipAndPath, string name)
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Get,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/downloadfile/{ipAndPath.Path.AppendPath(name)}",
+        };
 
     public static string UpOne(this string path)
         => path[7..].Contains('/')

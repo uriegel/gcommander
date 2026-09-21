@@ -6,8 +6,7 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO remote items: copy items from remote
-
+// TODO remote items: exception handling copy and get
 // TODO remote items: copy items to remote
 // TODO DirectoryItems delete Progress
 
