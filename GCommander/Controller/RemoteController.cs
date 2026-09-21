@@ -70,6 +70,17 @@ class RemoteController : Controller
                     iconname?.SetFromIconName("folder-open");
                 else if (item is FileItem fileItem)
                     iconname?.SetIcon(fileItem.Name);
+                var row = iconname?.GetParent()?.GetParent();
+                row?.DataContext = item;
+                if (item is SelectableItem si)
+                    row?.SetBindingToCss("selection", nameof(si.IsSelected));
+            })
+            .Unbind(listitem =>
+            {
+                var iconname = listitem.GetManagedChild<IconNameItem>();
+                var row = iconname?.GetParent()?.GetParent();
+                row?.UnsetBindingToCss("selection");
+                row?.DataContext = null;
             });
 
         var datefactory = SignalListItemFactory
