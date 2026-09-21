@@ -4,12 +4,14 @@ abstract class Controller : IDisposable
 {
     public static Controller GetFromPath(string id, string? path, Controller? current, FolderView view, FolderContext context)
     {
-        if (path == null || path == "/.." || path.Length == 0 || path == RootController.Name)
+        if (path == null || path == "/.." || path.Length == 0 || path == RootController.Name || IsRemotes(path))
             return RootController.Get(id, current, view, context);
         else if (path == FavoriteController.Name)
             return FavoriteController.Get(id, current, view, context);
         else if (path == RemotesController.Name)
             return RemotesController.Get(id, current, view, context);
+        else if (path.StartsWith(RemoteController.Name))
+            return RemoteController.Get(id, current, view, context);
         else
             return DirectoryController.Get(id, current, view, context);
     }
@@ -113,7 +115,7 @@ abstract class Controller : IDisposable
         Id = id;
         this.view = view;
         filter = CreateFilter();
-        this.Context = context;
+        Context = context;
         store = new(item => item.Name);
         sortModel = SortListModel.New(new FilterListModel<Item>(store, filter), null);
         model = SingleSelection.New(sortModel);
@@ -129,9 +131,10 @@ abstract class Controller : IDisposable
 
     protected virtual CustomFilter? CreateFilter() => null;
 
+    static bool IsRemotes(string path) => path.EndsWith("..") && path.StartsWith(RemoteController.Name) && path.Count(n => n == '/') == 2;
+
     void OnSelectionChange(int _, int __) => view.SelectionChanged(model.Selected);
-        
- 
+
     protected SingleSelection model;
     protected SortListModel sortModel;
     protected KeyedListStore<Item, string> store;

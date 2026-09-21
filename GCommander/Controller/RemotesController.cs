@@ -30,7 +30,7 @@ class RemotesController : Controller
                     iconname?.SetFromIconName("go-up");
                 else if (item is NewRemoteItem)
                     iconname?.SetFromIconName("add");
-                else if (item is RemoteItem ri && ri.IsAndroid)
+                else if (item is RemoteDevice ri && ri.IsAndroid)
                     iconname?.SetFromIconName("phone");
                 else 
                     iconname?.SetFromIconName("network-server");
@@ -47,7 +47,7 @@ class RemotesController : Controller
             {
                 var label = listitem.GetChild<Label>();
                 var item = listitem.GetItem<Item>();
-                label.Text = item is RemoteItem ri ? ri.IP : "";
+                label.Text = item is RemoteDevice ri ? ri.IP : "";
             });
 
         view.ColumnView.SetModel(null);
@@ -65,7 +65,7 @@ class RemotesController : Controller
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var ipSorter = CustomSorter.New<Item>((item1, item2) => (item1 is RemoteItem ri ? ri.IP : "").CompareTo(item2 is RemoteItem ri2 ? ri2.IP : ""));
+        using var ipSorter = CustomSorter.New<Item>((item1, item2) => (item1 is RemoteDevice ri ? ri.IP : "").CompareTo(item2 is RemoteDevice ri2 ? ri2.IP : ""));
         using var ipMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(ipSorter);
         view.ColumnView.AppendColumn(ColumnViewColumn
             .New("IP-Adresse", ipfactory)
@@ -102,9 +102,9 @@ class RemotesController : Controller
                 return null;
 
             var remotes = Application.Settings.GetString("remotes") is string remote && remote.Length > 0 
-                 ? JsonSerializer.Deserialize<RemoteItem[]>(remote) ?? [] 
+                 ? JsonSerializer.Deserialize<RemoteDevice[]>(remote) ?? [] 
                  : [];
-            Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteItem[]>([.. remotes, result]));
+            Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteDevice[]>([.. remotes, result]));
             MainWindow.Refresh();
             MainWindow.FocusActiveView();
             return null;
@@ -117,25 +117,25 @@ class RemotesController : Controller
             ? RootController.Name
             : pos == items.Length + 1
             ? ""
-            : model.GetItem<Item>(pos) is RemoteItem ri ? ri.IP : "";
+            : model.GetItem<Item>(pos) is RemoteDevice ri ? $"remote/{ri.IP}" : "";
 
-    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<RemoteItem>().Count();
+    public override int GetDirectoryCount() => model.GetItems<Item>().OfType<RemoteDevice>().Count();
     
     async Task<Item[]> Get()
     {
         items = Application.Settings.GetString("remotes") is string remotes && remotes.Length > 0
-                ? JsonSerializer.Deserialize<RemoteItem[]>(remotes) ?? []
+                ? JsonSerializer.Deserialize<RemoteDevice[]>(remotes) ?? []
                 : [];
         return [
             new ParentItem(),
-            .. items.Select(n => new RemoteItem(n.Name, n.IP, n.IsAndroid)),
+            .. items.Select(n => new RemoteDevice(n.Name, n.IP, n.IsAndroid)),
             new NewRemoteItem()
         ];
     }
 
     public override async Task Delete(int focusedPos)
     {
-        var selected = GetSelectedItems(focusedPos).OfType<RemoteItem>().ToArray();
+        var selected = GetSelectedItems(focusedPos).OfType<RemoteDevice>().ToArray();
         if (selected.Length == 0)
             return;
         var dialog = AdwAlertDialog.New("Gerät löschen", $"Möchtest du {(selected.Length > 1 ? "die Geräte" : "das Gerät")} löschen?");
@@ -148,10 +148,10 @@ class RemotesController : Controller
             return;
 
         var favs = Application.Settings.GetString("remotes") is string favstr && favstr.Length > 0
-                ? JsonSerializer.Deserialize<RemoteItem[]>(favstr) ?? []
+                ? JsonSerializer.Deserialize<RemoteDevice[]>(favstr) ?? []
                 : [];
         var selectedNames = selected.Select(n => n.Name);
-        Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteItem[]>([.. favs.Where(n => !selectedNames.Contains(n.Name))]));
+        Application.Settings.SetString("remotes", JsonSerializer.Serialize<RemoteDevice[]>([.. favs.Where(n => !selectedNames.Contains(n.Name))]));
         MainWindow.Refresh();
         MainWindow.FocusActiveView();
     }
@@ -162,9 +162,9 @@ class RemotesController : Controller
             ? -1
             : item2 is ParentItem
             ? 1
-            : item1 is RemoteItem && item2 is NewRemoteItem
+            : item1 is RemoteDevice && item2 is NewRemoteItem
             ? -1
-            : item2 is RemoteItem && item1 is NewRemoteItem
+            : item2 is RemoteDevice && item1 is NewRemoteItem
             ? 1
             : 0;
         return reverseOrder ? -order : order;
@@ -174,5 +174,5 @@ class RemotesController : Controller
 
     bool reverseOrder;
 
-    RemoteItem[] items = [];
+    RemoteDevice[] items = [];
 }

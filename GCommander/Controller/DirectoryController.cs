@@ -111,6 +111,7 @@ class DirectoryController : Controller
     public DirectoryController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
     {
+        directorySorter = new(ExtendedRenameChanged);
         watcher.Created += WatchCreated;
         watcher.Deleted += WatchDeleted;
         watcher.Changed += WatchChanged;
@@ -208,10 +209,10 @@ class DirectoryController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<Item>(NameOrExtensionOrder);
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(nameSorter);
+        using var nameSorter = CustomSorter.New<Item>(directorySorter.NameOrExtensionOrder);
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = ColumnViewColumn
-            .New(NAME, namefactory)
+            .New(DirectorySorter.NAME, namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.ColumnView.AppendColumn(firstCol);
@@ -220,15 +221,15 @@ class DirectoryController : Controller
         using var dateSorter = CustomSorter.New<Item>((item1, item2) 
             => (item1 is FileItem fi ? fi.ExifData?.DateTime ?? fi.DateTime : item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue)
                 .CompareTo(item2 is FileItem fi2 ? fi2.ExifData?.DateTime ?? fi2.DateTime : item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
-        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(dateSorter);
+        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(dateSorter);
         var dateCol = ColumnViewColumn
             .New("Datum", datefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.ColumnView.AppendColumn(dateCol);
 
-        using var sizeSorter = CustomSorter.New<Item>(SortSize);
-        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortDirectoriesFirst)).Append(sizeSorter);
+        using var sizeSorter = CustomSorter.New<Item>(DirectorySorter.SortSize);
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(sizeSorter);
         var sizeCol = ColumnViewColumn
             .New("Größe", sizefactory)
             .Expand()
@@ -236,8 +237,8 @@ class DirectoryController : Controller
         view.ColumnView.AppendColumn(sizeCol);
 
         using var viewsorter = view.ColumnView.GetSorter();
-        viewsorter.OnChanged -= SortOrderChanged;
-        viewsorter.OnChanged += SortOrderChanged;
+        viewsorter.OnChanged -= directorySorter.SortOrderChanged;
+        viewsorter.OnChanged += directorySorter.SortOrderChanged;
         sortModel.SetSorter(viewsorter);
     }
 
@@ -545,52 +546,6 @@ class DirectoryController : Controller
             && (view.Context.Restriction == null
                 || item?.Name.StartsWith(view.Context.Restriction, StringComparison.CurrentCultureIgnoreCase) == true);
 
-
-    int NameOrExtensionOrder(Item? item1, Item? item2)
-        => extensionSearch
-            ? (item1?.Name.GetFileExtension() ?? "").CompareTo(item2?.Name.GetFileExtension() ?? "")
-            : (item1?.Name ?? "").CompareTo(item2?.Name ?? "");
-  
-    void SortOrderChanged(bool reverse, ColumnViewColumn? col, SorterChange sc)
-    {
-        if ((lastSearchTitle == NAME || lastSearchTitle == ERWEITERUNG) && col?.Title == lastSearchTitle && reverseOrder != reverse && !reverse)
-        {
-            extensionSearch = lastSearchTitle == NAME;
-            nameOrExt = col;
-            col?.Title = extensionSearch ? ERWEITERUNG : NAME;
-        }
-        if (col?.Title != NAME && col?.Title != ERWEITERUNG && extensionSearch)
-        {
-            extensionSearch = false;
-            // This is a little bit dangerous!!
-            nameOrExt?.Title = NAME;
-        }
-        reverseOrder = reverse;
-        lastSearchTitle = col?.Title ?? "";
-
-        OnChanged();
-
-        async void OnChanged()
-        {
-            await Task.Delay(300);
-            extendedRename?.SelectionChanged();
-        }
-    }
-
-    int SortDirectoriesFirst(Item? item1, Item? item2)
-    {
-        var order = item1 is ParentItem
-            ? -1
-            : item2 is ParentItem
-            ? 1
-            : item1 is DirectoryItem && item2 is FileItem
-            ? -1
-            : item2 is DirectoryItem && item1 is FileItem
-            ? 1
-            : 0;
-        return reverseOrder ? -order : order;
-    }
-
     void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainContext.ShowHiddenItems))
@@ -721,29 +676,16 @@ class DirectoryController : Controller
         });
     }
 
-    static int SortSize(Item? item1, Item? item2)
-    {
-        var a = item1 is FileItem fi1 ? fi1.Size : 0;
-        var b = item2 is FileItem fi2 ? fi2.Size : 0;
-        return a - b > 0
-            ? 1
-            : a - b < 0
-            ? -1
-            : 0;
-    }
-    
     readonly FileSystemWatcher watcher = new();
-    bool reverseOrder;
-    bool extensionSearch;
-    string lastSearchTitle = "";
-    ColumnViewColumn? nameOrExt;
-    const string NAME = "Name";
-    const string ERWEITERUNG = "Erweiterung";
-
     MetaFileData? metaFileData;
-
     ExtendedRename? extendedRename;
     CancellationTokenSource cancellation = new();
+    void ExtendedRenameChanged()
+    {
+        if (extendedRename != null)
+            extendedRename?.SelectionChanged();
+    } 
+    readonly DirectorySorter directorySorter;
 
     readonly Channel<bool> refreshes = Channel.CreateBounded<bool>(new BoundedChannelOptions(1)
     {

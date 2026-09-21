@@ -6,7 +6,9 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO remote items
+// TODO remote items: copy items from remote
+
+// TODO remote items: copy items to remote
 // TODO DirectoryItems delete Progress
 
 // TODO public static void RemoveDrive(string mountPoint)

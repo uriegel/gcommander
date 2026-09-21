@@ -2,7 +2,7 @@ using Gtk4DotNet;
 
 class NewRemote : AdwAlertDialog
 {
-    public static async Task<RemoteItem?> PresentAsync()
+    public static async Task<RemoteDevice?> PresentAsync()
     {
         using var builder = Builder.FromDotNetResource("new-remote");
         var dialog = new NewRemote(builder, "dialog");
@@ -12,7 +12,7 @@ class NewRemote : AdwAlertDialog
         return dialog.Result;
     }
 
-    public RemoteItem? Result
+    public RemoteDevice? Result
     {
         get
         {

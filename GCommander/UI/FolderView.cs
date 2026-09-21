@@ -23,6 +23,7 @@ class FolderView : Box
                 ChangePath(editablePath.AsEditable().Text);
             }
         };
+        editablePath.Ellipsize = EllipsizeMode.Start;
         editablePath.Binding("text", nameof(FolderContext.CurrentPath));
         searchBar.SetBinding("search-mode-enabled", nameof(FolderContext.Restriction), BindingFlags.Default, obj => ((string?)obj)?.Length > 0);
         searchEntry.SetBinding("text", nameof(FolderContext.Restriction), BindingFlags.Bidirectional);

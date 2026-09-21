@@ -6,5 +6,6 @@ class DirectoryItem : FileSystemItem
         DateTime = a.DateTime;
         IsSelected = a.IsSelected;
     }
-    DirectoryItem(DirectoryInfo info) : base(info) {}
+    public DirectoryItem(string name, bool isHidden) : base(name, isHidden) { }
+    DirectoryItem(DirectoryInfo info) : base(info) { }
 }
