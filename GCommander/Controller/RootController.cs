@@ -6,16 +6,17 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO remote items: exception handling copy and get
-// TODO remote items: copy items to remote
+// TODO Copy: Check other side
+// TODO Copy to Remote: check directories
+// TODO Copy to Remote
 // TODO DirectoryItems delete Progress
+// TODO Remote CreateFolder
+// TODO Remote rename
 
 // TODO public static void RemoveDrive(string mountPoint)
 
 // TODO Percentage as progress in drive items?
 // TODO DriveType??
-
-// TODO After Actions grabFocus to paned
 class RootController : Controller
 {
     public const string Name = "root";
