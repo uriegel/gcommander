@@ -6,9 +6,8 @@ using Extensions;
 
 using static CsTools.ProcessCmd;
 
-// TODO Copy: Check other side
-// TODO Copy to Remote: check directories
 // TODO Copy to Remote
+// TODO Copy to Remote: check directories
 // TODO DirectoryItems delete Progress
 // TODO Remote CreateFolder
 // TODO Remote rename

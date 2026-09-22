@@ -40,7 +40,7 @@ class MainWindow : ApplicationWindow
         AddActions(new SimpleAction("sel-all-above", folderpaned.SelectAllAbove, "<Shift>Home"));
         AddActions(new SimpleAction("sel-all-beneath", folderpaned.SelectAllBeneath, "<Shift>End"));
         AddActions(new SimpleAction("toggleselection", folderpaned.ToggleSelection, "Insert"));
-        AddActions(new SimpleAction("delete", folderpaned.Delete, "Entf"));
+        AddActions(new SimpleAction("delete", folderpaned.Delete));
         AddActions(new SimpleAction("quit", CloseWindow, "<Ctrl>Q"));
         AddActions(new SimpleAction("favorites", folderpaned.ShowFavorites, "F1"));
         AddActions(new SimpleAction("renameascopy", folderpaned.RenameAsCopy, "<Shift>F2"));

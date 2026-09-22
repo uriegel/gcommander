@@ -54,6 +54,10 @@ class RemoteController : Controller
 
     public override async Task Copy(int focusedPos, bool move)
     {
+        var targetController = MainWindow.GetInactiveView().GetController();
+        if (targetController is not DirectoryController)
+            return;
+
         var selected = GetSelectedItems(focusedPos).OfType<FileItem>().ToArray();
         if (selected.Length == 0 || move)
             return;

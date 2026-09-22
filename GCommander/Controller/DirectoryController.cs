@@ -284,6 +284,10 @@ class DirectoryController : Controller
 
     public override async Task Copy(int focusedPos, bool move)
     {
+        var targetController = MainWindow.GetInactiveView().GetController();
+        if (targetController is not DirectoryController && targetController is not RemoteController)
+            return;
+
         var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
         if (selected.Length == 0)
             return;

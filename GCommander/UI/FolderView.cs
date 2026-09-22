@@ -9,6 +9,8 @@ class FolderView : Box
 
     public int CurrentPos { get; private set; } = -1;
 
+    public Controller GetController() => controller;
+
     public FolderView(Builder builder, string name, nint parent)
         : base(builder, "folderview", widget => ReplacePlaceHolder(name, parent, widget))
     {
