@@ -80,6 +80,7 @@ class MainWindow : ApplicationWindow
     }
 
     public static FolderView GetInactiveView() => Instance.folderpaned.GetInactiveView();
+    public static FolderView GetActiveView() => Instance.folderpaned.GetFolderView();
 
     public static void Refresh() => Instance.folderpaned.Refresh();
     public static void FocusActiveView() => Instance.folderpaned.SetFocus();

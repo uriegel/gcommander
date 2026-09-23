@@ -52,6 +52,51 @@ class RemoteController : Controller
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
     public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
 
+    public override bool CheckRestriction(string searchKey)
+        => model
+            .GetItems<Item>()
+            .Any(n => n.Name.StartsWith(searchKey, StringComparison.CurrentCultureIgnoreCase));
+
+    public override async Task CreateFolder(int focusedPos)
+    {
+        var item = model.GetItem<Item>(focusedPos) is SelectableItem si ? si : null;
+        var newFile = await UI.CreateFolder.PresentAsync(item?.Name, MainWindow.Instance);
+        if (newFile == null)
+            return;
+        await Request.RunAsync(Context.CurrentPath.AppendPath(newFile).GetIpAndPath().PostCreateDirectory(), true);
+        MainWindow.GetActiveView().Refresh();
+    }
+
+    public override async Task Delete(int focusedPos)
+    {
+        var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
+        if (selected.Length == 0)
+            return;
+        var dirs = selected.Count(n => n is DirectoryItem);
+        var files = selected.Count(n => n is FileItem);
+        var text = dirs == 0 && files == 1
+            ? "die Datei"
+            : dirs == 1 && files == 0
+            ? "das Verzeichnis"
+            : dirs == 0 && files > 1
+            ? "die Dateien"
+            : dirs > 1 && files == 0
+            ? "die Verzeichnisse"
+            : "die Einträge";
+        var dialog = AdwAlertDialog.New("Löschen", $"Möchtest du {text} löschen?");
+        dialog.SetResponses([
+                new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                new("cancel", "_Abbrechen", Cancel: true)
+            ]);
+        var res = await dialog.PresentAsync(MainWindow.Instance);
+        if (res == "cancel")
+            return;
+
+        foreach (var item in selected)
+            await Request.RunAsync(Context.CurrentPath.AppendPath(item.Name).GetIpAndPath().DeleteItem(), true);
+        MainWindow.GetActiveView().Refresh();
+    }
+
     public override async Task Copy(int focusedPos, bool move)
     {
         var targetController = MainWindow.GetInactiveView().GetController();
@@ -211,6 +256,8 @@ class RemoteController : Controller
         sortModel.SetSorter(viewsorter);
     }
 
+    protected override CustomFilter? CreateFilter() => CustomFilter.New<Item>(Filter);
+
     async Task<Item[]> Get(string path, bool fromHistory)
     {
         var result = await path
@@ -259,7 +306,7 @@ class RemoteController : Controller
                     File
                         .Create(tmpNewFileName.EnsureFileDirectoryExists())
                         .WithProgress((t, c) => onProgress(len ?? t, c));
-                await msg.Content.ReadAsStream().CopyToAsync(target, cancellation);   
+                await msg.Content.ReadAsStream().CopyToAsync(target, cancellation);
                 lastWrite = msg.GetHeaderLongValue("x-file-date");
             }
             catch
@@ -279,6 +326,11 @@ class RemoteController : Controller
         gsf.CopyAttributes(gtf, FileCopyFlags.Overwrite);
         File.Move(tmpNewFileName, newFileName, true);
     }
+    
+    bool Filter(Item? item)
+        => (MainContext.Instance.ShowHiddenItems || item is not FileSystemItem fsi || !fsi.IsHidden)
+            && (view.Context.Restriction == null
+                || item?.Name.StartsWith(view.Context.Restriction, StringComparison.CurrentCultureIgnoreCase) == true);
 
     CancellationTokenSource cancellation = new();
     readonly DirectorySorter directorySorter = new();
@@ -326,6 +378,22 @@ static partial class RemoteControllerExtensions
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/downloadfile/{ipAndPath.Path.AppendPath(name)}",
         };
+
+    public static Settings PostCreateDirectory(this IpAndPath ipAndPath) 
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Post,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/createdirectory/{ipAndPath.Path}",
+        };
+
+    public static Settings DeleteItem(this IpAndPath ipAndPath) 
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Delete,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/deletefile/{ipAndPath.Path}",
+        };    
 
     public static string UpOne(this string path)
         => path[7..].Contains('/')
