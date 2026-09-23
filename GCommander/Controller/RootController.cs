@@ -8,7 +8,6 @@ using static CsTools.ProcessCmd;
 
 // TODO Remote and File: after CreateFolder select newly created item
 // TODO DirectoryItems delete Progress
-// TODO Copy to Remote
 
 // TODO public static void RemoveDrive(string mountPoint)
 

@@ -5,6 +5,7 @@ using CsTools.Extensions;
 using Gtk4DotNet;
 using UI;
 using Extensions;
+using CsTools.HttpRequest;
 
 class DirectoryController : Controller
 {
@@ -287,12 +288,17 @@ class DirectoryController : Controller
         var targetController = MainWindow.GetInactiveView().GetController();
         if (targetController is not DirectoryController && targetController is not RemoteController)
             return;
+        var toRemote = targetController is RemoteController;
+        if (toRemote && move)
+            return;
 
         var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
         if (selected.Length == 0)
             return;
         var title = move ? "Verschieben" : "Kopieren";
         var dirs = selected.Count(n => n is DirectoryItem);
+        if (toRemote && dirs > 0)
+            return; 
         var files = selected.Count(n => n is FileItem);
         var text = dirs == 0 && files == 1
             ? "die Datei"
@@ -351,8 +357,16 @@ class DirectoryController : Controller
             var target = targetPath.AppendPath(item.SubPath).AppendPath(item.Name);
             if (move)
                 await file.MoveAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
-            else
+            else if (!toRemote)
                 await file.CopyAsync(target, FileCopyFlags.Overwrite, true, OnProgress);
+            else
+            {
+                var ipAndPath = targetPath.GetIpAndPath();
+                using var source = File
+                    .OpenRead(sourcePath.AppendPath(item.Name))
+                    .WithProgress(OnProgress);
+                await Request.RunAsync(source.PutFile(ipAndPath, item.Name, item.DateTime), true);
+            }
             totalCurrentBytes += item.Size;
             currentCount++;
         }
