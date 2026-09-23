@@ -119,7 +119,7 @@ class RemoteController : Controller
         var conflicts = CopyItems.GetConflictItems(copyItems, targetPath).ToArray();
         if (conflicts.Length == 0)
         {
-            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} kopieren?");
             dialog.SetResponses([
                     new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                     new("cancel", "_Abbrechen", Cancel: true)
@@ -378,6 +378,20 @@ static partial class RemoteControllerExtensions
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/downloadfile/{ipAndPath.Path.AppendPath(name)}",
         };
+
+    public static Settings PutFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWrite)
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Put,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/putfile/{ipAndPath.Path.AppendPath(name)}",
+            Timeout = 100_000_000,
+            AddContent = () => new StreamContent(streamToPost, 15000)
+                                    .SideEffect(n => n.Headers
+                                                        .TryAddWithoutValidation(
+                                                            "x-file-date",
+                                                            new DateTimeOffset(lastWrite).ToUnixTimeMilliseconds().ToString()))
+        };        
 
     public static Settings PostCreateDirectory(this IpAndPath ipAndPath) 
         => DefaultSettings with
