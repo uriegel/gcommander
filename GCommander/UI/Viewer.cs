@@ -115,7 +115,9 @@ class Viewer : Stack
 
     static bool IsVideo(string? file)
         => file?.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) == true
-        || file?.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) == true;
+        || file?.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) == true
+        || file?.EndsWith(".avi", StringComparison.InvariantCultureIgnoreCase) == true
+        || file?.EndsWith(".3gp", StringComparison.InvariantCultureIgnoreCase) == true;
 
     static bool IsPdf(string? file)
         => file?.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase) == true;
