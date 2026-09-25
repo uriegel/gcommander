@@ -7,8 +7,6 @@ using Extensions;
 using static CsTools.ProcessCmd;
 
 // TODO Remote and File: after CreateFolder select newly created item
-// TODO Move one directory: last file remains   
-// TODO Move directories: delete empty directories
 // TODO DirectoryItems delete Progress
 
 // TODO public static void RemoveDrive(string mountPoint)

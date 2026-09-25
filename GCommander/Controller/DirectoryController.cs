@@ -371,6 +371,9 @@ class DirectoryController : Controller
             currentCount++;
         }
 
+        if (move)
+            DeleteEmptyDirectories.Delete(selected, sourcePath);
+
         MainWindow.GetInactiveView().Refresh();
     }
 
@@ -528,6 +531,8 @@ class DirectoryController : Controller
             view.CountsChanged(GetDirectoryCount(), GetFileCount());
         }
     }
+
+
 
     void WatchCreated(object _, FileSystemEventArgs e)
     {
