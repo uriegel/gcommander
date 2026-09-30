@@ -33,7 +33,6 @@ class DateExif : Box
         exif?.UnsetBindingToCss("exif");
     }
 
-    public DateExif() : base() { }
     public DateExif(Builder builder) : base(builder, "listitem") { }
 
     [Widget]

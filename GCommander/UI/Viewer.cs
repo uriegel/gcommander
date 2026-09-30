@@ -117,7 +117,8 @@ class Viewer : Stack
         => file?.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) == true
         || file?.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) == true
         || file?.EndsWith(".avi", StringComparison.InvariantCultureIgnoreCase) == true
-        || file?.EndsWith(".3gp", StringComparison.InvariantCultureIgnoreCase) == true;
+        || file?.EndsWith(".3gp", StringComparison.InvariantCultureIgnoreCase) == true
+        || file?.EndsWith(".mov", StringComparison.InvariantCultureIgnoreCase) == true;
 
     static bool IsPdf(string? file)
         => file?.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase) == true;
@@ -138,7 +139,11 @@ class Viewer : Stack
         webview.Visible = false;
         trackviewer.Visible = false;
         imageContainer.Visible = true;
-        image.SetFileName(fileName ?? "");
+
+        using var pixbuf = new Pixbuf(fileName ?? "");
+        pixbuf.ApplyEmbeddedOrientation();
+        var pic = Picture.New();
+        image.SetPixbuf(pixbuf);
     }
     
     void SetVideo()

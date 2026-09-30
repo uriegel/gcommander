@@ -18,7 +18,6 @@ class IconNameItem : Box
         SetObject(Quark.Get("Hallo"), icon);
     }
 
-    public IconNameItem() : base() { }
     public IconNameItem(Builder builder) : base(builder, "listitem") { }
 
     [Widget]

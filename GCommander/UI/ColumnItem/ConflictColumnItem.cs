@@ -50,7 +50,6 @@ class ConflictColumnItem : Box
         } 
     }
 
-    public ConflictColumnItem() : base() { }
     public ConflictColumnItem(Builder builder) : base(builder, "listitem") { }
  
     [Widget]

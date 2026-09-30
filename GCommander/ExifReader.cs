@@ -5,7 +5,44 @@ record ExifData(
     DateTime DateTime,
     double? Latitude,
     double? Longitude
+//    Orientation Orientation
 );
+
+enum Orientation
+{
+    Undefined,
+    Normal,
+    /// <summary>
+    /// Indicates the image is left right reversed mirror.
+    /// </summary>
+    FlipHorizontal,
+    /// <summary>
+    /// Indicates the image is rotated by 180 degree clockwise.
+    /// </summary>
+    Rotate180,
+    /// <summary>
+    /// Indicates the image is upside down mirror, it can also be represented by flip horizontally firstly and rotate 180 degree clockwise.
+    /// </summary>
+    FlipVertical,
+    /// <summary>
+    /// Indicates the image is flipped about top-left <--> bottom-right axis, it can also be 
+    /// represented by flip horizontally firstly and rotate 270 degree clockwise.
+    /// </summary>
+    Transpose,
+    /// <summary>
+    /// Indicates the image is rotated by 90 degree clockwise.
+    /// </summary>
+    Rotate90,
+    /// <summary>
+    /// Indicates the image is flipped about top-right <--> bottom-left axis, it can also be
+    /// represented by flip horizontally firstly and rotate 90 degree clockwise. 
+    /// </summary>
+    Traverse,
+    /// <summary>
+    /// Indicates the image is rotated by 270 degree clockwise.
+    /// </summary>
+    Rotate270
+}
 
 class ExifReader : IDisposable
 {
@@ -21,9 +58,11 @@ class ExifReader : IDisposable
 
             if (reader.GetTagValue<double>(ExifTags.GPSLatitude, out var d))
                 latitude = !double.IsNaN(d) ? d : null;
-            if (reader.GetTagValue<double>(ExifTags.GPSLongitude, out d))
+            if (reader.GetTagValue(ExifTags.GPSLongitude, out d))
                 longitude = !double.IsNaN(d) ? d : null;
-
+            // var orientation = reader.GetTagValue<ushort>(ExifTags.Orientation, out var i)
+            //     ? (Orientation)i
+            //     : Orientation.Undefined;
             if (reader.GetTagValue<DateTime>(ExifTags.DateTimeOriginal, out var res))
                 dateTime = res;
             else if (reader.GetTagValue(ExifTags.DateTime, out res))
@@ -32,7 +71,7 @@ class ExifReader : IDisposable
                 ? null
                 : new ExifData(dateTime, latitude, longitude);
         }
-        catch 
+        catch
         {
             return null;
         }
@@ -182,11 +221,11 @@ class ExifReader : IDisposable
     }
 
     public bool GetTagValue<T>(ExifTags tag, out T result)
-        where T: struct
+        where T : struct
         => GetTagValue((ushort)tag, out result);
 
     public bool GetTagValue<T>(ushort tagID, out T result)
-        where T: struct
+        where T : struct
     {
         var tagData = GetTagBytes(tagID, out ushort tiffDataType, out uint numberOfComponents);
         if (tagData == null)
@@ -347,13 +386,13 @@ class ExifReader : IDisposable
 
     static byte GetTIFFFieldLength(ushort tiffDataType)
         => tiffDataType switch
-            {
-                1 or 2 or 6 => 1,
-                3 or 8 => 2,
-                4 or 7 or 9 or 11 => 4,
-                5 or 10 or 12 => 8,
-                _ => throw new Exception(string.Format("Unknown TIFF datatype: {0}", tiffDataType)),
-            };
+        {
+            1 or 2 or 6 => 1,
+            3 or 8 => 2,
+            4 or 7 or 9 or 11 => 4,
+            5 or 10 or 12 => 8,
+            _ => throw new Exception(string.Format("Unknown TIFF datatype: {0}", tiffDataType)),
+        };
 
     ushort ReadUShort() => ToUShort(ReadBytes(2));
     uint ReadUint() => ToUint(ReadBytes(4));
@@ -460,7 +499,7 @@ class ExifReader : IDisposable
             convertedData.SetValue(converter(buffer), elementCount);
         }
         return convertedData is double[] da
-            ? da[0] + da[1]/60 + da[2]/3600
+            ? da[0] + da[1] / 60 + da[2] / 3600
             : 0;
     }
 

@@ -24,7 +24,6 @@ class ConflictNameItem : Box
         SetObject(Quark.Get("Hallo"), icon);
     }
 
-    public ConflictNameItem() : base() { }
     public ConflictNameItem(Builder builder) : base(builder, "listitem") { }
 
     [Widget]
