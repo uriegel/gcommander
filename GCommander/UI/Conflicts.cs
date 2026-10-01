@@ -82,9 +82,9 @@ class Conflicts : AdwAlertDialog, IDisposable
             if (item?.Size == item?.TargetSize)
                 conflict?.ConflictType = ConflictType.Indifferent;
         });
-        columnView.AppendColumn(ColumnViewColumn.New("Name", namefactory).Expand());
-        columnView.AppendColumn(ColumnViewColumn.New("Datum", dateTimeFactory).Expand());
-        columnView.AppendColumn(ColumnViewColumn.New("Größe", sizeFactory).Expand());
+        columnView.AppendColumn(new ColumnViewColumn("Name", namefactory).Expand());
+        columnView.AppendColumn(new ColumnViewColumn("Datum", dateTimeFactory).Expand());
+        columnView.AppendColumn(new ColumnViewColumn("Größe", sizeFactory).Expand());
 
         noDefault = items.Any(n => n.DateTime < n.TargetDateTime);
 

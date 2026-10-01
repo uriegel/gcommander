@@ -52,19 +52,17 @@ class FavoriteController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<Item>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(nameSorter);
-        var firstCol = ColumnViewColumn
-            .New("Name", namefactory)
+        using var nameSorter = CustomSorter.Create<Item>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(nameSorter);
+        var firstCol = new ColumnViewColumn("Name", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var pathSorter = CustomSorter.New<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
-        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(SortFixedFirst)).Append(pathSorter);
-        view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("Path", pathfactory)
+        using var pathSorter = CustomSorter.Create<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
+        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(pathSorter);
+        view.ColumnView.AppendColumn(new ColumnViewColumn("Path", pathfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(pathMultiSorter))
         );

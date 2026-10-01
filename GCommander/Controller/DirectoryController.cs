@@ -207,29 +207,26 @@ class DirectoryController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<Item>(directorySorter.NameOrExtensionOrder);
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(nameSorter);
-        var firstCol = ColumnViewColumn
-            .New(DirectorySorter.NAME, namefactory)
+        using var nameSorter = CustomSorter.Create<Item>(directorySorter.NameOrExtensionOrder);
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(nameSorter);
+        var firstCol = new ColumnViewColumn(DirectorySorter.NAME, namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var dateSorter = CustomSorter.New<Item>((item1, item2) 
+        using var dateSorter = CustomSorter.Create<Item>((item1, item2) 
             => (item1 is FileItem fi ? fi.ExifData?.DateTime ?? fi.DateTime : item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue)
                 .CompareTo(item2 is FileItem fi2 ? fi2.ExifData?.DateTime ?? fi2.DateTime : item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
-        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(dateSorter);
-        var dateCol = ColumnViewColumn
-            .New("Datum", datefactory)
+        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(dateSorter);
+        var dateCol = new ColumnViewColumn("Datum", datefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.ColumnView.AppendColumn(dateCol);
 
-        using var sizeSorter = CustomSorter.New<Item>(DirectorySorter.SortSize);
-        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<Item>(directorySorter.SortDirectoriesFirst)).Append(sizeSorter);
-        var sizeCol = ColumnViewColumn
-            .New("Größe", sizefactory)
+        using var sizeSorter = CustomSorter.Create<Item>(DirectorySorter.SortSize);
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(sizeSorter);
+        var sizeCol = new ColumnViewColumn("Größe", sizefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter));
         view.ColumnView.AppendColumn(sizeCol);
@@ -248,7 +245,8 @@ class DirectoryController : Controller
     public override int GetDirectoryCount() => model.GetItems<Item>().OfType<DirectoryItem>().Count();
     public override int GetFileCount() => model.GetItems<Item>().OfType<FileItem>().Count();
 
-    public override async Task Delete(int focusedPos)
+    public override async Task Delete(int 
+    focusedPos)
     {
         var selected = GetSelectedItems(focusedPos).OfType<SelectableItem>().ToArray();
         if (selected.Length == 0)

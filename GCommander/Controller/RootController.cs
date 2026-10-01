@@ -144,42 +144,37 @@ class RootController : Controller
 
         previous?.Dispose();
 
-        using var nameSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(nameSorter);
-        var firstCol = ColumnViewColumn
-            .New("Name", namefactory)
+        using var nameSorter = CustomSorter.Create<RootItem>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
+        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<RootItem>(SortMounted)).Append(nameSorter);
+        var firstCol = new ColumnViewColumn("Name", namefactory)
             //.New("N", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
         view.ColumnView.AppendColumn(firstCol);
         view.ColumnView.SortByColumn(firstCol);
 
-        using var descriptionSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
-        using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(descriptionSorter);
-        view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("Bez.", descriptionfactory)
+        using var descriptionSorter = CustomSorter.Create<RootItem>((item1, item2) => (item1?.Description ?? "").CompareTo(item2?.Description ?? ""));
+        using var descriptionMultiSorter = MultiSorter.New().Append(CustomSorter.Create<RootItem>(SortMounted)).Append(descriptionSorter);
+        view.ColumnView.AppendColumn(new ColumnViewColumn("Bez.", descriptionfactory)
             //.New("B", descriptionfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(descriptionMultiSorter))
         );
-        using var mountPointSorter = CustomSorter.New<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
-        using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(mountPointSorter);
-        view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("Mount", mountPointfactory)
+        using var mountPointSorter = CustomSorter.Create<RootItem>((item1, item2) => (item1?.MountPoint ?? "").CompareTo(item2?.MountPoint ?? ""));
+        using var mountPointMultiSorter = MultiSorter.New().Append(CustomSorter.Create<RootItem>(SortMounted)).Append(mountPointSorter);
+        view.ColumnView.AppendColumn(new ColumnViewColumn("Mount", mountPointfactory)
             //.New("M", mountPointfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(mountPointMultiSorter))
         );
-        using var useSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
-        using var useMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(useSorter);
-        view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("%", usefactory)
+        using var useSorter = CustomSorter.Create<RootItem>((item1, item2) => SortSize(item1?.Use, item2?.Use));
+        using var useMultiSorter = MultiSorter.New().Append(CustomSorter.Create<RootItem>(SortMounted)).Append(useSorter);
+        view.ColumnView.AppendColumn(new ColumnViewColumn("%", usefactory)
             .SideEffect(cvc => cvc.SetSorter(useMultiSorter))
         );
-        using var sizeSorter = CustomSorter.New<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
-        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.New<RootItem>(SortMounted)).Append(sizeSorter);
-        view.ColumnView.AppendColumn(ColumnViewColumn
-            .New("Größe", sizefactory)
+        using var sizeSorter = CustomSorter.Create<RootItem>((item1, item2) => SortSize(item1?.Size, item2?.Size));
+        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.Create<RootItem>(SortMounted)).Append(sizeSorter);
+        view.ColumnView.AppendColumn(new ColumnViewColumn("Größe", sizefactory)
             //.New("G", sizefactory)
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter))
         );

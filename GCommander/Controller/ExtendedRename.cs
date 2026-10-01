@@ -27,8 +27,7 @@ class ExtendedRename : IDisposable
             });
 
 
-        var col = ColumnViewColumn
-            .New("Neuer Name", factory)
+        var col = new ColumnViewColumn("Neuer Name", factory)
             .Expand();
         controller.InsertColumn(1, col);
         controller.SelectNone();
