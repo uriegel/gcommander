@@ -36,7 +36,7 @@ class FolderPaned : Paned
         folderViewLeft.AddController(leftEvents);
         folderViewRight.AddController(rightEvents);
 
-        var kec = KeyEventController.New();
+        var kec = new KeyEventController();
         kec.SetPropagationPhase(PropagationPhase.Capture);
         kec.OnKeyPressed += OnKey;
         AddController(kec);

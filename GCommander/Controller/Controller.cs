@@ -118,7 +118,7 @@ abstract class Controller : IDisposable
         Context = context;
         store = new(item => item.Name);
         sortModel = SortListModel.New(new FilterListModel<Item>(store, filter), null);
-        model = SingleSelection.New(sortModel);
+        model = new(sortModel);
         model.OnSelectionChanged += OnSelectionChange;
     }
 

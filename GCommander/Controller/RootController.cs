@@ -82,8 +82,7 @@ class RootController : Controller
         : base(id, view, context)
     {
 
-        var namefactory = SignalListItemFactory
-            .New()
+        var namefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("icon-name-item");
@@ -101,44 +100,40 @@ class RootController : Controller
                 row?.AddCssClass("hiddenItem", item?.IsMounted != true);
             });
 
-        var descriptionfactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).MarginEnd(4).SetEllipsize(EllipsizeMode.End)))
+        var descriptionfactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.Start).MarginEnd(4).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<RootItem>();
                 label.Text = item?.Description ?? "";
             });
 
-        var mountPointfactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+        var mountPointfactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<RootItem>();
                 label.Text = item?.MountPoint ?? "";
             });
 
-        var usefactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
+        var usefactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.End).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<RootItem>();
                 label.Text = item?.Use != null ? $"{item?.Use}%" : "";
                 if (item?.Use > 90)
                     label?.GetParent()?.AddCssClass("warning", item?.IsMounted == true);
             });
 
-        var sizefactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).MarginStart(5).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
+        var sizefactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.End).MarginStart(5).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<RootItem>();
                 label.Text = item?.Size.FormatSize() ?? "";
             });

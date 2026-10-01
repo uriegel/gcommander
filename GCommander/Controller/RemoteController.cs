@@ -165,8 +165,7 @@ class RemoteController : Controller
     public RemoteController(string id, Controller? previous, FolderView view, FolderContext context)
         : base(id, view, context)
     {
-        var namefactory = SignalListItemFactory
-            .New()
+        var namefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("icon-name-item");
@@ -197,22 +196,20 @@ class RemoteController : Controller
                 row?.DataContext = null;
             });
 
-        var datefactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().SetEllipsize(EllipsizeMode.End)))
+        var datefactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<Item>();
                 label.Text = item is FileItem fileItem ? fileItem.DateTime.ToString("g") : "";
             });
 
-        var sizefactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
+        var sizefactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.End).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<Item>();
                 label.Text = item is FileItem fileItem ? fileItem.Size.FormatSize() : "";
             });

@@ -7,12 +7,11 @@ class ExtendedRename : IDisposable
     {
         this.controller = controller;
 
-        var factory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+        var factory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 if (listitem.GetItem<Item>() is FileItem fileItem)
                 {
                     label.DataContext = fileItem;
@@ -21,7 +20,7 @@ class ExtendedRename : IDisposable
             })
             .Unbind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 label.UnsetBinding("label");
                 label.Text = "";
                 label.DataContext = null;

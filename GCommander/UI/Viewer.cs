@@ -142,7 +142,6 @@ class Viewer : Stack
 
         using var pixbuf = new Pixbuf(fileName ?? "");
         pixbuf.ApplyEmbeddedOrientation();
-        var pic = Picture.New();
         image.SetPixbuf(pixbuf);
     }
     

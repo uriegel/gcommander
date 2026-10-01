@@ -34,7 +34,7 @@ class FolderView : Box
 
         ColumnView.OnActivate += Activate;
 
-        var clickGesture = ClickGesture.New();
+        var clickGesture = new ClickGesture();
         clickGesture.OnPressed += (c, x, y, keys) =>
         {
             int pos = ColumnView.GetFocusedItemPos();
@@ -44,7 +44,7 @@ class FolderView : Box
         };
         ColumnView.AddController(clickGesture);
 
-        var keyController = KeyEventController.New();
+        var keyController = new KeyEventController();
         keyController.OnKeyPressed += (chr, modifiers) =>
         {
             if (chr == (char)ConsoleKey.Escape)

@@ -123,8 +123,7 @@ class DirectoryController : Controller
                     | NotifyFilters.LastWrite
                     | NotifyFilters.Size;
 
-        var namefactory = SignalListItemFactory
-            .New()
+        var namefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("icon-name-item");
@@ -144,8 +143,7 @@ class DirectoryController : Controller
                     iconname?.SetIcon(fileItem.Name);
             });
 
-        var datefactory = SignalListItemFactory
-            .New()
+        var datefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("date-exif");
@@ -184,12 +182,11 @@ class DirectoryController : Controller
                 dateexif?.DataContext = null;
             });
 
-        var sizefactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.End).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
+        var sizefactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.End).MarginEnd(5).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 if (listitem.GetItem<Item>() is FileItem fileItem)
                 {
                     label.DataContext = fileItem;
@@ -198,7 +195,7 @@ class DirectoryController : Controller
             })
             .Unbind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 label.UnsetBinding("label");
                 label.Text = "";
                 label.DataContext = null;

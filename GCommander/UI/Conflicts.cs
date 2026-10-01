@@ -23,10 +23,10 @@ class Conflicts : AdwAlertDialog, IDisposable
 
         var store = new ListStore<ConflictItem>();
         store.Initialize(items);
-        model = SingleSelection.New(store);
+        model = new SingleSelection(store);
         columnView.SetModel(model);
 
-        var namefactory = SignalListItemFactory.New();
+        var namefactory = new SignalListItemFactory();
         namefactory.Setup(n =>
         {
             using var builder = Builder.FromDotNetResource("conflictnameitem");
@@ -41,7 +41,7 @@ class Conflicts : AdwAlertDialog, IDisposable
             iconname?.SubPath = item?.SubPath ?? "";
             iconname?.SetIcon(item?.Name ?? "");
         });
-        var dateTimeFactory = SignalListItemFactory.New();
+        var dateTimeFactory = new SignalListItemFactory();
         dateTimeFactory.Setup(n =>
         {
             using var builder = Builder.FromDotNetResource("conflictitem");
@@ -62,7 +62,7 @@ class Conflicts : AdwAlertDialog, IDisposable
             else if (item?.DateTime < item?.TargetDateTime)
                 conflict?.ConflictType = ConflictType.No;
         });
-        var sizeFactory = SignalListItemFactory.New();
+        var sizeFactory = new SignalListItemFactory();
         sizeFactory.Setup(n =>
         {
             using var builder = Builder.FromDotNetResource("conflictitem");

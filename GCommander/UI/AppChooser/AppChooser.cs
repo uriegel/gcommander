@@ -17,7 +17,7 @@ class AppChooser : AdwDialog
         );
         InsertActionGroup("appchooser", actiongroup);
 
-        var keyController = KeyEventController.New();
+        var keyController = new KeyEventController();
         keyController.OnKeyPressed += (chr, mod) =>
         {
             if (chr == 13)
@@ -39,7 +39,7 @@ class AppChooser : AdwDialog
                 current?.CreateHeader("Alle Apps");
         });
 
-        EventController CreatePressed() => ClickGesture.New().SideEffect(c => c.OnPressed += (n, x, y, mod) =>
+        EventController CreatePressed() => new ClickGesture().SideEffect(c => c.OnPressed += (n, x, y, mod) =>
         {
             if (n == 2)
                 StartProcess(listbox, path, fileName);

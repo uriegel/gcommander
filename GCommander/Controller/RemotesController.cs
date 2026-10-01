@@ -13,8 +13,7 @@ class RemotesController : Controller
 
     public RemotesController(string id, Controller? previous, FolderView view, FolderContext context) : base(id, view, context)
     {
-        var namefactory = SignalListItemFactory
-            .New()
+        var namefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("icon-name-item");
@@ -40,12 +39,11 @@ class RemotesController : Controller
                     row?.SetBindingToCss("selection", nameof(si.IsSelected));
             });
 
-        var ipfactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+        var ipfactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<Item>();
                 label.Text = item is RemoteDevice ri ? ri.IP : "";
             });

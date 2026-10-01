@@ -13,8 +13,7 @@ class FavoriteController : Controller
 
     public FavoriteController(string id, Controller? previous, FolderView view, FolderContext context) : base(id, view, context)
     {
-        var namefactory = SignalListItemFactory
-            .New()
+        var namefactory = new SignalListItemFactory()
             .Setup(listitem =>
             {
                 using var builder = Builder.FromDotNetResource("icon-name-item");
@@ -38,12 +37,11 @@ class FavoriteController : Controller
                     row?.SetBindingToCss("selection", nameof(si.IsSelected));
             });
 
-        var pathfactory = SignalListItemFactory
-            .New()
-            .Setup(listitem => listitem.SetChild(Label.New().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
+        var pathfactory = new SignalListItemFactory()
+            .Setup(listitem => listitem.SetChild(new Label().HAlign(Align.Start).SetEllipsize(EllipsizeMode.End)))
             .Bind(listitem =>
             {
-                var label = listitem.GetChild<Label>();
+                var label = listitem.GetChild().AsLabel();
                 var item = listitem.GetItem<Item>();
                 label.Text = item is FavoriteItem fi ? fi.Path : "";
             });

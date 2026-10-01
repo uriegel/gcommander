@@ -8,7 +8,7 @@ class MainWindow : ApplicationWindow
         Instance = this;
         StyleContext.AddProviderForDisplay(
             Display.GetDefault(),
-            CssProvider.New().FromResource("style"),
+            CssProvider.FromResource("style"),
             StyleProviderPriority.Application);
 
         var w = Application.Settings.GetInt("width");
