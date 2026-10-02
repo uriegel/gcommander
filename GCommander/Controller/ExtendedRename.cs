@@ -42,7 +42,7 @@ class ExtendedRename : IDisposable
             .ToArray();
         if (fileItems.Length == 0)
             return false;
-        var dialog = AdwAlertDialog.New("Erweitertes Umbenennen", $"Möchtest du die Dateien umbenennen?");
+        var dialog = new AdwAlertDialog("Erweitertes Umbenennen", $"Möchtest du die Dateien umbenennen?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)

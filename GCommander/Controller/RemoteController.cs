@@ -83,7 +83,7 @@ class RemoteController : Controller
             : dirs > 1 && files == 0
             ? "die Verzeichnisse"
             : "die Einträge";
-        var dialog = AdwAlertDialog.New("Löschen", $"Möchtest du {text} löschen?");
+        var dialog = new AdwAlertDialog("Löschen", $"Möchtest du {text} löschen?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)
@@ -119,7 +119,7 @@ class RemoteController : Controller
         var conflicts = CopyItems.GetConflictItems(copyItems, targetPath).ToArray();
         if (conflicts.Length == 0)
         {
-            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} kopieren?");
+            var dialog = new AdwAlertDialog(title, $"Möchtest du {text} kopieren?");
             dialog.SetResponses([
                     new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                     new("cancel", "_Abbrechen", Cancel: true)
@@ -315,8 +315,8 @@ class RemoteController : Controller
         }, CancellationToken.None);
         if (lastWrite.HasValue)
             File.SetLastWriteTime(tmpNewFileName, lastWrite.Value.FromUnixTime());
-        using var gsf = GFile.New(Context.CurrentPath.AppendPath(item.Name));
-        using var gtf = GFile.New(tmpNewFileName);
+        using var gsf = new GFile(Context.CurrentPath.AppendPath(item.Name));
+        using var gtf = new GFile(tmpNewFileName);
         gsf.CopyAttributes(gtf, FileCopyFlags.Overwrite);
         File.Move(tmpNewFileName, newFileName, true);
     }

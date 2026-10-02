@@ -134,7 +134,7 @@ class RemotesController : Controller
         var selected = GetSelectedItems(focusedPos).OfType<RemoteDevice>().ToArray();
         if (selected.Length == 0)
             return;
-        var dialog = AdwAlertDialog.New("Gerät löschen", $"Möchtest du {(selected.Length > 1 ? "die Geräte" : "das Gerät")} löschen?");
+        var dialog = new AdwAlertDialog("Gerät löschen", $"Möchtest du {(selected.Length > 1 ? "die Geräte" : "das Gerät")} löschen?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)

@@ -13,9 +13,12 @@ class IconNameItem : Box
 
     public void SetIcon(string name)
     {
-        var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
-        image.SetIcon(icon);
-        SetObject(Quark.Get("Hallo"), icon);
+        var icon = GIcon.FromContentType(Gio.GuessContentType(name) ?? "none");
+        if (icon != null)
+        {
+            image.SetIcon(icon);
+            SetObject(Quark.Get("Hallo"), icon);
+        }
     }
 
     public IconNameItem(Builder builder) : base(builder, "listitem") { }

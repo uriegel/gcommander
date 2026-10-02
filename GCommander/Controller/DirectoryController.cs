@@ -262,7 +262,7 @@ class DirectoryController : Controller
             : dirs > 1 && files == 0
             ? "die Verzeichnisse"
             : "die Einträge";
-        var dialog = AdwAlertDialog.New("Löschen", $"Möchtest du {text} löschen?");
+        var dialog = new AdwAlertDialog("Löschen", $"Möchtest du {text} löschen?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)
@@ -273,7 +273,7 @@ class DirectoryController : Controller
 
         foreach (var item in selected)
         {
-            using var file = GFile.New(Context.CurrentPath.AppendPath(item.Name));
+            using var file = new GFile(Context.CurrentPath.AppendPath(item.Name));
             await file.TrashAsync();
         }
     }
@@ -313,7 +313,7 @@ class DirectoryController : Controller
         var conflicts = CopyItems.GetConflictItems(copyItems, targetPath).ToArray();
         if (conflicts.Length == 0)
         {
-            var dialog = AdwAlertDialog.New(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
+            var dialog = new AdwAlertDialog(title, $"Möchtest du {text} {(move ? "verschieben" : "kopieren")}?");
             dialog.SetResponses([
                     new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                     new("cancel", "_Abbrechen", Cancel: true)
@@ -348,7 +348,7 @@ class DirectoryController : Controller
                 => ProgressContext.Instance.CopyProgress = new(title, item.Name, copyItems.Length, currentCount,
                         totalMaxBytes, totalCurrentBytes, item.Size, curr, DateTime.UtcNow - start, cts);
 
-            using var file = GFile.New(sourcePath.AppendPath(item.SubPath).AppendPath(item.Name));
+            using var file = new GFile(sourcePath.AppendPath(item.SubPath).AppendPath(item.Name));
             var target = targetPath.AppendPath(item.SubPath).AppendPath(item.Name);
             if (move)
                 await file.MoveAsync(target, FileCopyFlags.Overwrite, true, OnProgress);

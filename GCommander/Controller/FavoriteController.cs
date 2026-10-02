@@ -121,7 +121,7 @@ class FavoriteController : Controller
         var selected = GetSelectedItems(focusedPos).OfType<FavoriteItem>().ToArray();
         if (selected.Length == 0)
             return;
-        var dialog = AdwAlertDialog.New("Favoriten löschen", $"Möchtest du {(selected.Length > 1 ? "die" : "den")} Favoriten löschen?");
+        var dialog = new AdwAlertDialog("Favoriten löschen", $"Möchtest du {(selected.Length > 1 ? "die" : "den")} Favoriten löschen?");
         dialog.SetResponses([
                 new("ok", "_OK", Default: true, Appearance: AdwResponseAppearance.Suggested),
                 new("cancel", "_Abbrechen", Cancel: true)

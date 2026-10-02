@@ -21,7 +21,7 @@ class MediaPlayer : Overlay
                 dar = orientation?.Contains("90") == true || orientation?.Contains("270") == true ? 1 / dar : dar;
                 videoContainer.AspectRatio = dar;
                 mediaFile?.Dispose();
-                mediaFile = MediaFile.New(value);
+                mediaFile = new MediaFile(value);
                 mediaControls.SetMediaStream(mediaFile);
                 video.SetPaintable(mediaFile);
                 var asp = (mediaFile as IPaintable).IntrinsicAspectRatio;
