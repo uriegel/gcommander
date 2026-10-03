@@ -53,7 +53,7 @@ class FavoriteController : Controller
         previous?.Dispose();
 
         using var nameSorter = CustomSorter.Create<Item>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(nameSorter);
+        using var nameMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(nameSorter);
         var firstCol = new ColumnViewColumn("Name", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
@@ -61,7 +61,7 @@ class FavoriteController : Controller
         view.ColumnView.SortByColumn(firstCol);
 
         using var pathSorter = CustomSorter.Create<Item>((item1, item2) => (item1 is FavoriteItem fi ? fi.Path : "").CompareTo(item2 is FavoriteItem fi2 ? fi2.Path : ""));
-        using var pathMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(pathSorter);
+        using var pathMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(pathSorter);
         view.ColumnView.AppendColumn(new ColumnViewColumn("Path", pathfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(pathMultiSorter))

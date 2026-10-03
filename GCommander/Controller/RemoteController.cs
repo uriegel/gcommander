@@ -221,7 +221,7 @@ class RemoteController : Controller
         previous?.Dispose();
 
         using var nameSorter = CustomSorter.Create<Item>(directorySorter.NameOrExtensionOrder);
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(nameSorter);
+        using var nameMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(nameSorter);
         var firstCol = new ColumnViewColumn(DirectorySorter.NAME, namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
@@ -231,14 +231,14 @@ class RemoteController : Controller
         using var dateSorter = CustomSorter.Create<Item>((item1, item2)
             => (item1 is FileItem fi ? fi.ExifData?.DateTime ?? fi.DateTime : item1 is FileSystemItem fsi1 ? fsi1.DateTime : DateTime.MinValue)
                 .CompareTo(item2 is FileItem fi2 ? fi2.ExifData?.DateTime ?? fi2.DateTime : item2 is FileSystemItem fsi2 ? fsi2.DateTime : DateTime.MinValue));
-        using var dateMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(dateSorter);
+        using var dateMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(dateSorter);
         var dateCol = new ColumnViewColumn("Datum", datefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(dateMultiSorter));
         view.ColumnView.AppendColumn(dateCol);
 
         using var sizeSorter = CustomSorter.Create<Item>(DirectorySorter.SortSize);
-        using var sizeMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(sizeSorter);
+        using var sizeMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(directorySorter.SortDirectoriesFirst)).Append(sizeSorter);
         var sizeCol = new ColumnViewColumn("Größe", sizefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(sizeMultiSorter));

@@ -10,7 +10,7 @@ class AppChooser : AdwDialog
         description.Text = $"Wähle eine App, um <b>{fileName}</b> zu öffnen";
         SetDefaultWidget(openBtn);
 
-        using var actiongroup = SimpleActionGroup.New("appchooser");
+        using var actiongroup = new SimpleActionGroup("appchooser");
         actiongroup.AddActions(
             new SimpleAction("openfile", () => StartProcess(listbox, path, fileName)),
             new SimpleAction("cancel", CloseDialog)

@@ -55,7 +55,7 @@ class RemotesController : Controller
         previous?.Dispose();
 
         using var nameSorter = CustomSorter.Create<Item>((item1, item2) => (item1?.Name ?? "").CompareTo(item2?.Name ?? ""));
-        using var nameMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(nameSorter);
+        using var nameMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(nameSorter);
         var firstCol = new ColumnViewColumn("Name", namefactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(nameMultiSorter));
@@ -63,7 +63,7 @@ class RemotesController : Controller
         view.ColumnView.SortByColumn(firstCol);
 
         using var ipSorter = CustomSorter.Create<Item>((item1, item2) => (item1 is RemoteDevice ri ? ri.IP : "").CompareTo(item2 is RemoteDevice ri2 ? ri2.IP : ""));
-        using var ipMultiSorter = MultiSorter.New().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(ipSorter);
+        using var ipMultiSorter = new MultiSorter().Append(CustomSorter.Create<Item>(SortFixedFirst)).Append(ipSorter);
         view.ColumnView.AppendColumn(new ColumnViewColumn("IP-Adresse", ipfactory)
             .Expand()
             .SideEffect(cvc => cvc.SetSorter(ipMultiSorter))

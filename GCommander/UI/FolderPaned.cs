@@ -12,7 +12,7 @@ class FolderPaned : Paned
         activeView = folderViewLeft;
         MainContext.Instance.ChangeFolderContext(folderViewLeft.Context);
 
-        var leftEvents = FocusEventController.New();
+        var leftEvents = new FocusEventController();
         leftEvents.OnEnter += () =>
         {
             if (onItemsSet)
@@ -22,7 +22,7 @@ class FolderPaned : Paned
             lastActiveView = folderViewLeft;
         };
         leftEvents.OnLeave += () => activeView = null;
-        var rightEvents = FocusEventController.New();
+        var rightEvents = new FocusEventController();
         rightEvents.OnEnter += () =>
         {
             if (onItemsSet)
